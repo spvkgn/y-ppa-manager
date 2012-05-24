@@ -1,0 +1,203 @@
+#!/bin/bash
+
+usage() {
+cat << EOF
+usage: $(basename $0) [[-u|--upgrade] OLD_RELEASE NEW_RELEASE]
+
+Change or list PPAs that can be upgraded from OLD_RELEASE to NEW_RELEASE.
+
+OPTIONS:
+   -h, --help           Show this message
+   -t, --test           Don't make any changes
+   -u, --upgrade        Upgrade PPAs using OLD_RELEASE to use the NEW_RELEASE
+   -a, --auto-upgrade   Automatically upgrade PPAs to use the current release (experimental)
+   -q, --quiet          Don't output anything. Useful for scripts.
+
+$(basename $0) is licenced under the GPL by Christian Dannie Storgaard.
+Support for Ubuntu upgraded PPAs by Alin Andrei.
+EOF
+}
+
+function testConnection() 
+{
+	testconnection=`wget --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
+	if [[ $? != 0 ]]; then
+		echo  "You are not connected to the Internet. Please check your Internet connection and try again."
+		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
+		ppa_manager_run
+	else
+		echo Internet connection - ok
+		rm /tmp/.testinternet  > /dev/null 2>&1
+	fi
+}
+
+function ONLYROOT ()
+{
+
+if [[ "$UID" -ne "$ROOT_UID" ]]; then 
+	yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Cannot run as regular user" --text="  Please run this command from the  \n  Y PPA Manager Advanced dialog  " --button="gtk-ok:0"
+	echo "Error - Cannot run as regular user! Please run y-ppa-manager as an administrator (e.g. gksu  y-ppa-manager)"
+	exit
+fi
+
+}
+
+ONLYROOT
+
+TEST=false
+QUIET=false
+UPGRADE=false
+REGULAR=false
+AUTO=false
+OLD_RELEASE=
+NEW_RELEASE=$(lsb_release -cs)
+
+if [[ $# -eq 0 ]]; then
+	usage
+	exit 1
+fi
+while [ $# -gt 0 ] ; do
+	case "$1" in
+		-h|--help|'-?')
+			usage
+			exit 1
+			;;
+		-t|--test)
+			TEST=true
+			;;
+		-q|--quiet)
+			QUIET=true
+			;;
+		-r|--regular)
+			REGULAR=true
+			;;
+		-u|--upgrade)
+			UPGRADE=true
+			;;
+		-a|--auto)
+			UPGRADE=true
+			AUTO=true
+			;;
+	esac
+	shift
+done
+
+url_exists() {
+	rett=1
+	not_found=$(wget -S --spider "$url" 2>&1 | \
+	            grep -E '^\s*HTTP.*?404')
+	[[ -z "$( echo $not_found)" ]] && rett=0
+	return $rett
+}
+
+#replace OLD_RELEASE with NEW_RELEASE:
+replace_old_new() {
+Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all existing PPAs and replace the old Ubuntu version with    \n   the new Ubuntu version you enter below (only for PPAs that work   \n   with the new Ubuntu version)   " --field="Current Ubuntu version. E.g. oneiric" --field="Previous Ubuntu version. E.g. natty" --button="gtk-cancel:1" --button="gtk-ok:0"`
+ret=$?
+if [[ $ret -eq 0 ]]; then
+	NEW_RELEASE=`echo "$Y_UPGRADE_PPA" | cut -d '|' -f1`
+	OLD_RELEASE=`echo "$Y_UPGRADE_PPA" | cut -d '|' -f2`
+	selectok=true
+else
+	selectok=false
+	y-ppa-cmd advanced
+fi
+}
+
+#update PPAs disabled after regular upgrade:
+update_after_regular_upgrade() {
+yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all PPAs disabled after   \n   upgrade and re-enable those that work   \n   with your current Ubuntu version   " --button="gtk-cancel:1" --button="gtk-ok:0"
+
+ret=$?
+if [[ $ret -eq 0 ]]; then
+	selectok=true
+else
+	selectok=false
+	y-ppa-cmd advanced
+fi
+
+}
+
+if $UPGRADE; then
+	testConnection
+	replace_old_new
+fi
+
+if $REGULAR; then
+	testConnection
+	update_after_regular_upgrade
+fi
+
+
+changed=false
+for file in /etc/apt/sources.list.d/*; do
+
+	if [[ $file == *.save ]]; then continue; fi
+
+	if $UPGRADE; then
+		# Check if this PPA uses an old release
+		if $AUTO; then
+			# Search for any PPA that doesn't use the current release
+			line="$(grep -hE '^deb .*? ' $file | grep -vE " ($NEW_RELEASE|stable|testing)")"
+			OLD_RELEASE=$(echo "$line" | cut -d\  -f3)
+		else
+			line="$(grep -whE $OLD_RELEASE $file | head -1)"
+		fi
+		action='upgrade'
+	else
+		# Check if this PPA was disabled on upgrade
+		line="$(grep -whE "disabled on upgrade" "$file" | head -1)"
+		action='uncomment'
+	fi
+	
+	if [[ -z $(echo $line) ]]; then continue; fi
+	
+	! $QUIET &&   $UPGRADE && echo "${OLD_RELEASE^} is used in: $(basename $file)"
+	! $QUIET && ! $UPGRADE && echo "$(basename $file) has been disabled on distribution upgrade"
+	
+	! $QUIET && echo -en "\tChecking if the PPA supports ${NEW_RELEASE^}..."
+	
+	# Check if PPA with an updated URL exists
+	if [[ $action == 'uncomment' ]]; then
+		url="$(echo $line | sed -e "s/^# /#/g" -e "s/# disabled on upgrade.*//g" | cut -d\  -f2- | tr \  \/)"
+		url=${url//ubuntu/ubuntu\/dists}
+	else
+		url="$(echo $line | sed -e "s/^# /#/g" -e "s/# disabled on upgrade.*//g" | cut -d\  -f2- | tr \  \/)"
+		url=${url//$OLD_RELEASE/dists\/$NEW_RELEASE}
+	fi
+	
+	# It does, change the sources.list.d file
+	if url_exists "$url"; then
+		! $QUIET && echo " yes."
+		if ! $TEST; then
+			if [[ $action == 'uncomment' ]]; then
+				! $QUIET && echo -en "\tEnabling PPA previously disabled by distribution upgrade..."
+				result=$(sed -i "s/^# //g" "$file" &>/dev/null; \
+				         sed -i "s/ # disabled on upgrade.*//g" "$file" &>/dev/null; echo $?
+				)
+			else
+				! $QUIET && echo -en "\tUpdating PPA to use ${NEW_RELEASE^} instead of ${OLD_RELEASE^}..."
+				result=$(sed -i "s/$OLD_RELEASE/$NEW_RELEASE/g" "$file" &>/dev/null; echo $?)
+			fi
+			
+			if [[ $result == 0 ]]; then
+				! $QUIET && echo " done."
+				changed=true
+			else
+				! $QUIET && echo " failed. Do you have the necessary permissions?"
+			fi
+		fi
+	else
+		! $QUIET && echo " no."
+	fi
+	! $QUIET && echo ""
+done
+
+if $changed && ! $QUIET; then
+		apt-get update
+		notify-send --expire-time="5000" --icon=object-flip-vertical "Y PPA Manager" "Done updating PPAs"
+		y-ppa-cmd advanced
+elif $selectok; then
+		notify-send --expire-time="5000" --icon=dialog-information "Y PPA Manager" "There are no PPAs to update"
+		y-ppa-cmd advanced
+fi

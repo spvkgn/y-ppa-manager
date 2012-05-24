@@ -1,0 +1,8 @@
+0.0.8.4:
+- added Ubuntu appindicator: works in stand alone mode (automatically starts when you log in and doesn't require Y PPA Manager to run) or in regular mode: starts when the user opens Y PPA Manager and quits when Y PPA Manager is closed. The appindicator is disabled by default
+- renamed NotifyOSD icons to work with KDE too
+- use built-in (doesn't require Faenza to be installed) slightly modified Faenza icons for the main UI
+- added "import all missing GPG keys"
+- added "fix all GPG badsig errors"
+- kdesudo integration
+- Linux Mint 12 Lisa support

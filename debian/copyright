@@ -1,0 +1,13 @@
+This package was debianized by Alin Andrei <webupd8@gmail.com> on Fri,  09 Apr 2010 11:05 +0200
+
+Upstream Author: Alin Andrei <webupd8@gmail.com>
+
+Copyright: 
+- 2010-2011 Alin Andrei
+- tiheum for base Y PPA Manager icon (the Y PPA Manager icon is based on the Faenza icons) and the add/remove/settings/advanced/search/list icons: http://tiheum.deviantart.com/art/Faenza-Icons-173323228
+
+License:
+    GPL v3 see http://www.gnu.org/ for details
+
+
+The Debian packaging is copyright 2010 Alin Andrei <webupd8@gmail.com> and available on the same terms as the package itself (see above).
