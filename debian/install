@@ -6,6 +6,7 @@ ppa-upgrade /usr/bin/
 y-ppa-indicator /usr/bin/
 fix_gpg_badsig /usr/bin/
 y-sudo /usr/bin/
+update-ppa /usr/bin/
 debian/y-ppa-manager.desktop /usr/share/applications/
 doc/y_ppa_man_help /usr/share/y-ppa-manager/
 share/icons/y-add.png /usr/share/icons/hicolor/48x48/actions/

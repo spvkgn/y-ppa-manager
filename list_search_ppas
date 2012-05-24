@@ -82,15 +82,15 @@ function y_add_ppa ()
 {
 if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
 	if [[ $dosudo = gksu ]]; then
-		gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y $1 && launchpad-getkeys > /dev/null 2>&1'"
+		gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1'"
 	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -y $1 && launchpad-getkeys > /dev/null 2>&1'"
+		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1'"
 	fi
 else
 	if [[ $dosudo = gksu ]]; then
-		gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository $1 && launchpad-getkeys > /dev/null 2>&1'"
+		gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository $1 && update-ppa $1 > /dev/null 2>&1'"
 	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository $1 && launchpad-getkeys > /dev/null 2>&1'"
+		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository $1 && update-ppa $1 > /dev/null 2>&1'"
 	fi
 fi
 }
@@ -100,7 +100,7 @@ add_searched_ppa()
 	checkAPT
 #	echo SEARCH_LIST_PACKAGES2 "$SEARCH_LIST_PACKAGES"
 	PPA_TO_ADD=$(echo "$SEARCH_LIST_PACKAGES" | sed -e 's/|\|(.*//')
-	notify-send --icon=list-add "Y PPA Manager" "Adding ppa:"$PPA_TO_ADD" and updating software sources"
+	notify-send --icon=list-add "Y PPA Manager" "Adding ppa:"$PPA_TO_ADD""
 	y_add_ppa ppa:"$PPA_TO_ADD"
 	#gksu -S apt-get update
 
@@ -110,9 +110,11 @@ add_searched_ppa()
 			
 	ppafilename1=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g"`
 	ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g"`
+	username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
+	ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
+	checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
 			
-	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list ]]; then
-			
+	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa ]]; then	
 		notify-send --expire-time="5000" --icon=list-add "Y PPA Manager - Done" "The ppa:"$PPA_TO_ADD" PPA has been added successfully!"
 	else
 		notify-send --icon=dialog-error "Y PPA Manager" "An error occured and ppa:"$PPA_TO_ADD" has not been added!"

@@ -161,15 +161,17 @@ add_a_PPA()
 		
 		if [[ "$ADD_PPA_NO_SPACES" && $valid_ppa_check1 && $valid_ppa_check2 && $valid_ppa_check3 -gt 0 && $valid_ppa_check4 -gt 0 && $valid_ppa_check5 -eq 1 && $valid_ppa_check6 -eq 1 ]]; then
 			checkAPT
-			notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Adding "$ADD_PPA_NO_SPACES" and updating software sources"
+			notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Adding "$ADD_PPA_NO_SPACES""
 			y_add_ppa "$ADD_PPA_NO_SPACES"
-			apt-get update
+			#apt-get update
 			
 			ppafilename1=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/^ppa://g" -e "s/\//-/g"`
 			ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/^ppa://g" -e "s/\//-/g"`
+			username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
+			ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
+			checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
 			
-			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list ]]; then
-			
+			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa ]]; then
 				notify-send --expire-time="5000" --icon=list-add "Y PPA Manager - Done" "The "$ADD_PPA_NO_SPACES" PPA has been added successfully!"
 			else
 				notify-send --icon=dialog-error "Y PPA Manager" "An error occured and "$ADD_PPA_NO_SPACES" has not been added!"
