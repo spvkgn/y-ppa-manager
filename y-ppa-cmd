@@ -94,9 +94,9 @@ ONLYROOT
 
 #echo 1 $1
 if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
-	add-apt-repository -y $1 &> /tmp/.added_ppa
+	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
-	add-apt-repository $1 &> /tmp/.added_ppa
+	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
 fi
 ERRORGETTINGKEY=$(cat /tmp/.added_ppa | tail -n 1 | grep ^gpg.*0$)
 if [[ $ERRORGETTINGKEY ]]; then
@@ -104,7 +104,7 @@ if [[ $ERRORGETTINGKEY ]]; then
 	gpg --ignore-time-conflict --no-options --no-default-keyring --secret-keyring /etc/apt/secring.gpg --trustdb-name /etc/apt/trustdb.gpg --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv $GPGKEYTOGET
 fi
 
-rm /tmp/.added_ppa > /dev/null 2>&1
+#rm /tmp/.added_ppa > /dev/null 2>&1
 }
 
 

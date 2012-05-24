@@ -77,14 +77,17 @@ p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http:
 if [ ! -n "$p" ]; then
 	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
 	read response
-	case $response in
-		if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
-			[yY]) add-apt-repository -y "$ppa";;
-		else
-			[yY]) add-apt-repository "$ppa";;
-		fi
-	    *) exit 1;;
-	esac
+	if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
+		case $response in
+				[yY]) add-apt-repository -y "$ppa";;
+	 	   *) exit 1;;
+		esac
+	else
+		case $response in
+				[yY]) add-apt-repository "$ppa";;	    *) exit 1;;
+		esac
+
+	fi
 fi
 # Switch to a temporary directory
 tempdir="/tmp/update-ppa"
