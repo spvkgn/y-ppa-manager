@@ -1,0 +1,118 @@
+#!/bin/bash
+# Script to selectively update lists for a PPA in Ubuntu
+# Example: update-ppa ppa:satyajit-happy/themes
+#
+# Copyright (C) 2012  Satyajit sahoo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+# Set Colors
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+BLUE="\033[0;34m"
+ENDCOLOR="\033[0m"
+# Check the Distro
+u=`lsb_release -a | grep -i "ubuntu"`
+if [ ! -n "$u" ]; then
+	echo -e $RED"The distro doesn't seem to be Ubuntu!"$ENDCOLOR
+	exit 1
+fi
+#Ubuntu version
+case `lsb_release -cs` in
+	helena)
+		UBUVER="karmic" ;;
+	isadora)
+		UBUVER="lucid" ;;
+	julia)
+		UBUVER="maverick" ;;
+	katya)
+		UBUVER="natty" ;;
+	lisa)
+		UBUVER="oneiric" ;;
+	maya)
+		UBUVER="precise" ;;
+	karmic)
+		UBUVER="karmic" ;;
+	lucid)
+		UBUVER="lucid" ;;
+	maverick)
+		UBUVER="maverick" ;;
+	natty)
+		UBUVER="natty" ;;
+	oneiric)
+		UBUVER="oneiric" ;;
+	precise)
+		UBUVER="precise" ;;
+esac
+# Parse the arguement
+ppa="$1"
+s=`echo "$ppa" | grep "^ppa:" | grep "/"`
+if [ ! -n "$s" ]; then
+	echo -e $RED"Please pass a correct PPA name as argument!"$ENDCOLOR
+	exit 1
+fi
+# Check if root
+if [ ! $(whoami) = "root" ]; then
+	echo -e $RED"Root access is needed to continue!"$ENDCOLOR
+	exit 1
+fi
+# Detect the required info
+arch="$(uname -i)"
+codename="$(lsb_release -cs)"
+username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
+ppaname="$(echo $ppa | cut -f2 -d\/)"
+# Check if the PPA is present or not
+p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $codename main"`
+if [ ! -n "$p" ]; then
+	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
+	read response
+	case $response in
+		if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
+			[yY]) add-apt-repository -y "$ppa";;
+		else
+			[yY]) add-apt-repository "$ppa";;
+		fi
+	    *) exit 1;;
+	esac
+fi
+# Switch to a temporary directory
+tempdir="/tmp/update-ppa"
+if [ -d "$tempdir" ]; then
+	rm -rf "$tempdir"
+fi
+mkdir "$tempdir"
+cd "$tempdir"
+# Fetch files to the temporary directory
+echo -e $BLUE"Fetching files..."$ENDCOLOR
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release.gpg -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/binary-"$arch"/Packages -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/source/Sources -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources
+# Move files to the correct location
+if [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]; then
+	mv ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"* /var/lib/apt/lists/
+else
+	echo -e $RED"The files could not be downloaded or lost. Please check if you have an internet connection and retry :("$ENDCOLOR
+exit 1
+fi
+# Delete the temporary directory
+cd ..
+rm -rf "$tempdir"
+# Show success message
+if [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]; then
+	echo -e $GREEN"The lists for the PPA $ppa have been successfully updated!"$ENDCOLOR
+else
+	echo -e $RED"An error occured. Please retry :("$ENDCOLOR
+exit 1
+fi
