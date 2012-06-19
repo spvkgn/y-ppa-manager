@@ -120,17 +120,18 @@ while read -r sum fname; do
         flist[$sum]="$fname"
     fi
 done <  <(find /etc/apt/sources.list.d/ -name "*.list" -exec sha256sum {} +)  >/tmp/.rmdups)
+dupes_number=$(cat /tmp/.rmdups | wc -l)
 
-if [[ -s /tmp/.rmdups ]]; then 
-	yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate sources detected" --text="   You seem to have duplicate PPA source list files   \n   Do you want Y PPA Manager to remove the duplicates?   " --button="gtk-ok:0" --button="gtk-cancel:1"
+if [[ -s /tmp/.rmdups ]]; then
+	yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate sources detected" --text="   You have $dupes_number duplicate PPA source list files   \n   Do you want Y PPA Manager to remove the duplicates?   " --button="gtk-ok:0" --button="gtk-cancel:1"
 	if [[ $? -eq 0 ]]; then
 	chmod +x /tmp/.rmdups
 	if [[ $dosudo = gksu ]]; then
 		gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups && apt-get update'"
 	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups && apt-get update'"
+		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
 	fi
-	notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates and updated the software sources!"
+	notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 	fi
 else
 	notify-send --expire-time="5000" --icon=dialog-information "Y PPA Manager" "No PPA duplicates found!"
