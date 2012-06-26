@@ -67,14 +67,14 @@ if [ ! -n "$p" ]; then
 	read response
 	if [[ $codename = "oneiric" || $codename = "precise" ]]; then
 		case $response in
-				[yY]) add-apt-repository -y "$ppa";;
-	 	   *) exit 1;;
+			[yY]) add-apt-repository -y "$ppa";;
+			*) exit 1;;
 		esac
 	else
 		case $response in
-				[yY]) add-apt-repository "$ppa";;	    *) exit 1;;
+			[yY]) add-apt-repository "$ppa";;
+			*) exit 1;;
 		esac
-
 	fi
 fi
 # Switch to a temporary directory
