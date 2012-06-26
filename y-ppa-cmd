@@ -398,7 +398,7 @@ list_packages_PPA()
 
 	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
 
-	LIST_PPA_PACKAGES=$(yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=400 --height=300 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)"  --button="Close:1" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
+	LIST_PPA_PACKAGES=$(yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=400 --height=300 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)"  --button="Close:1" --button="Update PPA:2" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
 
 	if [[ $? -eq 0 ]]; then
 
