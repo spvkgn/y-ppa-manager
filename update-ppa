@@ -23,11 +23,7 @@ GREEN="\033[0;32m"
 BLUE="\033[0;34m"
 ENDCOLOR="\033[0m"
 # Check the distro
-<<<<<<< TREE
 u=`lsb_release -i | grep -i "ubuntu"`
-=======
-u=`lsb_release -a | grep -i "ubuntu"`
->>>>>>> MERGE-SOURCE
 if [ ! -n "$u" ]; then
 	echo -e $RED"The distro doesn't seem to be Ubuntu!"$ENDCOLOR
 	exit 1
