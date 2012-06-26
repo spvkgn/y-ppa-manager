@@ -22,39 +22,12 @@ RED="\033[0;31m"
 GREEN="\033[0;32m"
 BLUE="\033[0;34m"
 ENDCOLOR="\033[0m"
-# Check the Distro
-u=`lsb_release -a | grep -i "ubuntu"`
+# Check the distro
+u=`lsb_release -i | grep -i "ubuntu"`
 if [ ! -n "$u" ]; then
 	echo -e $RED"The distro doesn't seem to be Ubuntu!"$ENDCOLOR
 	exit 1
 fi
-#Ubuntu version
-case `lsb_release -cs` in
-	helena)
-		UBUVER="karmic" ;;
-	isadora)
-		UBUVER="lucid" ;;
-	julia)
-		UBUVER="maverick" ;;
-	katya)
-		UBUVER="natty" ;;
-	lisa)
-		UBUVER="oneiric" ;;
-	maya)
-		UBUVER="precise" ;;
-	karmic)
-		UBUVER="karmic" ;;
-	lucid)
-		UBUVER="lucid" ;;
-	maverick)
-		UBUVER="maverick" ;;
-	natty)
-		UBUVER="natty" ;;
-	oneiric)
-		UBUVER="oneiric" ;;
-	precise)
-		UBUVER="precise" ;;
-esac
 # Parse the arguement
 ppa="$1"
 s=`echo "$ppa" | grep "^ppa:" | grep "/"`
@@ -69,14 +42,30 @@ if [ ! $(whoami) = "root" ]; then
 fi
 # Detect the required info
 arch="$(uname -i)"
+codename="$(lsb_release -cs)"
 username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 ppaname="$(echo $ppa | cut -f2 -d\/)"
+# Ubuntu version for Linux Mint
+case `lsb_release -cs` in
+	helena)
+		codename="karmic";;
+	isadora)
+		codename="lucid";;
+	julia)
+		codename="maverick";;
+	katya)
+		codename="natty";;
+	lisa)
+		codename="oneiric";;
+	maya)
+		codename="precise";;
+esac
 # Check if the PPA is present or not
-p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $codename main"`
 if [ ! -n "$p" ]; then
 	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
 	read response
-	if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
+	if [[ $codename = "oneiric" || $codename = "precise" ]]; then
 		case $response in
 				[yY]) add-apt-repository -y "$ppa";;
 	 	   *) exit 1;;
@@ -97,13 +86,13 @@ mkdir "$tempdir"
 cd "$tempdir"
 # Fetch files to the temporary directory
 echo -e $BLUE"Fetching files..."$ENDCOLOR
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$UBUVER"/Release -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_Release
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$UBUVER"/Release.gpg -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_Release.gpg
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$UBUVER"/main/binary-"$arch"/Packages -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_main_binary-"$arch"_Packages
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$UBUVER"/main/source/Sources -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_main_source_Sources
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release.gpg -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/binary-"$arch"/Packages -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages
+wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/source/Sources -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources
 # Move files to the correct location
-if [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_Release ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_Release.gpg ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_main_binary-"$arch"_Packages ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_main_source_Sources ]; then
-	mv ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"* /var/lib/apt/lists/
+if [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]; then
+	mv ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"* /var/lib/apt/lists/
 else
 	echo -e $RED"The files could not be downloaded or lost. Please check if you have an internet connection and retry :("$ENDCOLOR
 exit 1
@@ -112,7 +101,7 @@ fi
 cd ..
 rm -rf "$tempdir"
 # Show success message
-if [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_Release ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_Release.gpg ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_main_binary-"$arch"_Packages ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$UBUVER"_main_source_Sources ]; then
+if [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]; then
 	echo -e $GREEN"The lists for the PPA $ppa have been successfully updated!"$ENDCOLOR
 else
 	echo -e $RED"An error occured. Please retry :("$ENDCOLOR
