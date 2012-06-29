@@ -867,6 +867,8 @@ case $1 in
 	remove_a_PPA ;;
 	advanced)
 	advanced_options ;;
+	purge)
+	purge_a_PPA ;;
 	list)
 	list_packages_PPA ;;
 	help)
