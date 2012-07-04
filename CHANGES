@@ -6,6 +6,7 @@
 - automatically support newer Ubuntu versions (so this means the new version works on Ubuntu Quantal now)
 - fixed minor postinst bug that was occuring on Linux Mint 12
 - Scan for duplicate sources files now displays the number of duplicates found
+- the PPA backup feature now backs up / restores repositories keys too (launchpad-getkeys was and is still used to automatically fetch missing keys)
 
 0.0.8.4:
 - added Ubuntu appindicator: works in stand alone mode (automatically starts when you log in and doesn't require Y PPA Manager to run) or in regular mode: starts when the user opens Y PPA Manager and quits when Y PPA Manager is closed. The appindicator is disabled by default
