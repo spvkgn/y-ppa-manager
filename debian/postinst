@@ -3,6 +3,7 @@
 if [ "$1" = "configure" ]; then
 	ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
 
+	UBUVER="$(lsb_release -cs)"
 	case `lsb_release -cs` in
 		helena)
 			UBUVER="karmic" ;;
@@ -14,17 +15,7 @@ if [ "$1" = "configure" ]; then
 			UBUVER="natty" ;;
 		lisa)
 			UBUVER="oneiric" ;;
-		karmic)
-			UBUVER="karmic" ;;
-		lucid)
-			UBUVER="lucid" ;;
-		maverick)
-			UBUVER="maverick" ;;
-		natty)
-			UBUVER="natty" ;;
-		oneiric)
-			UBUVER="oneiric" ;;
-		precise)
+		maya)
 			UBUVER="precise" ;;
 	esac
 
