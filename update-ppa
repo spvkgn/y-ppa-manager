@@ -86,7 +86,6 @@ mkdir "$tempdir"
 cd "$tempdir"
 # Fetch files to the temporary directory
 echo -e $BLUE"Fetching files..."$ENDCOLOR
-echo http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release -O
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release.gpg -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/binary-"$arch"/Packages -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages

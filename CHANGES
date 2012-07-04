@@ -1,3 +1,12 @@
+0.0.8.7:
+- added "update-ppa" which can update a single PPA source and not all software sources, useful for those with limited internet connectivity. Usage example: sudo update-ppa ppa:webupd8team/y-ppa-manager . (Thanks to Satya for this feature!)
+- when adding a PPA, the new "update-ppa" is used so only that PPA source is updated, not all software sources
+- added man pages (thanks Satya)
+- fixed launching the PPA Purge feature via command line
+- automatically support newer Ubuntu versions (so this means the new version works on Ubuntu Quantal now)
+- fixed minor postinst bug that was occuring on Linux Mint 12
+- Scan for duplicate sources files now displays the number of duplicates found
+
 0.0.8.4:
 - added Ubuntu appindicator: works in stand alone mode (automatically starts when you log in and doesn't require Y PPA Manager to run) or in regular mode: starts when the user opens Y PPA Manager and quits when Y PPA Manager is closed. The appindicator is disabled by default
 - renamed NotifyOSD icons to work with KDE too
