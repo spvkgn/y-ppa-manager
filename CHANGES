@@ -4,7 +4,7 @@
 - added man pages (thanks Satya)
 - fixed launching the PPA Purge feature via command line
 - automatically support newer Ubuntu versions (so this means the new version works on Ubuntu Quantal now)
-- fixed a bug that was occuring on Linux Mint 12, causing the default version to be set as blank
+- fixed a bug that was occuring on Linux Mint 13, causing the default version to be set as blank
 - Scan for duplicate sources files now displays the number of duplicates found
 - the PPA backup feature now backs up / restores repositories keys too (launchpad-getkeys was and is still used to automatically fetch missing keys)
 - other minor fixes
