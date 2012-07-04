@@ -23,6 +23,6 @@ share/icons/24/y-ppa-manager.png /usr/share/icons/hicolor/24x24/apps/
 share/icons/24/y-ppa-indicator.png /usr/share/pixmaps/
 share/icons/32/y-ppa-manager.png /usr/share/icons/hicolor/32x32/apps/
 share/icons/48/y-ppa-manager.png /usr/share/icons/hicolor/48x48/apps/
-share/icons/ubuntu-mono-dark/y-ppa-indicator.svg /usr/share/icons/ubuntu-mono-dark/apps/24/
-share/icons/ubuntu-mono-light/y-ppa-indicator.svg /usr/share/icons/ubuntu-mono-light/apps/24/
+share/icons/ubuntu-mono-dark/y-ppa-indicator.png /usr/share/icons/ubuntu-mono-dark/apps/24/
+share/icons/ubuntu-mono-light/y-ppa-indicator.png /usr/share/icons/ubuntu-mono-light/apps/24/
 share/desktopfiles /usr/share/y-ppa-manager/
