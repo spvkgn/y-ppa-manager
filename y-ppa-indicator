@@ -39,7 +39,7 @@ class IndicatorY:
 	    exit(0)
         self.ind = appindicator.Indicator("y-ppa-indicator", "y-ppa-indicator", appindicator.CATEGORY_APPLICATION_STATUS)
         #self.ind.set_label("Y")
-        self.ind.set_status(appindicator.STATUS_ACTIVE)        
+        self.ind.set_status(appindicator.STATUS_ACTIVE)
 
         self.create_menu()
 
