@@ -21,6 +21,8 @@ def item_run(w, yitem):
         os.system("gksu -S -m 'Y PPA Manager requires admin privileges for this task' /usr/bin/y-ppa-cmd remove")
     elif yitem == "_yppa_list":
         os.system("/usr/bin/y-ppa-cmd list")
+    elif yitem == "_yppa_install":
+        os.system("/usr/bin/y-ppa-cmd install")
     elif yitem == "_yppa_adv":
         os.system("/usr/bin/y-ppa-cmd advanced")
     elif yitem == "_yppa_set":
@@ -64,6 +66,10 @@ class IndicatorY:
 
         item = gtk.MenuItem("List packages")
         item.connect("activate", item_run, "_yppa_list")
+        menu.append(item)
+
+        item = gtk.MenuItem("Install packages")
+        item.connect("activate", item_run, "_yppa_install")
         menu.append(item)
 
         item = gtk.MenuItem("Advanced")

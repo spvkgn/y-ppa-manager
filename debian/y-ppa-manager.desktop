@@ -10,7 +10,7 @@ X-MultipleArgs=false
 Type=Application
 Categories=GNOME;System;
 StartupWMClass=Y-PPA-Manager
-X-Ayatana-Desktop-Shortcuts=YPPAManager1;YPPAManager2;YPPAManager3;YPPAManager4;YPPAManager5;YPPAManager6;
+X-Ayatana-Desktop-Shortcuts=YPPAManager1;YPPAManager2;YPPAManager3;YPPAManager4;YPPAManager5;YPPAManager6;YPPAManager7;
 TargetEnvironment=Unity
 
 [YPPAManager1 Shortcut Group]
@@ -34,11 +34,16 @@ Exec=y-ppa-cmd list
 TargetEnvironment=Unity
 
 [YPPAManager5 Shortcut Group]
+Name=Install packages
+Exec=y-ppa-cmd install
+TargetEnvironment=Unity
+
+[YPPAManager6 Shortcut Group]
 Name=Advanced
 Exec=y-ppa-cmd advanced
 TargetEnvironment=Unity
 
-[YPPAManager6 Shortcut Group]
+[YPPAManager7 Shortcut Group]
 Name=Settings
 Exec=y-ppa-cmd settings
 TargetEnvironment=Unity
