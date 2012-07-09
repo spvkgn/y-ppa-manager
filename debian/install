@@ -15,6 +15,8 @@ share/icons/y-list.png /usr/share/icons/hicolor/48x48/actions/
 share/icons/y-remove.png /usr/share/icons/hicolor/48x48/actions/
 share/icons/y-search.png /usr/share/icons/hicolor/48x48/actions/
 share/icons/y-settings.png /usr/share/icons/hicolor/48x48/actions/
+share/icons/y-purge.png /usr/share/icons/hicolor/48x48/actions/
+share/icons/y-install.png /usr/share/icons/hicolor/48x48/actions/
 share/icons/y-ppa-manager.png /usr/share/icons/hicolor/128x128/apps/
 share/icons/16/y-ppa-manager.png /usr/share/icons/hicolor/16x16/apps/
 share/icons/22/y-ppa-manager.png /usr/share/icons/hicolor/22x22/apps/
@@ -26,3 +28,4 @@ share/icons/48/y-ppa-manager.png /usr/share/icons/hicolor/48x48/apps/
 share/icons/ubuntu-mono-dark/y-ppa-indicator.png /usr/share/icons/ubuntu-mono-dark/apps/24/
 share/icons/ubuntu-mono-light/y-ppa-indicator.png /usr/share/icons/ubuntu-mono-light/apps/24/
 share/desktopfiles /usr/share/y-ppa-manager/
+install_package.py /usr/share/pyshared/y-ppa-manager/

@@ -1,0 +1,13 @@
+
+[Desktop Entry]
+Version=1.0
+Name=Purge a PPA
+Comment=Purge a PPA: disable the PPA and remove any packages installed from that PPA
+GenericName=Purge a PPA
+Exec=y-ppa-cmd purge
+Icon=y-purge
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;System;
+StartupWMClass=Y-PPA-Manager

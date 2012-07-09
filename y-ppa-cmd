@@ -593,15 +593,13 @@ function y_ppa_fix_gpg_badsig() {
 
 function advanced_options() {
 
-Y_ADVANCED=`yad --list --no-headers --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --column="" "Purge a PPA" "Scan and remove duplicate PPAs" "Try to import all missing GPG keys" "Try to fix all GPG BADSIG errors" "Backup repositories" "Restore repositories backup" "Re-enable working PPAs after Ubuntu upgrade" "Update release name in working PPAs" --width=350 --height=270 --title="Advanced - Y PPA Manager" --button="Close:1" --button="gtk-ok:0"`
+Y_ADVANCED=`yad --list --no-headers --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --column="" "Scan and remove duplicate PPAs" "Try to import all missing GPG keys" "Try to fix all GPG BADSIG errors" "Backup repositories" "Restore repositories backup" "Re-enable working PPAs after Ubuntu upgrade" "Update release name in working PPAs" --width=350 --height=270 --title="Advanced - Y PPA Manager" --button="Close:1" --button="gtk-ok:0"`
 
 Y_ADVANCED_fix=`echo "$Y_ADVANCED" | sed -e "s/|//"`
 
 if [[ $? -eq 0 ]]; then
 	if [[ $Y_ADVANCED_fix = "Backup repositories" ]]; then
 		y_ppa_backup
-	elif [[ $Y_ADVANCED_fix = "Purge a PPA" ]]; then
-		purge_a_PPA
 	elif [[ $Y_ADVANCED_fix = "Scan and remove duplicate PPAs" ]]; then
 		find_n_remove_dupes
 	elif [[ $Y_ADVANCED_fix = "Try to import all missing GPG keys" ]]; then
@@ -806,6 +804,16 @@ fi
 }
 
 
+function y_ppa_install() {
+
+if [[ $dosudo = gksu ]]; then
+	gksu -S -m "Y PPA Manager requires admin privileges for this task" "python /usr/share/pyshared/y-ppa-manager/install_package.py"
+elif [[ $dosudo = kdesudo ]]; then
+	kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "python /usr/share/pyshared/y-ppa-manager/install_package.py"
+fi
+
+}
+
 help_dialog()
 {
 	yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Help - Y PPA Manager" --width="500" --height="400" --text-info  --wrap --filename="/usr/share/y-ppa-manager/y_ppa_man_help" --button="Close:1"
@@ -863,6 +871,8 @@ case $1 in
 	testConnection && exec list_search_ppas ;;
 	settings)
 	y_ppa_settings ;;
+	install)
+	y_ppa_install ;;
 	kadd)
 	y_add_ppa ;;
 	*)
