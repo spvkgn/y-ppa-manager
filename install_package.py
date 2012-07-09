@@ -31,8 +31,10 @@ from apt.cache import LockFailedException
 
 class InstallPackageDialog(gtk.Dialog):
 	def __init__(self,packages = None):
-		title = 'Install package(s)'
+		title = 'Y PPA Manager - Install package(s)'
 		gtk.Dialog.__init__(self,title,None,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+		self.set_wmclass = 'Y-PPA-Manager'
+		self.set_icon_name('y-ppa-manager')
 		self.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 		self.set_size_request(400, 200)
 		self.set_resizable(False)
