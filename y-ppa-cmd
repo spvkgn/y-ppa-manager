@@ -754,12 +754,12 @@ Comment=Stand-alone Y PPA Manager Ubuntu indicator" > ~/.config/autostart/y-ppa-
 	
 	if [[ $Y_dist != $current_ubuntu_version ]]; then
 
-		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" ]]; then
+		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" ]]; then
 			sed -i "s/searchdist=.*/searchdist=$Y_dist/g" /tmp/.y-ppa-manager.conf
 #			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #			rm /tmp/.y-ppa-manager.conf
 		else
-			yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  precise, oneiric, natty, maverick, lucid or karmic (in lowercase) " --button="gtk-ok:0"
+			yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  quantal, precise, oneiric, natty, maverick, lucid or karmic (in lowercase) " --button="gtk-ok:0"
 			y_ppa_settings
 		fi
 
