@@ -31,8 +31,10 @@ from apt.cache import LockFailedException
 
 class InstallPackageDialog(gtk.Dialog):
 	def __init__(self,packages = None):
-		title = 'Install package(s)'
+		title = 'Y PPA Manager - Install package(s)'
 		gtk.Dialog.__init__(self,title,None,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+		self.set_wmclass = 'Y-PPA-Manager'
+		self.set_icon_name('y-ppa-manager')
 		self.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 		self.set_size_request(400, 200)
 		self.set_resizable(False)
@@ -98,7 +100,7 @@ class InstallPackageDialog(gtk.Dialog):
 		noupgradables = []
 		for package in packages:
 			try:
-				print "%s is installed %s and is upgrade %s"%(package,cache[package].is_installed,cache[package].is_upgradable)
+				print "%s is installed %s and is upgradable %s"%(package,cache[package].is_installed,cache[package].is_upgradable)
 				if cache[package].is_installed and not cache[package].is_upgradable:
 					noupgradables.append(package)
 				else:
@@ -125,7 +127,7 @@ class InstallPackageDialog(gtk.Dialog):
 					tpackages = ', '.join(inpackages)
 					message += "\n<b>Only</b> these packages: '%s'\n will be installed"%tpackages
 				else:
-					message += "\n<b>Only</b> this package %s will be installed"%inpackages[0]
+					message += "\n<b>Only</b>: %s will be installed"%inpackages[0]
 				message +="\n\n<b>Continue?</b>"
 				ans_exit = False
 			else:
@@ -144,13 +146,13 @@ class InstallPackageDialog(gtk.Dialog):
 				md.destroy()
 				exit(0)
 			md.destroy()
-		print packages
-		if len(packages)>0:
-			for package in packages:
-				if cache[package].is_upgradable:
-					cache[package].mark_upgrade()
+		print inpackages
+		if len(inpackages)>0:
+			for inpackage in inpackages:
+				if cache[inpackage].is_upgradable:
+					cache[inpackage].mark_upgrade()
 				else:
-					cache[package].mark_install(auto_fix=True, auto_inst=True, from_user=True)
+					cache[inpackage].mark_install(auto_fix=True, auto_inst=True, from_user=True)
 			try:
 				self.set_size_request(800, 650)
 				self.progress.show_terminal(expanded=True)
