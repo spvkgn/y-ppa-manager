@@ -31,10 +31,8 @@ from apt.cache import LockFailedException
 
 class InstallPackageDialog(gtk.Dialog):
 	def __init__(self,packages = None):
-		title = 'Y PPA Manager - Install package(s)'
+		title = 'Install package(s)'
 		gtk.Dialog.__init__(self,title,None,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
-		self.set_wmclass = 'Y-PPA-Manager'
-		self.set_icon_name('y-ppa-manager')
 		self.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 		self.set_size_request(400, 200)
 		self.set_resizable(False)
@@ -92,66 +90,82 @@ class InstallPackageDialog(gtk.Dialog):
 		
 	def install_package(self,widget):
 		cache = apt.cache.Cache(self.progress.open)
-		packages = self.entry12.get_text().split()
+		packages = self.entry12.get_text().strip().split()
+		for p in packages:
+			print p
+		inpackages = []
 		nopackages = []
 		noupgradables = []
 		for package in packages:
 			try:
+				print "%s is installed %s and is upgrade %s"%(package,cache[package].is_installed,cache[package].is_upgradable)
 				if cache[package].is_installed and not cache[package].is_upgradable:
 					noupgradables.append(package)
+				else:
+					inpackages.append(package)
 			except KeyError,e:
 				print e
 				nopackages.append(package)
-		if len(noupgradables)>0:
-			if len(noupgradables)>1:
-				packages = ', '.join(noupgradables)
-				message = "The packages: '%s'\n can't be upgraded or the latest version is already installed"%packages
+		if len(noupgradables)>0 or len(nopackages)>0:
+			message = "<b>Some errors found:</b>\n"
+			if len(noupgradables)>0:
+				if len(noupgradables)>1:
+					tpackages = ', '.join(noupgradables)
+					message += "\nThe packages: '%s'\n <b>can't be upgraded</b> or the latest version is already installed"%tpackages
+				else:
+					message += "\nThe package: %s <b>can't be upgraded</b> or the latest version is already installed"%noupgradables[0]
+			if len(nopackages)>0:
+				if len(nopackages)>1:
+					tpackages = ', '.join(nopackages)
+					message += "\nThere are <b>no packages</b> called:\n '%s'"%tpackages
+				else:
+					message += '\nThere is <b>no package</b> called "%s"'%nopackages[0]
+			if len(inpackages)>0:
+				if len(inpackages)>1:
+					tpackages = ', '.join(inpackages)
+					message += "\n<b>Only</b> these packages: '%s'\n will be installed"%tpackages
+				else:
+					message += "\n<b>Only</b> this package %s will be installed"%inpackages[0]
+				message +="\n\n<b>Continue?</b>"
+				ans_exit = False
 			else:
-				message = "The package: %s can't be upgraded or the latest version is already installed"%noupgradables[0]
+				message += "\n\nThere is <b>no package</b> to install"
+				message += "\nInstallation will <b>not continue</b>"
+				ans_exit = True
 			md = gtk.MessageDialog(parent=self,
-			flags= gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-			type=gtk.MESSAGE_WARNING,
-			buttons= gtk.BUTTONS_OK,
-			message_format=message)
-			md.run()
-			md.destroy()
-			return
-			
-		if len(nopackages)>0:
-			if len(nopackages)>1:
-				packages = ', '.join(nopackages)
-				message = "There are no packages called:\n '%s'"%packages
-			else:
-				message = 'There is no package called "%s"'%nopackages[0]
-			md = gtk.MessageDialog(parent=self,
-			flags= gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+			flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
 			type=gtk.MESSAGE_ERROR,
-			buttons= gtk.BUTTONS_OK,
-			message_format=message)
-			md.run()
+			buttons=gtk.BUTTONS_YES_NO,
+			message_format=None)
+			md.set_markup(message)
+			ans = md.run()
+			print ans
+			if ans == -9 or ans_exit:
+				md.destroy()
+				exit(0)
 			md.destroy()
-			return
-			
-		for package in packages:
-			if cache[package].is_installed:
-				cache[package].mark_upgrade()
-			else:
-				cache[package].mark_install(auto_fix=True, auto_inst=True, from_user=True)
-		try:
-			self.set_size_request(800, 650)
-			self.progress.show_terminal(expanded=True)
-			cache.commit(self.progress.fetch, self.progress.install)					
-		except LockFailedException,e:
-			print e
-			md = gtk.MessageDialog(parent=self,
-			flags= gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-			type=gtk.MESSAGE_ERROR,
-			buttons= gtk.BUTTONS_OK,
-			message_format='You didnt run this application as root or another package manager such as Synpatic or apt-get is already running')
-			md.run()
-			md.destroy()
-			self.progress.show_terminal(expanded=False)
-			self.set_size_request(400, 200)			
+		print packages
+		if len(packages)>0:
+			for package in packages:
+				if cache[package].is_upgradable:
+					cache[package].mark_upgrade()
+				else:
+					cache[package].mark_install(auto_fix=True, auto_inst=True, from_user=True)
+			try:
+				self.set_size_request(800, 650)
+				self.progress.show_terminal(expanded=True)
+				cache.commit(self.progress.fetch, self.progress.install)					
+			except LockFailedException,e:
+				print e
+				md = gtk.MessageDialog(parent=self,
+				flags= gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+				type=gtk.MESSAGE_ERROR,
+				buttons= gtk.BUTTONS_OK,
+				message_format="You didn't run this program as root or another package\nmanager such as Synaptic or apt-get is running")
+				md.run()
+				md.destroy()
+				self.progress.show_terminal(expanded=False)
+				self.set_size_request(400, 200)			
 		self.progress.show_terminal(expanded=False)
 		self.set_size_request(400, 200)
 
