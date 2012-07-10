@@ -45,6 +45,8 @@ arch="$(uname -i)"
 codename="$(lsb_release -cs)"
 username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 ppaname="$(echo $ppa | cut -f2 -d\/)"
+function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
+RELEASE=$(lsb_release -r | cut -f2)
 # Ubuntu version for Linux Mint
 case `lsb_release -cs` in
 	helena)
@@ -65,7 +67,7 @@ p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http:
 if [ ! -n "$p" ]; then
 	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
 	read response
-	if [[ $codename = "oneiric" || $codename = "precise" || $codename = "quantal" ]]; then
+	if [[ $(version $RELEASE) -gt $(version 11.04) ]]; then
 		case $response in
 			[yY]) add-apt-repository -y "$ppa";;
 			*) exit 1;;

@@ -9,6 +9,9 @@ ROOT_UID=0
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
 
+function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
+RELEASE=$(lsb_release -r | cut -f2)
+
 UBUVER="$(lsb_release -cs)"
 case `lsb_release -cs` in
 	helena)
@@ -79,7 +82,7 @@ function y_add_ppa ()
 ONLYROOT
 
 #echo 1 $1
-if [[ $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
+if [[ $(version $RELEASE) -gt $(version 11.04) ]]; then
 	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
