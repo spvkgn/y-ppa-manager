@@ -660,10 +660,10 @@ elif [[ $RANKINGS = "false" ]]; then
 SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=550 --height=300 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 fi
-
+	ret2=$?
 PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//'`
 
-	ret2=$?
+
 #	echo SEARCH_ADVANCED_LIST_PACKAGES $SEARCH_ADVANCED_LIST_PACKAGES
 	if [[ $ret2 -eq 0 ]]; then
 		CLEARTEMP
