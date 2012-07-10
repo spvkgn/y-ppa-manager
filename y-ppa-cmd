@@ -79,7 +79,7 @@ function y_add_ppa ()
 ONLYROOT
 
 #echo 1 $1
-if [[ $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
+if [[ $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
 	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
