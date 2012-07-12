@@ -41,7 +41,11 @@ if [ ! $(whoami) = "root" ]; then
 	exit 1
 fi
 # Detect the required info
-arch="$(uname -i)"
+if [[ "i686" = `uname -m` ]]; then
+	arch=i386
+elif [[ "x86_64" = `uname -m` ]]; then
+	arch=amd64
+fi
 codename="$(lsb_release -cs)"
 username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 ppaname="$(echo $ppa | cut -f2 -d\/)"
