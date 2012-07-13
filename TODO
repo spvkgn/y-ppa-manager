@@ -1,2 +1,4 @@
 Better KDE icon integration
 Faenza mono icons for the indicator
+
+Better way to find if a PPA is already added (for instance, if PPA name has older Ubuntu version or if older Ubuntu version is in the repo name)

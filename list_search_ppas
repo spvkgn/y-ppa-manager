@@ -70,6 +70,8 @@ function checkAPT()
 
 function y_add_ppa ()
 {
+
+
 if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
 	if [[ $dosudo = gksu ]]; then
 		gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1'"
@@ -89,7 +91,23 @@ add_searched_ppa()
 {
 	checkAPT
 #	echo SEARCH_LIST_PACKAGES2 "$SEARCH_LIST_PACKAGES"
-	PPA_TO_ADD=$(echo "$SEARCH_LIST_PACKAGES" | sed -e 's/|\|(.*//')
+	PPA_TO_ADD=$(echo "$SEARCH_LIST_PACKAGES" | sed -e 's/|\|(.*//' -e "s/ //g")
+
+#check if PPA is already added or not
+echo PPA_TO_ADD $PPA_TO_ADD
+	ppafilename1=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g"`
+	ppafilename2=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g"`
+	username="$(echo $PPA_TO_ADD | cut -f1 -d\/ | cut -f2 -d\:)"
+	ppaname="$(echo $PPA_TO_ADD | cut -f2 -d\/)"
+	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
+echo "yes then wtf"
+		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
+		search_ppa_ppa_results
+	fi
+#done check
+
 	notify-send --icon=list-add "Y PPA Manager" "Adding ppa:"$PPA_TO_ADD""
 	y_add_ppa ppa:"$PPA_TO_ADD"
 	#gksu -S apt-get update
@@ -201,26 +219,50 @@ search_ppa_packages_results_dialog()
 			packagestoinstall=$(echo $LIST_PACKAGES | sed -e 's/([^)]*)//g' -e 's/LIST_PACKAGES//g' -e 's/    / /g' -e 's/  / /g' -e 's/^ //g' -e 's/ $//g')
 			packagestoinstall_with_comma=$(echo $packagestoinstall | sed -e 's/ /, /g')
 
-			ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$ppa_name"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+#check if PPA is already added or not
+			ppafilename1=`echo "$ppa_name" | sed -e "s/\//-/g" -e "s/ //g"`
+			ppafilename2=`echo "$ppa_name" | sed -e "s/\//-/g" -e "s/ //g"`
+			username="$(echo $ppa_name | cut -f1 -d\/ | cut -f2 -d\:)"
+			ppaname="$(echo $ppa_name | cut -f2 -d\/)"
+			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
+				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n   $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
-			if [[ $? -eq 0 ]]; then
-				if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
+				if [[ $? -eq 0 ]]; then
 					if [[ $dosudo = gksu ]]; then
-						gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
 					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
 					fi
+					CLEARTEMP
 				else
-					if [[ $dosudo = gksu ]]; then
-						gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
-					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
-					fi
+					CLEARTEMP
+					exit 0
 				fi
-				CLEARTEMP
 			else
-				CLEARTEMP
-				exit 0
+
+				ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$ppa_name"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+
+				if [[ $? -eq 0 ]]; then
+					if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
+						if [[ $dosudo = gksu ]]; then
+							gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						elif [[ $dosudo = kdesudo ]]; then
+							kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						fi
+					else
+						if [[ $dosudo = gksu ]]; then
+							gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						elif [[ $dosudo = kdesudo ]]; then
+							kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						fi
+					fi
+					CLEARTEMP
+				else
+					CLEARTEMP
+					exit 0
+				fi
 			fi
 
 
@@ -530,7 +572,22 @@ rm /tmp/.already_searching > /dev/null 2>&1
 add_searched_advanced_ppa()
 {
 	checkAPT
-	PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//'`
+	PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//' -e 's/Already present|//g' -e 's/Not present|//g'`
+
+
+#check if PPA is already added or not
+	ppafilename1=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g"`
+	ppafilename2=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g"`
+	username="$(echo $PPA_TO_ADD | cut -f1 -d\/ | cut -f2 -d\:)"
+	ppaname="$(echo $PPA_TO_ADD | cut -f2 -d\/)"
+	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
+		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
+		search_advanced_ppa_ppa_results
+	fi
+#done check
+
 	notify-send --icon=list-add "Y PPA Manager" "Adding ppa:"$PPA_TO_ADD" and updating software sources"
 	y_add_ppa ppa:"$PPA_TO_ADD"
 	#gksu -S apt-get update
@@ -560,7 +617,7 @@ search_advanced_ppa_packages_results_dialog()
 {
 	CLEARTEMP
    	cd /tmp/ > /dev/null 2>&1
-	ppa_temp_url2=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//'`
+	ppa_temp_url2=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//' -e 's/Already present|//g' -e 's/Not present|//g'`
 #	echo ppa temp url2 $ppa_temp_url2
 
 #	last_ppa_word=`echo $LIST_PPA_PACKAGES | awk -F- '{print $(NF)}'`
@@ -584,7 +641,7 @@ search_advanced_ppa_packages_results_dialog()
 		paste --delimiters=" " .packagename .packageversion .packagedldlink > .package_search_with_dld
 
 		PPA_SEARCH_LIST_RESULTS=`cat .package_search_list_results`
-		ppa_name=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*|ppa:/ppa:/' -e 's/|//'`
+		ppa_name=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*|ppa:/ppa:/' -e 's/|//' -e 's/Already present|//g' -e 's/Not present|//g'`
 		LIST_PACKAGES=`yad --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=250 --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Open PPA in browser:3" --button="Install:0" --list $PPA_SEARCH_LIST_RESULTS`
 		ret=$?
 #		echo RET $ret
@@ -643,26 +700,52 @@ search_advanced_ppa_packages_results_dialog()
 			packagestoinstall=$(echo $LIST_PACKAGES | sed -e 's/([^)]*)//g' -e 's/LIST_PACKAGES//g' -e 's/    / /g' -e 's/  / /g' -e 's/^ //g' -e 's/ $//g')
 			packagestoinstall_with_comma=$(echo $packagestoinstall | sed -e 's/ /, /g')
 
-			ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$PPA_TO_ADD"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+#check if PPA is already added or not
+			ppafilename1=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g" -e "s/ //g"`
+			ppafilename2=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g" -e "s/ //g"`
+			username="$(echo $PPA_TO_ADD | cut -f1 -d\/ | cut -f2 -d\:)"
+			ppaname="$(echo $PPA_TO_ADD | cut -f2 -d\/)"
+			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
 
-			if [[ $? -eq 0 ]]; then
-				if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
+				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n   $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+
+				if [[ $? -eq 0 ]]; then
 					if [[ $dosudo = gksu ]]; then
-						gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
 					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
 					fi
+					CLEARTEMP
 				else
-					if [[ $dosudo = gksu ]]; then
-						gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
-					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
-					fi
+					CLEARTEMP
+					exit 0
 				fi
-				CLEARTEMP
+
 			else
-				CLEARTEMP
-				exit 0
+
+				ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$PPA_TO_ADD"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+
+				if [[ $? -eq 0 ]]; then
+					if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
+						if [[ $dosudo = gksu ]]; then
+							gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						elif [[ $dosudo = kdesudo ]]; then
+							kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						fi
+					else
+						if [[ $dosudo = gksu ]]; then
+							gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						elif [[ $dosudo = kdesudo ]]; then
+							kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1'"
+						fi
+					fi
+					CLEARTEMP
+				else
+					CLEARTEMP
+					exit 0
+				fi
 			fi
 
 
@@ -693,11 +776,11 @@ if [[ $RANKINGS = "true" ]]; then
 
 elif [[ $RANKINGS = "false" ]]; then
 
-SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=400 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=400 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 fi
 	ret2=$?
-PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//'`
+PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//' -e 's/Already present|//g' -e 's/Not present|//g'`
 
 
 #	echo SEARCH_ADVANCED_LIST_PACKAGES $SEARCH_ADVANCED_LIST_PACKAGES
