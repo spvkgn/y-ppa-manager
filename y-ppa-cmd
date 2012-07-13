@@ -79,6 +79,7 @@ fi
      
 function y_add_ppa ()
 {
+
 ONLYROOT
 
 #echo 1 $1
@@ -150,6 +151,21 @@ add_a_PPA()
 		valid_ppa_check6=$(echo "$ADD_PPA_NO_SPACES" | tr -cd ":" | wc -c)		
 		
 		if [[ "$ADD_PPA_NO_SPACES" && $valid_ppa_check1 && $valid_ppa_check2 && $valid_ppa_check3 -gt 0 && $valid_ppa_check4 -gt 0 && $valid_ppa_check5 -eq 1 && $valid_ppa_check6 -eq 1 ]]; then
+
+#check if PPA is already added or not
+			ppafilename1=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g" -e "s/ //g"`
+			ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g" -e "s/ //g"`
+			username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
+			ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
+			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
+				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$ADD_PPA_NO_SPACES is already  \n  added on your system.  " --button="gtk-ok:0"
+				add_a_PPA
+			fi
+#done check
+
+
 			checkAPT
 			notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Adding "$ADD_PPA_NO_SPACES""
 			y_add_ppa "$ADD_PPA_NO_SPACES"
