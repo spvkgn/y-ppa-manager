@@ -359,6 +359,13 @@ search_ppa_dialog()
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" && ! -e /tmp/.already_searching ]]; then
 
+				if [[ `dpkg --status $SEARCH_PPA | grep Version:` ]]; then
+					pck_version=`dpkg --status $SEARCH_PPA | grep Version: | sed -e 's/Version: //g'`
+					MSG="<b>\"$SEARCH_PPA\"</b> version installed on your system: <b>$pck_version</b>"
+				else
+					MSG="<b>\"$SEARCH_PPA\"</b> isn't installed on your system"
+				fi
+
 				notify-send --expire-time="3000" --icon=edit-find "Y PPA Manager" "Searching all Launchpad PPAs for "$SEARCH_PPA"..."
 				echo "1" > /tmp/.already_searching
 		
@@ -541,7 +548,7 @@ rm /tmp/.already_searching > /dev/null 2>&1
 
 	IFS=$'\n'
 
-	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=750 --height=400 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
+	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=750 --height=400 --title="PPA Search - Y PPA Manager" --text="$SEARCH_PPA can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
 	ret2=$?
 #	echo SEARCH_LIST_PACKAGES "$SEARCH_LIST_PACKAGES"
 #	echo ret $ret2
@@ -766,17 +773,19 @@ exit
 search_advanced_ppa_ppa_results()
 {
 
+
+
 rm /tmp/.already_searching > /dev/null 2>&1
 
 	IFS=$'\n'
 
 if [[ $RANKINGS = "true" ]]; then
 
-	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA Rank" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="$SEARCH_PPA can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA Rank" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 elif [[ $RANKINGS = "false" ]]; then
 
-	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="  "$MSG"   \n\n  $SEARCH_PPA can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 fi
 	ret2=$?
