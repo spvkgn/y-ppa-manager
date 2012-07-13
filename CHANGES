@@ -1,3 +1,8 @@
+0.0.9.0:
+- new "Install packages" item in the main UI that lets you quickly install packages (if you already know the package names). Separate multiple packages with a space
+- when you search for packages in Launchpad PPAs, you can select to install some packages directly from the search dialog in which case the PPA is added (if it's not already added) and then Y PPA Manager runs the install dialog and installs the selected package(s).
+- a new "PPA status" column in the basic search and advanced search results dialog that lets you know if the PPA is already added on your system or not
+
 0.0.8.7:
 - added "update-ppa" which can update a single PPA source and not all software sources, useful for those with limited internet connectivity. Usage example: sudo update-ppa ppa:webupd8team/y-ppa-manager . (Thanks to Satya for this feature!)
 - when adding a PPA, the new "update-ppa" is used so only that PPA source is updated, not all software sources
