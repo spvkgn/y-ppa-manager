@@ -499,7 +499,7 @@ rm /tmp/.already_searching > /dev/null 2>&1
 
 	IFS=$'\n'
 
-	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
+	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=750 --height=400 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
 	ret2=$?
 #	echo SEARCH_LIST_PACKAGES "$SEARCH_LIST_PACKAGES"
 #	echo ret $ret2
@@ -693,7 +693,7 @@ if [[ $RANKINGS = "true" ]]; then
 
 elif [[ $RANKINGS = "false" ]]; then
 
-SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=550 --height=300 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=400 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 fi
 	ret2=$?
