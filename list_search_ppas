@@ -99,7 +99,7 @@ echo PPA_TO_ADD $PPA_TO_ADD
 	ppafilename2=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g"`
 	username="$(echo $PPA_TO_ADD | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo $PPA_TO_ADD | cut -f2 -d\/)"
-	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
 echo "yes then wtf"
@@ -224,10 +224,10 @@ search_ppa_packages_results_dialog()
 			ppafilename2=`echo "$ppa_name" | sed -e "s/\//-/g" -e "s/ //g"`
 			username="$(echo $ppa_name | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo $ppa_name | cut -f2 -d\/)"
-			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
-				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n   $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
 					if [[ $dosudo = gksu ]]; then
@@ -323,7 +323,7 @@ search_ppa_dialog()
 					ppafilename2=`echo "$searched_ppa" | sed -e "s/\//-/g"`
 					username="$(echo $searched_ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 					ppaname="$(echo $searched_ppa | cut -f2 -d\/)"
-					checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+					checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 					if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then	
 						echo "Already present" >> /tmp/.y_ppas_status_regular
@@ -425,7 +425,7 @@ search_ppa_dialog()
 						ppafilename2=`echo "$apackageppaTMP" | sed -e "s/\//-/g"`
 						username="$(echo $apackageppaTMP | cut -f1 -d\/ | cut -f2 -d\:)"
 						ppaname="$(echo $apackageppaTMP | cut -f2 -d\/)"
-						checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+						checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 						if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then	
 							echo "Already present" >> /tmp/.y_ppas_status
@@ -580,7 +580,7 @@ add_searched_advanced_ppa()
 	ppafilename2=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g"`
 	username="$(echo $PPA_TO_ADD | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo $PPA_TO_ADD | cut -f2 -d\/)"
-	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
 		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
@@ -705,11 +705,11 @@ search_advanced_ppa_packages_results_dialog()
 			ppafilename2=`echo "$PPA_TO_ADD" | sed -e "s/\//-/g" -e "s/ //g"`
 			username="$(echo $PPA_TO_ADD | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo $PPA_TO_ADD | cut -f2 -d\/)"
-			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
 
-				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n   $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
 					if [[ $dosudo = gksu ]]; then

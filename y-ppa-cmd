@@ -157,7 +157,7 @@ add_a_PPA()
 			ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g" -e "s/ //g"`
 			username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
-			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
 				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$ADD_PPA_NO_SPACES is already  \n  added on your system.  " --button="gtk-ok:0"
