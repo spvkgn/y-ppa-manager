@@ -18,7 +18,7 @@ esac
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
 function CLEARTEMP ()
 {
-	rm /tmp/.Packages* /tmp/.package_search_list_results /tmp/.packagename /tmp/.packageversion /tmp/.list_search_results /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/+ppas* /tmp/.packagedldlink /tmp/.package_search_with_dld /tmp/.added_ppa /tmp/.y_* /tmp/.list_search_results_ranks /tmp/.list_search_results_number_rankings /tmp/.pparankings_onwers /tmp/.pparankings_ppanames /tmp/.pparankings_ubuver /tmp/.list_search_results_final /tmp/.pparankings_arch  > /dev/null 2>&1
+	rm /tmp/.Packages* /tmp/.package_search_list_results /tmp/.packagename /tmp/.packageversion /tmp/.list_search_results /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/+ppas* /tmp/.packagedldlink /tmp/.package_search_with_dld /tmp/.added_ppa /tmp/.y_* /tmp/.list_search_results_ranks /tmp/.list_search_results_number_rankings /tmp/.pparankings_onwers /tmp/.pparankings_ppanames /tmp/.pparankings_ubuver /tmp/.list_search_results_final /tmp/.pparankings_arch /tmp/.y_ppas_status /tmp/.y_ppas_status_regular /tmp/.list_search_results_tmp  > /dev/null 2>&1
 }
 
 function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
@@ -274,8 +274,27 @@ search_ppa_dialog()
 				searched_ppas=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d "\"" -f 1 | sed -e 's/\/+archive//g' > .searched_ppas; cat .searched_ppas`
 				rm /tmp/+ppas* > /dev/null 2>&1;
 	
+
+#check if PPA is already added or not
+				for searched_ppa in $searched_ppas; do
+					ppafilename1=`echo "$searched_ppa" | sed -e "s/\//-/g"`
+					ppafilename2=`echo "$searched_ppa" | sed -e "s/\//-/g"`
+					username="$(echo $searched_ppa | cut -f1 -d\/ | cut -f2 -d\:)"
+					ppaname="$(echo $searched_ppa | cut -f2 -d\/)"
+					checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+					if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then	
+						echo "Already present" >> /tmp/.y_ppas_status_regular
+					else
+						echo "Not present" >> /tmp/.y_ppas_status_regular
+				
+					fi
+				done	
+
+## done check
 	
-				paste --delimiters=" " .searched_ppas .searched_ppa_names > .list_search_results 
+				paste --delimiters=" " .searched_ppas .searched_ppa_names > .list_search_results_tmp
+				paste --delimiters="\n" .list_search_results_tmp .y_ppas_status_regular > .list_search_results
 				list_search_results=`cat .list_search_results`
 				search_ppa_ppa_results
 
@@ -358,6 +377,22 @@ search_ppa_dialog()
 						apackageppaTMP=`echo "$aPackageSource" | sed -e 's/\.Packages\.//' -e 's/\./\//g'`
 						apackageppa=`echo ppa:"$apackageppaTMP" >> .y_apackageppa`
 						apackageppaFILE=`cat .y_apackageppa`
+
+#check if PPA is already added or not
+						ppafilename1=`echo "$apackageppaTMP" | sed -e "s/\//-/g"`
+						ppafilename2=`echo "$apackageppaTMP" | sed -e "s/\//-/g"`
+						username="$(echo $apackageppaTMP | cut -f1 -d\/ | cut -f2 -d\:)"
+						ppaname="$(echo $apackageppaTMP | cut -f2 -d\/)"
+						checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			
+						if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then	
+							echo "Already present" >> /tmp/.y_ppas_status
+						else
+							echo "Not present" >> /tmp/.y_ppas_status
+				
+						fi
+#done ppa present check
+
 					fi
 
 				done
@@ -432,7 +467,7 @@ search_ppa_dialog()
 #------------------/ end ppa rankings------------------------
 
 
-						paste --delimiters="\n" .y_apackage .y_apackageversion .y_apackageppa > .y_advanced_search_packages
+						paste --delimiters="\n" .y_apackage .y_apackageversion .y_apackageppa .y_ppas_status > .y_advanced_search_packages
 					fi
 
 					advancedsearch=`cat .y_advanced_search_packages`
@@ -464,7 +499,7 @@ rm /tmp/.already_searching > /dev/null 2>&1
 
 	IFS=$'\n'
 
-	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="PPA (description)" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
+	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
 	ret2=$?
 #	echo SEARCH_LIST_PACKAGES "$SEARCH_LIST_PACKAGES"
 #	echo ret $ret2
@@ -658,7 +693,7 @@ if [[ $RANKINGS = "true" ]]; then
 
 elif [[ $RANKINGS = "false" ]]; then
 
-SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=550 --height=300 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=550 --height=300 --title="PPA Search - Y PPA Manager" --text="The packages you've searched for can be found in the following PPAs:" --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 fi
 	ret2=$?
