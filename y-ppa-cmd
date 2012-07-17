@@ -126,9 +126,9 @@ if [[ -s /tmp/.rmdups ]]; then
 	if [[ $ret -eq 0 ]]; then
 		chmod +x /tmp/.rmdups
 		if [[ $dosudo = gksu ]]; then
-			gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups && apt-get update'"
+			gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
 		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
+			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
 		fi
 		notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 
@@ -137,9 +137,9 @@ if [[ -s /tmp/.rmdups ]]; then
 		if [[ $? -eq 0 ]]; then
 			chmod +x /tmp/.rmdups
 			if [[ $dosudo = gksu ]]; then
-				gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
 			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
 			fi
 			notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 		else
