@@ -2,7 +2,7 @@
 
 function CLEARTEMP () 
 {
-	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa > /dev/null 2>&1
+	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
 }
 ROOT_UID=0
 #UBUVER=`lsb_release -cs`
@@ -102,6 +102,8 @@ function find_n_remove_dupes() {
 
 checkAPT
 
+rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
+
 finddupes=$(unset flist; declare -A flist
 while read -r sum fname; do
     if [[ ${flist[$sum]} ]]; then
@@ -111,17 +113,42 @@ while read -r sum fname; do
     fi
 done <  <(find /etc/apt/sources.list.d/ -name "*.list" -exec sha256sum {} +)  >/tmp/.rmdups)
 dupes_number=$(cat /tmp/.rmdups | wc -l)
+cp /tmp/.rmdups /tmp/.dupes_show
+sed -i -e 's/sudo rm -- "/   /g' -e 's/" # Same as >/ is the same as: \n   /g' -e 's/list</list \n/g' /tmp/.dupes_show
+dupes_show=$(cat /tmp/.dupes_show)
+cp /tmp/.rmdups /tmp/.dupes_to_remove
+sed -i -e 's/sudo rm -- "/   /g' -e 's/" #.*//g' -e 's/$list/list \n/g' /tmp/.dupes_to_remove
+dupes_to_remove=$(cat /tmp/.dupes_to_remove)
 
 if [[ -s /tmp/.rmdups ]]; then
-	yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate sources detected" --text="   You have $dupes_number duplicate PPA source list files   \n   Do you want Y PPA Manager to remove the duplicates?   " --button="gtk-ok:0" --button="gtk-cancel:1"
-	if [[ $? -eq 0 ]]; then
-	chmod +x /tmp/.rmdups
-	if [[ $dosudo = gksu ]]; then
-		gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups && apt-get update'"
-	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
-	fi
-	notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+	yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources detected" --text="   You have $dupes_number duplicate PPA source list file(s)   " --button="gtk-cancel:1" --button="Remove duplicates:0" --button="Show duplicates:2"
+	ret=$?
+	if [[ $ret -eq 0 ]]; then
+		chmod +x /tmp/.rmdups
+		if [[ $dosudo = gksu ]]; then
+			gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups && apt-get update'"
+		elif [[ $dosudo = kdesudo ]]; then
+			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
+		fi
+		notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+
+	elif [[ $ret -eq 2 ]]; then
+		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
+		if [[ $? -eq 0 ]]; then
+			chmod +x /tmp/.rmdups
+			if [[ $dosudo = gksu ]]; then
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
+			elif [[ $dosudo = kdesudo ]]; then
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.rmdups'"
+			fi
+			notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+		else
+			exit 0
+		fi
+
+	elif [[ $ret -eq 1 ]]; then
+		exit 0
+
 	fi
 else
 	notify-send --expire-time="5000" --icon=dialog-information "Y PPA Manager" "No PPA duplicates found!"
