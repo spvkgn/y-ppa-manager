@@ -283,7 +283,7 @@ search_ppa_dialog()
 {
 
 	rm /tmp/+ppas* > /dev/null 2>&1;
-	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. To use the Deep search  \n  you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Deep search (May take a long time):CHK" --button="gtk-ok:0"`
+	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. To use Deep Search  \n  you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Deep Search (more acurate, displays detailed info):CHK" --button="gtk-ok:0"`
 	if [[ $? -eq 0 ]]; then
 		checkbox=`echo $SEARCH_PPA | grep "|FALSE|"`
 		SEARCH_PPA=`echo $SEARCH_PPA | sed -e 's/|.*|//' | tr '[:upper:]' '[:lower:]'`
@@ -359,11 +359,11 @@ search_ppa_dialog()
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" && ! -e /tmp/.already_searching ]]; then
 
-				if [[ `dpkg --status $SEARCH_PPA | grep Version:` ]]; then
-					pck_version=`dpkg --status $SEARCH_PPA | grep Version: | sed -e 's/Version: //g'`
-					MSG="<b>\"$SEARCH_PPA\"</b> version installed on your system: <b>$pck_version</b>. The package can be found in the following PPA(s):"
+				if [[ `dpkg --status $SEARCH_PPA | grep "Status: install ok installed"` ]]; then
+					pck_version=`dpkg --status $SEARCH_PPA | grep Version: | sed -e 's/Version: //g' -e 's/Config-Version:.*//g'`
+					MSG="You've searched for <b>\"$SEARCH_PPA\"</b> (version installed on your system: <b>$pck_version</b>):"
 				else
-					MSG="<b>\"$SEARCH_PPA\"</b> isn't installed on your system. The package can be found in the following PPA(s):"
+					MSG="You've searched for <b>\"$SEARCH_PPA\"</b> (the package isn't installed on your system):"
 				fi
 
 				notify-send --expire-time="3000" --icon=edit-find "Y PPA Manager" "Searching all Launchpad PPAs for "$SEARCH_PPA"..."

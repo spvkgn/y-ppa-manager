@@ -2,7 +2,7 @@
 - new "Install packages" item in the main UI that lets you quickly install packages (if you already know the package names). Separate multiple packages with a space. This python script was contributed by Lorenzo from atareao.es
 - when you search for packages in Launchpad PPAs, you can select to install some packages directly from the search results dialog - if the PPA isn't already added on your system, it will be added and then the selected package(s) will be installed using the new "Install packages" python script mentioned above, that comes with a GUI, so the user can see if any errors occur.
 - a new "PPA status" column in the basic search and advanced search results dialog that lets you know if the PPA is already added on your system or not
-- Search results dialog: when searching for a package, Y PPA manager will display its version if it's installed, or it will let you know that the package is not installed.
+- Search results dialog: when searching for a package (in deep search only), Y PPA manager will display its version if it's installed, or it will let you know that the package is not installed.
 - Remove duplicate PPA sources: display which PPA sources are duplicates and also, display which PPA sources are about to be removed 
 
 0.0.8.7:
