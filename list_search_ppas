@@ -162,7 +162,7 @@ search_ppa_packages_results_dialog()
 
 		PPA_SEARCH_LIST_RESULTS=`cat .package_search_list_results`
 		ppa_name=`echo "$SEARCH_LIST_PACKAGES" | sed -e 's/|\|(.*//'`
-		LIST_PACKAGES=`yad --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=400 --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Open PPA in browser:3" --button="Install:0" --list $PPA_SEARCH_LIST_RESULTS`
+		LIST_PACKAGES=`yad --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=400 --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Install:0" --button="Open PPA in browser:3" --list $PPA_SEARCH_LIST_RESULTS`
 
 		ret=$?
 #		echo RET $ret
@@ -283,7 +283,7 @@ search_ppa_dialog()
 {
 
 	rm /tmp/+ppas* > /dev/null 2>&1;
-	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. To use Deep Search  \n  you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Deep Search (more acurate, displays detailed info):CHK" --button="gtk-ok:0"`
+	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. To use Deep Search  \n  you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Deep Search (more acurate, displays detailed info\nbut is slower):CHK" --button="gtk-ok:0"`
 	if [[ $? -eq 0 ]]; then
 		checkbox=`echo $SEARCH_PPA | grep "|FALSE|"`
 		SEARCH_PPA=`echo $SEARCH_PPA | sed -e 's/|.*|//' | tr '[:upper:]' '[:lower:]'`
