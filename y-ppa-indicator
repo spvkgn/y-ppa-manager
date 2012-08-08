@@ -41,7 +41,11 @@ class IndicatorY:
 	    exit(0)
         self.ind = appindicator.Indicator("y-ppa-indicator", "y-ppa-indicator", appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_status(appindicator.STATUS_ACTIVE)
-        self.ind.set_property ("title", ("Y PPA Manager"))
+	hud_naming = True
+	try:
+        	self.ind.set_property ("title", ("Y PPA Manager"))
+	except:
+		hud_naming = False
 
         self.create_menu()
 
