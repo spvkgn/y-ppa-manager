@@ -146,7 +146,7 @@ search_ppa_packages_results_dialog()
 #	echo $rest_ppa_words
    	
 	wget -q http://ppa.launchpad.net/"$ppa_temp_url2"/ubuntu/dists/$PPA_SEARCH_DIST/main/binary-$arch/Packages
-	mv Packages .Packages
+	mv Packages .Packages > /dev/null 2>&1
 
 
 	if [[ ! -s /tmp/.Packages ]]; then
@@ -633,7 +633,7 @@ search_advanced_ppa_packages_results_dialog()
 #	echo $rest_ppa_words
    	
 	wget -q http://ppa.launchpad.net/"$ppa_temp_url2"/ubuntu/dists/$PPA_SEARCH_DIST/main/binary-$arch/Packages
-	mv Packages .Packages
+	mv Packages .Packages > /dev/null 2>&1
 
 
 	if [[ ! -s /tmp/.Packages ]]; then

@@ -52,16 +52,16 @@ class IndicatorY:
         self.ind.set_menu(menu)
 
         # List items
-        item = gtk.MenuItem("Search")
-        item.connect("activate", item_run, "_yppa_search")
-        menu.append(item)
-
         item = gtk.MenuItem("Add PPA")
         item.connect("activate", item_run, "_yppa_add")
         menu.append(item)
 
         item = gtk.MenuItem("Remove PPA")
         item.connect("activate", item_run, "_yppa_rem")
+        menu.append(item)
+
+        item = gtk.MenuItem("Search in all Launchpad PPAs")
+        item.connect("activate", item_run, "_yppa_search")
         menu.append(item)
 
         item = gtk.MenuItem("List packages")
