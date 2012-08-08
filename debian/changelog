@@ -1,3 +1,9 @@
+y-ppa-manager (0.0.9.0-1~webupd8~lucid) lucid; urgency=medium
+ 
+  * new release
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Wed, 08 Aug 2012 19:51:36 +0300
+ 
 y-ppa-manager (0.0.9.0-3~webupd8~precise) precise; urgency=medium
  
   * new release
