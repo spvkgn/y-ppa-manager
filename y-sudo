@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #check if dosudo or kdesudo is installed; run dosudo firstly, if not installed, use kdesudo:
 if [[ -e /usr/bin/gksu ]]; then 
 	dosudo=gksu
