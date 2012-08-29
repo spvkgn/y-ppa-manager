@@ -69,6 +69,22 @@ function checkAPT()
 	done
 }
 
+
+function checkAPT_adv()
+{
+	sleep 1
+	for lock in synaptic update-manager software-center apt-get dpkg aptitude
+	do
+		if ps -U root -u root u | grep $lock | grep -v grep > /dev/null;
+			then 
+				echo "Installation won't work. Please close $lock first then try again.";
+				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Warning - Y PPA Manager" --text="\n\n  Selected action won't work.  \n\n  Please close / wait for <b>$lock</b> to finish and try again!   \n" --button="OK:4"
+				search_advanced_ppa_ppa_results
+		fi
+	done
+}
+
+
 function y_add_ppa ()
 {
 
@@ -579,7 +595,7 @@ rm /tmp/.already_searching > /dev/null 2>&1
 
 add_searched_advanced_ppa()
 {
-	checkAPT
+	checkAPT_adv
 	PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|//' -e 's/Already present|//g' -e 's/Not present|//g'`
 
 
