@@ -161,7 +161,7 @@ advanced_options
 add_a_PPA()  
 {
 	ONLYROOT
-	checkAPT
+#	checkAPT
 
 	ADD_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --entry --title="Add a PPA" --text="Enter a PPA to add (e.g.: ppa:webupd8team/ghtumb)\n" --entry-label="PPA:"`
 	
@@ -193,7 +193,7 @@ add_a_PPA()
 #done check
 
 
-			checkAPT
+#			checkAPT
 			notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Adding "$ADD_PPA_NO_SPACES""
 			y_add_ppa "$ADD_PPA_NO_SPACES"
 			#apt-get update
