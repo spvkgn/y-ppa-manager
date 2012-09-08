@@ -196,9 +196,9 @@ done
 
 if $changed && ! $QUIET; then
 		apt-get update
-		notify-send --expire-time="5000" --icon=object-flip-vertical "Y PPA Manager" "Done updating PPAs"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Done updating PPAs"
 		y-ppa-cmd advanced
 elif $selectok; then
-		notify-send --expire-time="5000" --icon=dialog-information "Y PPA Manager" "There are no PPAs to update"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information "Y PPA Manager" "There are no PPAs to update"
 		y-ppa-cmd advanced
 fi

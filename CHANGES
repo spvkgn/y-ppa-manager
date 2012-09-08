@@ -1,3 +1,10 @@
+0.0.9.2 (work in progress):
+- fixed a bug with search results dialog and apt-get
+
+
+0.0.9.1:
+- minor bug fixes
+
 0.0.9.0:
 - new "Install packages" item in the main UI that lets you quickly install packages (if you already know the package names). Separate multiple packages with a space. This python script was contributed by Lorenzo from atareao.es
 - when you search for packages in Launchpad PPAs, you can select to install some packages directly from the search results dialog - if the PPA isn't already added on your system, it will be added and then the selected package(s) will be installed using the new "Install packages" python script mentioned above, that comes with a GUI, so the user can see if any errors occur.

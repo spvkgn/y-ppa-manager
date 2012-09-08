@@ -130,7 +130,7 @@ if [[ -s /tmp/.rmdups ]]; then
 		elif [[ $dosudo = kdesudo ]]; then
 			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
 		fi
-		notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 
 	elif [[ $ret -eq 2 ]]; then
 		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
@@ -141,7 +141,7 @@ if [[ -s /tmp/.rmdups ]]; then
 			elif [[ $dosudo = kdesudo ]]; then
 				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
 			fi
-			notify-send --expire-time="5000" --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+			notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 		else
 			exit 0
 		fi
@@ -151,7 +151,7 @@ if [[ -s /tmp/.rmdups ]]; then
 
 	fi
 else
-	notify-send --expire-time="5000" --icon=dialog-information "Y PPA Manager" "No PPA duplicates found!"
+	notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information "Y PPA Manager" "No PPA duplicates found!"
 	echo no dupes found
 fi
 
@@ -194,7 +194,7 @@ add_a_PPA()
 
 
 #			checkAPT
-			notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Adding "$ADD_PPA_NO_SPACES""
+			notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager" "Adding "$ADD_PPA_NO_SPACES""
 			y_add_ppa "$ADD_PPA_NO_SPACES"
 			#apt-get update
 			
@@ -205,9 +205,9 @@ add_a_PPA()
 			checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa ]]; then
-				notify-send --expire-time="5000" --icon=list-add "Y PPA Manager - Done" "The "$ADD_PPA_NO_SPACES" PPA has been added successfully!"
+				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The "$ADD_PPA_NO_SPACES" PPA has been added successfully!"
 			else
-				notify-send --icon=dialog-error "Y PPA Manager" "An error occured and "$ADD_PPA_NO_SPACES" has not been added!"
+				notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and "$ADD_PPA_NO_SPACES" has not been added!"
 			
 			fi	
 		
@@ -271,14 +271,14 @@ remove_a_PPA()
 		if [[ $? -eq 0 ]]; then
 		
         		checkAPT
-        		notify-send --expire-time="3000" --icon=list-remove "Y PPA Manager" "Removing "$DEL_PPA" and updating software sources"
+        		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Removing "$DEL_PPA" and updating software sources"
         		
         		#to modify to real path:
 			rm /etc/apt/sources.list.d/"$DEL_PPA".list > /dev/null 2>&1;
 			#rm /home/andrei/Desktop/sources.list.d/"$DEL_PPA".list > /dev/null 2>&1;
 			apt-get update
 			rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
-			notify-send --expire-time="5000" --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$DEL_PPA" successfully!"
+			notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$DEL_PPA" successfully!"
 			remove_a_PPA
 			
 
@@ -350,7 +350,7 @@ purge_a_PPA()
 				PPA_PURGE_AUTO=`grep "ppa-purge=auto" /etc/y-ppa-manager.conf`
 				
 				if [[ $PPA_PURGE_AUTO ]]; then
-					notify-send --icon=list-remove "Y PPA Manager" "Please wait while purging "$the_ppa_to_purge""
+					notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Please wait while purging "$the_ppa_to_purge""
 					if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" ]]; then
 						if [[ $dosudo = gksu ]]; then
 							gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y ppa:$the_ppa_to_purge"
@@ -365,14 +365,14 @@ purge_a_PPA()
 						fi
 					fi
 				else
-					notify-send --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging!"
+					notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging!"
 					if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" ]]; then
 						xterm -hold -e sudo ppa-purge -d $UBUVER ppa:$the_ppa_to_purge
 					else					
 						xterm -hold -e sudo ppa-purge ppa:$the_ppa_to_purge
 					fi
 				fi
-				notify-send --expire-time="5000" --icon=list-remove "Y PPA Manager - Done" "Purged PPA: "$the_ppa_to_purge""
+				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Purged PPA: "$the_ppa_to_purge""
 				rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1
 				purge_a_PPA
 			else
@@ -472,7 +472,7 @@ list_packages_PPA()
 
 		
 			#echo "http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2"" | xclip -selection clipboard
-			#notify-send --expire-time="8000" --icon=gtk-paste "Y PPA Manager" ""$ppa_name" PPA link has been copied to the clipboard. Paste the link (CTRL + V) in a web browser."
+			#notify-send -h int:transient:1 -t 10000 -u normal --expire-time="8000" --icon=gtk-paste "Y PPA Manager" ""$ppa_name" PPA link has been copied to the clipboard. Paste the link (CTRL + V) in a web browser."
 			#open PPA link in browser:
 			xdg-open http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2"
 			CLEARTEMP
@@ -511,9 +511,9 @@ if [[ $ret -eq 0 ]]; then
 	rm -r /tmp/.sources
 
 	if [ -e "$Y_PPA_BACKUP" ]; then
-		notify-send --expire-time="3000" --icon=dialog-ok "Y PPA Manager" "Repositories backup successfully created"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager" "Repositories backup successfully created"
 	else
-		notify-send --expire-time="3000" --icon=dialog-error "Y PPA Manager" "Error: backup failed."
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "Error: backup failed."
 	fi
 	
 else
@@ -535,7 +535,7 @@ advanced_options
 #	cp /etc/apt/full-sources.backup-$b_name.tar.gz "$Y_PPA_BACKUP"
 #	cd -
 #	gksu -S rm /etc/apt/full-sources.backup-$b_name.tar.gz
-#	notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Full sources backup successfully created"
+#	notify-send -h int:transient:1 -t 10000 -u normal --expire-time="3000" --icon=list-add "Y PPA Manager" "Full sources backup successfully created"
 #else
 #	CLEARTEMP
 #	exit
@@ -554,7 +554,7 @@ if [[ $? -eq 0 ]]; then
 		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/ && launchpad-getkeys"
 	fi
 
-	notify-send --expire-time="3000" --icon=document-save "Y PPA Manager" "Repositories backup successfully restored. It's advisable to run an update now"
+	notify-send -h int:transient:1 -t 10000 -u normal --icon=document-save "Y PPA Manager" "Repositories backup successfully restored. It's advisable to run an update now"
 else
 	CLEARTEMP
 	exit
@@ -596,7 +596,7 @@ function y_ppa_import_gpg_keys() {
 			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "launchpad-getkeys"
 		fi
 
-		notify-send --expire-time="5000" --icon=object-flip-vertical "Y PPA Manager" "Done importing missing GPG keys"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Done importing missing GPG keys"
 		y-ppa-cmd advanced
 	else
 		y-ppa-cmd advanced
@@ -615,7 +615,7 @@ function y_ppa_fix_gpg_badsig() {
 		elif [[ $dosudo = kdesudo ]]; then
 			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "fix_gpg_badsig"
 		fi
-		notify-send --expire-time="5000" --icon=object-flip-vertical "Y PPA Manager" "Done fixing GPG BADSIG errors"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Done fixing GPG BADSIG errors"
 		y-ppa-cmd advanced
 	else
 		y-ppa-cmd advanced
@@ -628,7 +628,7 @@ function y_ppa_fix_gpg_badsig() {
 
 #if [[ $? -eq 0 ]]; then
 #	gksu -S -m "Y PPA Manager requires admin privileges for this task" "tar -xvf "$Y_PPA_BACKUP" -C /etc/apt/"
-#	notify-send --expire-time="3000" --icon=list-add "Y PPA Manager" "Full sources backup successfully restored. It's advisable to run an update now"
+#	notify-send -h int:transient:1 -t 10000 -u normal --expire-time="3000" --icon=list-add "Y PPA Manager" "Full sources backup successfully restored. It's advisable to run an update now"
 #else
 #	CLEARTEMP
 #	exit
@@ -702,7 +702,7 @@ function reset_settings() {
 	rm /tmp/.y-ppa-manager.conf
 	rm ~/.config/autostart/y-ppa-indicator.desktop
 
-	notify-send --expire-time="3000" --icon=view-refresh "Y PPA Manager" "Settings reseted"
+	notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh "Y PPA Manager" "Settings reseted"
 
 }
 
@@ -832,7 +832,7 @@ new_settings=$(cat /tmp/.y-ppa-manager.conf)
 			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf"
 		fi
 		rm /tmp/.y-ppa-manager.conf > /dev/null 2>&1
-		notify-send --expire-time="3000" --icon=dialog-ok "Y PPA Manager" "Settings saved"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager" "Settings saved"
 		exit 0
 	else
 		rm /tmp/.y-ppa-manager.conf > /dev/null 2>&1
