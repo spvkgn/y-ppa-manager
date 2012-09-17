@@ -549,9 +549,9 @@ Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selectio
 
 if [[ $? -eq 0 ]]; then
 	if [[ $dosudo = gksu ]]; then
-		gksu -S -m "Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/ && launchpad-getkeys"
+		gksu -S -m "Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf '$Y_PPA_BACKUP' -C /etc/apt/sources.list.d/ && launchpad-getkeys"
 	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/ && launchpad-getkeys"
+		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf '$Y_PPA_BACKUP' -C /etc/apt/sources.list.d/ && launchpad-getkeys"
 	fi
 
 	notify-send -h int:transient:1 -t 10000 -u normal --icon=document-save "Y PPA Manager" "Repositories backup successfully restored. It's advisable to run an update now"
@@ -902,6 +902,8 @@ help_dialog()
 #}
 
 #ppa_manager_run
+
+
 case $1 in
 	add)
 	add_a_PPA ;;
