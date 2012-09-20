@@ -64,7 +64,8 @@ case `lsb_release -cs` in
 		codename="precise";;
 esac
 # Try to find the codename from the list file
-if [[ `ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1` ]]; then
+ppafilename=$(ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1)
+if [[ $? -lt 1 ]]; then
 codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 fi
 version() {
