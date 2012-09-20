@@ -41,13 +41,13 @@ if [[ ! $(whoami) = "root" ]]; then
 	exit 1
 fi
 # Detect the required info
-arch="$(uname -i)"
+arch="$(uname -m)"
 codename="$(lsb_release -cs)"
 username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 ppaname="$(echo $ppa | cut -f2 -d\/)"
 release="$(lsb_release -r | cut -f2)"
 # Correct architecture output
-case `uname -i` in
+case `uname -m` in
 	i486|i586|i686)
 		arch="i386";;
 	x86_64)
