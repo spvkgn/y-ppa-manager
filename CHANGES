@@ -1,6 +1,9 @@
 0.0.9.2 (work in progress):
 - fixed a bug with search results dialog and apt-get
 - implement transient notifications for GNOME Shell
+- add support for updating PPAs having older release names
+- fix bug with update-ppa not working on Linux Mint
+- fix issue with PPA Restore function not working with spaces
 
 
 0.0.9.1:
