@@ -22,12 +22,7 @@ RED="\033[0;31m"
 GREEN="\033[0;32m"
 BLUE="\033[0;34m"
 ENDCOLOR="\033[0m"
-# Check the distro
-u=`lsb_release -i | grep -i "ubuntu"`
-if [[ ! -n "$u" ]]; then
-	echo -e $RED"The distro doesn't seem to be Ubuntu!"$ENDCOLOR
-	exit 1
-fi
+
 # Parse the arguement
 ppa="$1"
 s=`echo "$ppa" | grep "^ppa:" | grep "/"`
