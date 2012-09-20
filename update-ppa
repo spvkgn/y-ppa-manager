@@ -24,33 +24,35 @@ BLUE="\033[0;34m"
 ENDCOLOR="\033[0m"
 # Check the distro
 u=`lsb_release -i | grep -i "ubuntu"`
-if [ ! -n "$u" ]; then
+if [[ ! -n "$u" ]]; then
 	echo -e $RED"The distro doesn't seem to be Ubuntu!"$ENDCOLOR
 	exit 1
 fi
 # Parse the arguement
 ppa="$1"
 s=`echo "$ppa" | grep "^ppa:" | grep "/"`
-if [ ! -n "$s" ]; then
+if [[ ! -n "$s" ]]; then
 	echo -e $RED"Please pass a correct PPA name as argument!"$ENDCOLOR
 	exit 1
 fi
 # Check if root
-if [ ! $(whoami) = "root" ]; then
+if [[ ! $(whoami) = "root" ]]; then
 	echo -e $RED"Root access is needed to continue!"$ENDCOLOR
 	exit 1
 fi
 # Detect the required info
-if [[ "i686" = `uname -m` ]]; then
-	arch=i386
-elif [[ "x86_64" = `uname -m` ]]; then
-	arch=amd64
-fi
+arch="$(uname -m)"
 codename="$(lsb_release -cs)"
 username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 ppaname="$(echo $ppa | cut -f2 -d\/)"
-function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
-RELEASE=$(lsb_release -r | cut -f2)
+release="$(lsb_release -r | cut -f2)"
+# Correct architecture output
+case `uname -m` in
+	i486|i586|i686)
+		arch="i386";;
+	x86_64)
+		arch="amd64";;
+esac
 # Ubuntu version for Linux Mint
 case `lsb_release -cs` in
 	helena)
@@ -66,12 +68,15 @@ case `lsb_release -cs` in
 	maya)
 		codename="precise";;
 esac
+version() {
+echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
+}
 # Check if the PPA is present or not
 p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $codename main"`
-if [ ! -n "$p" ]; then
+if [[ ! -n "$p" ]]; then
 	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
 	read response
-	if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
+	if [[ $(version $release) -gt $(version 11.04) || $codename = "oneiric" || $codename = "precise" || $codename = "quantal" ]]; then
 		case $response in
 			[yY]) add-apt-repository -y "$ppa";;
 			*) exit 1;;
@@ -85,31 +90,33 @@ if [ ! -n "$p" ]; then
 fi
 # Switch to a temporary directory
 tempdir="/tmp/update-ppa"
-if [ -d "$tempdir" ]; then
+if [[ -d "$tempdir" ]]; then
 	rm -rf "$tempdir"
 fi
 mkdir "$tempdir"
 cd "$tempdir"
 # Fetch files to the temporary directory
-echo -e $BLUE"Fetching files..."$ENDCOLOR
+echo -e $BLUE"Fetching index files..."$ENDCOLOR
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release.gpg -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/binary-"$arch"/Packages -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages
 wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/source/Sources -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources
 # Move files to the correct location
-if [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages ] && [ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]; then
+if [[ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release && -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg && -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages && -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]]; then
 	mv ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"* /var/lib/apt/lists/
 else
-	echo -e $RED"The files could not be downloaded or lost. Please check if you have an internet connection and retry :("$ENDCOLOR
+	echo -e $RED"Some index files could not be downloaded or lost :("$ENDCOLOR
+	echo -e "\vPossible reasons may be,\n\v\t[*] The PPA may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
 exit 1
 fi
 # Delete the temporary directory
 cd ..
 rm -rf "$tempdir"
 # Show success message
-if [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages ] && [ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]; then
+if [[ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release && -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg && -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages && -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]]; then
 	echo -e $GREEN"The lists for the PPA $ppa have been successfully updated!"$ENDCOLOR
+	exit 0
 else
 	echo -e $RED"An error occured. Please retry :("$ENDCOLOR
-exit 1
+	exit 1
 fi
