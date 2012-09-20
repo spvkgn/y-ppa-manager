@@ -63,6 +63,10 @@ case `lsb_release -cs` in
 	maya)
 		codename="precise";;
 esac
+# Try to find the codename from the list file
+if [[ `ls /etc/apt/sources.list.d/$username-$ppaname-*.list` ]]; then
+codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
+fi
 version() {
 echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 }
