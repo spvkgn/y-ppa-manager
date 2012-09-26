@@ -24,7 +24,27 @@ BLUE="\033[0;34m"
 ENDCOLOR="\033[0m"
 
 # Parse the arguement
-ppa="$1"
+while [[ $# -gt 0 ]]; do
+case "$1" in
+	-a|--add)
+		add="yes"
+		shift;;
+	-h|--help)
+		echo -e "Usage: update-ppa <ppa>"
+		echo -e ""
+		echo -e "update-ppa is a script to selectively update lists for a launchpad ppa."
+		echo -e ""
+		echo -e "Example: update-ppa ppa:user/repository"
+		echo -e ""
+		echo -e "Options:"
+		echo -e "\t-a, --add\tadd the ppa if not present on the system"
+		echo -e "\t-h, --help\tshow this help message and exit"
+		exit;;
+	*)
+		ppa="$1"
+		shift;;
+esac
+done
 s=`echo "$ppa" | grep "^ppa:" | grep "/"`
 if [[ ! -n "$s" ]]; then
 	echo -e $RED"Please pass a correct PPA name as argument!"$ENDCOLOR
@@ -75,8 +95,12 @@ echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 # Check if the PPA is present or not
 p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $codename main"`
 if [[ ! -n "$p" ]]; then
-	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
-	read response
+	if [[ "$add" = "yes" ]]; then
+		response="y"
+	else
+		echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
+		read response
+	fi
 	case $response in
 		[yY])
 			echo -e $BLUE"Adding the PPA..."$ENDCOLOR
@@ -86,6 +110,7 @@ if [[ ! -n "$p" ]]; then
 				add-apt-repository "$ppa"
 			fi;;
 		*)
+			echo -e $RED"You must add the PPA to continue!"$ENDCOLOR
 			exit 1;;
 	esac
 fi
