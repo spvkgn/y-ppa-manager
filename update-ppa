@@ -62,7 +62,7 @@ ppaname="$(echo $ppa | cut -f2 -d\/)"
 release="$(lsb_release -r | cut -f2)"
 # Detect the architecture
 case `uname -m` in
-	i486|i586|i686)
+	i386|i486|i586|i686)
 		architectures=( "i386" );;
 	x86_64)
 		architectures=( "i386" "amd64" );;
@@ -85,8 +85,7 @@ case `lsb_release -cs` in
 		codename="precise";;
 esac
 # Try to find the codename from the list file
-
-ppafilename=$(ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1)
+l=`ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1`
 if [[ $? -eq 0 ]]; then
 codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 fi
