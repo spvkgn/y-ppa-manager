@@ -85,13 +85,9 @@ case `lsb_release -cs` in
 		codename="precise";;
 esac
 # Try to find the codename from the list file
-<<<<<<< TREE
+
 ppafilename=$(ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1)
 if [[ $? -eq 0 ]]; then
-=======
-i=`ls /etc/apt/sources.list.d/$username-$ppaname-*.list > "/dev/null" 2>&1`
-if [[ $? = "0" ]]; then
->>>>>>> MERGE-SOURCE
 codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 fi
 version() {
