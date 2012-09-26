@@ -1,6 +1,6 @@
 #!/bin/bash
-# Script to selectively update lists for a PPA in Ubuntu
-# Example: update-ppa ppa:satyajit-happy/themes
+# Script to selectively update lists for a Launchpad PPA in Ubuntu
+# Example: update-ppa ppa:user/repository
 #
 # Copyright (C) 2012  Satyajit sahoo
 #
@@ -24,7 +24,27 @@ BLUE="\033[0;34m"
 ENDCOLOR="\033[0m"
 
 # Parse the arguement
-ppa="$1"
+while [[ $# -gt 0 ]]; do
+case "$1" in
+	-a|--add)
+		add="yes"
+		shift;;
+	-h|--help)
+		echo -e "Usage: update-ppa <ppa>"
+		echo -e ""
+		echo -e "update-ppa is a script to selectively update lists for a launchpad ppa."
+		echo -e ""
+		echo -e "Example: update-ppa ppa:user/repository"
+		echo -e ""
+		echo -e "Options:"
+		echo -e "\t-a, --add\tadd the ppa if not present on the system"
+		echo -e "\t-h, --help\tshow this help message and exit"
+		exit;;
+	*)
+		ppa="$1"
+		shift;;
+esac
+done
 s=`echo "$ppa" | grep "^ppa:" | grep "/"`
 if [[ ! -n "$s" ]]; then
 	echo -e $RED"Please pass a correct PPA name as argument!"$ENDCOLOR
@@ -36,17 +56,18 @@ if [[ ! $(whoami) = "root" ]]; then
 	exit 1
 fi
 # Detect the required info
-arch="$(uname -m)"
 codename="$(lsb_release -cs)"
 username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
 ppaname="$(echo $ppa | cut -f2 -d\/)"
 release="$(lsb_release -r | cut -f2)"
-# Correct architecture output
+# Detect the architecture
 case `uname -m` in
 	i486|i586|i686)
-		arch="i386";;
+		architectures=( "i386" );;
 	x86_64)
-		arch="amd64";;
+		architectures=( "i386" "amd64" );;
+	*)
+		architectures=( "$(uname -m)" );;		
 esac
 # Ubuntu version for Linux Mint
 case `lsb_release -cs` in
@@ -64,8 +85,13 @@ case `lsb_release -cs` in
 		codename="precise";;
 esac
 # Try to find the codename from the list file
+<<<<<<< TREE
 ppafilename=$(ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1)
 if [[ $? -eq 0 ]]; then
+=======
+i=`ls /etc/apt/sources.list.d/$username-$ppaname-*.list > "/dev/null" 2>&1`
+if [[ $? = "0" ]]; then
+>>>>>>> MERGE-SOURCE
 codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 fi
 version() {
@@ -74,19 +100,24 @@ echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 # Check if the PPA is present or not
 p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $codename main"`
 if [[ ! -n "$p" ]]; then
-	echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
-	read response
-	if [[ $(version $release) -gt $(version 11.04) || $codename = "oneiric" || $codename = "precise" || $codename = "quantal" ]]; then
-		case $response in
-			[yY]) add-apt-repository -y "$ppa";;
-			*) exit 1;;
-		esac
+	if [[ "$add" = "yes" ]]; then
+		response="y"
 	else
-		case $response in
-			[yY]) add-apt-repository "$ppa";;
-			*) exit 1;;
-		esac
+		echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
+		read response
 	fi
+	case $response in
+		[yY])
+			echo -e $BLUE"Adding the PPA..."$ENDCOLOR
+			if [[ $(version $release) -gt $(version 11.04) || $codename = "oneiric" || $codename = "precise" || $codename = "quantal" ]]; then
+				add-apt-repository -y "$ppa"
+			else
+				add-apt-repository "$ppa"
+			fi;;
+		*)
+			echo -e $RED"You must add the PPA to continue!"$ENDCOLOR
+			exit 1;;
+	esac
 fi
 # Switch to a temporary directory
 tempdir="/tmp/update-ppa"
@@ -95,28 +126,36 @@ if [[ -d "$tempdir" ]]; then
 fi
 mkdir "$tempdir"
 cd "$tempdir"
+# Determine urls and file names
+for arch in "${architectures[@]}"; do
+	urls=( "${urls[@]}" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/main/binary-${arch}/Packages" )
+	files=( "${files[@]}" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_main_binary-${arch}_Packages" )
+done
+urls=( "${urls[@]}" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/Release" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/Release.gpg" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/main/source/Sources" )
+files=( "${files[@]}" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_Release" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_Release.gpg" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_main_source_Sources" )
 # Fetch files to the temporary directory
 echo -e $BLUE"Fetching index files..."$ENDCOLOR
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/Release.gpg -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/binary-"$arch"/Packages -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages
-wget -nv http://ppa.launchpad.net/"$username"/"$ppaname"/ubuntu/dists/"$codename"/main/source/Sources -O ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources
+for ((i=0; i < "${#urls[@]}"; i++))
+do
+	wget -nv "${urls[i]}" -O "${files[i]}"
+done
 # Move files to the correct location
-if [[ -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release && -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg && -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages && -s ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]]; then
-	mv ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"* /var/lib/apt/lists/
-else
-	echo -e $RED"Some index files could not be downloaded or lost :("$ENDCOLOR
-	echo -e "\vPossible reasons may be,\n\v\t[*] The PPA may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
-exit 1
-fi
+for file in "${files[@]}"; do
+	if [[ -s "$file" ]]; then
+		mv -f "$file" "/var/lib/apt/lists/"
+	else
+		echo -e $RED"Some index files could not be downloaded or lost :("$ENDCOLOR
+		echo -e "\vPossible reasons may be,\n\v\t[*] The PPA may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
+		exit 1
+	fi
+	if [[ ! -s "/var/lib/apt/lists/${file}" ]]; then
+		echo -e $RED"An error occured. Please retry :("$ENDCOLOR
+		exit 1
+	fi
+done
 # Delete the temporary directory
 cd ..
 rm -rf "$tempdir"
 # Show success message
-if [[ -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release && -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_Release.gpg && -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_binary-"$arch"_Packages && -s /var/lib/apt/lists/ppa.launchpad.net_"$username"_"$ppaname"_ubuntu_dists_"$codename"_main_source_Sources ]]; then
-	echo -e $GREEN"The lists for the PPA $ppa have been successfully updated!"$ENDCOLOR
-	exit 0
-else
-	echo -e $RED"An error occured. Please retry :("$ENDCOLOR
-	exit 1
-fi
+echo -e $GREEN"The lists for the PPA $ppa have been successfully updated!"$ENDCOLOR
+exit 0
