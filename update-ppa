@@ -79,7 +79,7 @@ case "$1" in
 	*)
 		repo="$1"
 		shift
-		if [[ `echo ${repo} | grep "^ppa:" | grep "/"` ]]; then
+		if [[ $repo =~ ^ppa\:.*\/ ]]; then
 			username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo ${repo} | cut -f2 -d\/)"
 			repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
@@ -87,7 +87,7 @@ case "$1" in
 			if [[ `ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1` ]]; then
 				codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 			fi
-		elif [[ `echo ${repo} | grep "http://"` ]]; then
+		elif [[ $repo =~ ^http\:\/\/ ]]; then
 			repourl="$(echo ${repo} | sed 's/\/$//')"
 		else
 			echo -e $RED"Please pass a correct repository name or url as argument!"$END
@@ -112,7 +112,7 @@ version() {
 echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 }
 # Check if the repository is present or not
-if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb ${repourl}/\? ${codename} ${section}"` && ! "$force" = "yes" ]]; then
+if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${repourl}/\? ${codename} ${section}"` && ! "$force" = "yes" ]]; then
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
@@ -147,9 +147,9 @@ urls=( "${urls[@]}" "${repourl}/dists/${codename}/Release" "${repourl}/dists/${c
 files=( "${files[@]}" "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
 # Fetch files to the temporary directory
 echo -e $BLUE"Fetching index files..."$END
-for ((i=0; i < "${#urls[@]}"; i++))
+for ((i=0; i < ${#urls[@]}; i++))
 do
-	if [[ "${urls[i]}" = *.gz ]]; then
+	if [[ ${urls[i]} =~ .gz$ ]]; then
 		wget -nv "${urls[i]}" -O "${files[i]}".gz
 		if [[ -s "${files[i]}".gz ]]; then
 			gunzip -cf "${files[i]}".gz > "${files[i]}"
