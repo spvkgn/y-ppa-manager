@@ -1,6 +1,5 @@
 #!/bin/bash
-# Script to selectively update lists for a Launchpad PPA in Ubuntu
-# Example: update-ppa ppa:user/repository
+# Script to selectively update lists for an apt repository
 #
 # Copyright (C) 2012  Satyajit sahoo
 #
@@ -21,44 +20,13 @@
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 BLUE="\033[0;34m"
-ENDCOLOR="\033[0m"
+END="\033[0m"
 
-# Parse the arguement
-while [[ $# -gt 0 ]]; do
-case "$1" in
-	-a|--add)
-		add="yes"
-		shift;;
-	-h|--help)
-		echo -e "Usage: update-ppa <ppa>"
-		echo -e ""
-		echo -e "update-ppa is a script to selectively update lists for a launchpad ppa."
-		echo -e ""
-		echo -e "Example: update-ppa ppa:user/repository"
-		echo -e ""
-		echo -e "Options:"
-		echo -e "\t-a, --add\tadd the ppa if not present on the system"
-		echo -e "\t-h, --help\tshow this help message and exit"
-		exit;;
-	*)
-		ppa="$1"
-		shift;;
-esac
-done
-s=`echo "$ppa" | grep "^ppa:" | grep "/"`
-if [[ ! -n "$s" ]]; then
-	echo -e $RED"Please pass a correct PPA name as argument!"$ENDCOLOR
-	exit 1
-fi
-# Check if root
-if [[ ! $(whoami) = "root" ]]; then
-	echo -e $RED"Root access is needed to continue!"$ENDCOLOR
-	exit 1
-fi
+# Set variables
+section="main"
+tempdir="/tmp/update-ppa"
 # Detect the required info
 codename="$(lsb_release -cs)"
-username="$(echo $ppa | cut -f1 -d\/ | cut -f2 -d\:)"
-ppaname="$(echo $ppa | cut -f2 -d\/)"
 release="$(lsb_release -r | cut -f2)"
 # Detect the architecture
 case `uname -m` in
@@ -84,67 +52,123 @@ case `lsb_release -cs` in
 	maya)
 		codename="precise";;
 esac
-# Try to find the codename from the list file
-l=`ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1`
-if [[ $? -eq 0 ]]; then
-codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
+# Parse the arguement
+while [[ $# -gt 0 ]]; do
+case "$1" in
+	-a|--add)
+		add="yes"
+		shift;;
+	-h|--help)
+		echo -e "Usage: update-ppa <sourceline>"
+		echo -e ""
+		echo -e "update-ppa is a script to selectively update lists for an apt repository."
+		echo -e ""
+		echo -e "Examples:"
+		echo -e "\tupdate-ppa ppa:user/repository"
+		echo -e "\tupdate-ppa http://extras.ubuntu.com/ubuntu"
+		echo -e "\tupdate-ppa http://extras.ubuntu.com/ubuntu quantal main"
+		echo -e ""
+		echo -e "Options:"
+		echo -e "\t-a, --add\tadd the repository if not present on the system"
+		echo -e "\t-h, --help\tshow this help message and exit"
+		exit;;
+	*)
+		if [[ `echo $1 | grep "^ppa:" | grep "/"` ]]; then
+			username="$(echo $1 | cut -f1 -d\/ | cut -f2 -d\:)"
+			ppaname="$(echo $1 | cut -f2 -d\/)"
+			repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
+			repo="ppa:${username}/${ppaname}"
+			# Try to find the codename from the list file
+			if [[ `ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1` ]]; then
+				codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
+			fi
+		elif [[ `echo $1 | grep "http://"` ]]; then
+			repourl="$(echo $1 | sed 's/\/$//')"
+			repo="${repourl}"
+		else
+			echo -e $RED"Please pass a correct repository name or url as argument!"$END
+			exit 1
+		fi
+		shift
+		if [[ $# -gt 1 ]]; then
+			if [[ ! $1 = -* ]]; then
+				codename="$1"
+				shift
+			fi
+			if [[ ! $1 = -* ]]; then
+				section="$1"
+				shift
+			fi
+			repo="${repourl} ${codename} ${section}"
+		fi;;
+esac
+done
+# Determine the file names
+repofile="$(echo ${repourl} | sed 's/http:\/\///g' | sed 's/\//_/g')"
+# Check if root
+if [[ ! $(whoami) = "root" ]]; then
+	echo -e $RED"Root access is needed to continue!"$END
+	exit 1
 fi
 version() {
 echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 }
-# Check if the PPA is present or not
-p=`cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $codename main"`
-if [[ ! -n "$p" ]]; then
+# Check if the repository is present or not
+if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb ${repourl}"` ]]; then
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
-		echo -e $RED"The PPA is not present on the system. Do you want to add it first? (y/n)"$ENDCOLOR
+		echo -e $RED"The repository \"${repo}\" is not present on the system. Do you want to add it first? (y/n)"$END
 		read response
 	fi
 	case $response in
 		[yY])
-			echo -e $BLUE"Adding the PPA..."$ENDCOLOR
-			if [[ $(version $release) -gt $(version 11.04) || $codename = "oneiric" || $codename = "precise" || $codename = "quantal" ]]; then
-				add-apt-repository -y "$ppa"
+			echo -e $BLUE"Adding the repository..."$END
+			if [[ $(version "$release") -gt $(version 11.04) || "$codename" = "oneiric" || "$codename" = "precise" || "$codename" = "quantal" ]]; then
+				add-apt-repository -y "$repo"
 			else
-				add-apt-repository "$ppa"
+				add-apt-repository "$repo"
 			fi;;
 		*)
-			echo -e $RED"You must add the PPA to continue!"$ENDCOLOR
+			echo -e $RED"You must add the repository to continue!"$END
 			exit 1;;
 	esac
 fi
 # Switch to a temporary directory
-tempdir="/tmp/update-ppa"
 if [[ -d "$tempdir" ]]; then
 	rm -rf "$tempdir"
 fi
-mkdir "$tempdir"
+mkdir -p "$tempdir"
 cd "$tempdir"
 # Determine urls and file names
 for arch in "${architectures[@]}"; do
-	urls=( "${urls[@]}" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/main/binary-${arch}/Packages" )
-	files=( "${files[@]}" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_main_binary-${arch}_Packages" )
+	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/binary-${arch}/Packages.gz" )
+	files=( "${files[@]}" "${repofile}_dists_${codename}_${section}_binary-${arch}_Packages" )
 done
-urls=( "${urls[@]}" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/Release" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/Release.gpg" "http://ppa.launchpad.net/${username}/${ppaname}/ubuntu/dists/${codename}/main/source/Sources" )
-files=( "${files[@]}" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_Release" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_Release.gpg" "ppa.launchpad.net_${username}_${ppaname}_ubuntu_dists_${codename}_main_source_Sources" )
+urls=( "${urls[@]}" "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
+files=( "${files[@]}" "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
 # Fetch files to the temporary directory
-echo -e $BLUE"Fetching index files..."$ENDCOLOR
+echo -e $BLUE"Fetching index files..."$END
 for ((i=0; i < "${#urls[@]}"; i++))
 do
-	wget -nv "${urls[i]}" -O "${files[i]}"
+	if [[ "${urls[i]}" = *.gz ]]; then
+		wget -nv "${urls[i]}" -O "${files[i]}".gz
+		gunzip -qf "${files[i]}".gz > "${files[i]}"
+	else
+		wget -nv "${urls[i]}" -O "${files[i]}"
+	fi
 done
 # Move files to the correct location
 for file in "${files[@]}"; do
 	if [[ -s "$file" ]]; then
 		mv -f "$file" "/var/lib/apt/lists/"
 	else
-		echo -e $RED"Some index files could not be downloaded or lost :("$ENDCOLOR
-		echo -e "\vPossible reasons may be,\n\v\t[*] The PPA may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
+		echo -e $RED"Some index files could not be downloaded or lost :("$END
+		echo -e "\vPossible reasons may be,\n\v\t[*] The repository may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
 		exit 1
 	fi
 	if [[ ! -s "/var/lib/apt/lists/${file}" ]]; then
-		echo -e $RED"An error occured. Please retry :("$ENDCOLOR
+		echo -e $RED"An error occured. Please retry :("$END
 		exit 1
 	fi
 done
@@ -152,5 +176,5 @@ done
 cd ..
 rm -rf "$tempdir"
 # Show success message
-echo -e $GREEN"The lists for the PPA $ppa have been successfully updated!"$ENDCOLOR
+echo -e $GREEN"The lists for the repository \"${repo}\" have been successfully updated!"$END
 exit 0
