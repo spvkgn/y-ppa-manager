@@ -77,27 +77,26 @@ case "$1" in
 		echo -e "\t-h, --help\tshow this help message and exit"
 		exit;;
 	*)
-		if [[ `echo $1 | grep "^ppa:" | grep "/"` ]]; then
-			username="$(echo $1 | cut -f1 -d\/ | cut -f2 -d\:)"
-			ppaname="$(echo $1 | cut -f2 -d\/)"
+		repo="$1"
+		shift
+		if [[ `echo ${repo} | grep "^ppa:" | grep "/"` ]]; then
+			username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
+			ppaname="$(echo ${repo} | cut -f2 -d\/)"
 			repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
-			repo="ppa:${username}/${ppaname}"
 			# Try to find the codename from the list file
 			if [[ `ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1` ]]; then
 				codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 			fi
-		elif [[ `echo $1 | grep "http://"` ]]; then
-			repourl="$(echo $1 | sed 's/\/$//')"
-			repo="${repourl}"
+		elif [[ `echo ${repo} | grep "http://"` ]]; then
+			repourl="$(echo ${repo} | sed 's/\/$//')"
 		else
 			echo -e $RED"Please pass a correct repository name or url as argument!"$END
 			exit 1
 		fi
-		shift
 		if [[ $# -gt 1 && ! $1 = -* && ! $2 = -* ]]; then
 			codename="$1"
 			section="$2"
-			repo="${repourl} ${codename} ${section}"
+			repo="${repo} ${codename} ${section}"
 			shift 2
 		fi;;
 esac
@@ -113,7 +112,7 @@ version() {
 echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 }
 # Check if the repository is present or not
-if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb ${repourl}"` && ! "$force" = "yes" ]]; then
+if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep -i "deb ${repourl}/\? ${codename} ${section}"` && ! "$force" = "yes" ]]; then
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
