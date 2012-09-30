@@ -52,12 +52,6 @@ case `lsb_release -cs` in
 	maya)
 		codename="precise";;
 esac
-<<<<<<< TREE
-# Try to find the codename from the list file
-ppafilename=$(ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1)
-if [[ $? -eq 0 ]]; then
-codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
-=======
 # Parse the arguement
 while [[ $# -gt 0 ]]; do
 case "$1" in
@@ -113,7 +107,6 @@ repofile="$(echo ${repourl} | sed 's/http:\/\///g' | sed 's/\//_/g')"
 if [[ ! $(whoami) = "root" ]]; then
 	echo -e $RED"Root access is needed to continue!"$END
 	exit 1
->>>>>>> MERGE-SOURCE
 fi
 version() {
 echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
