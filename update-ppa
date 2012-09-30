@@ -16,15 +16,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# Set Colors
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-BLUE="\033[0;34m"
-END="\033[0m"
-
+# Define functions
+show_info() {
+echo -e "\033[0;34m$@\033[0m"
+}
+show_success() {
+echo -e "\033[0;32m$@\033[0m"
+}
+show_error() {
+echo -e "\033[0;31m$@\033[0m" 1>&2
+}
+version() {
+echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
+}
 # Set variables
 section="main"
-tempdir="/tmp/update-ppa"
+tempdir="/var/lib/apt/lists/partial"
 # Detect the required info
 codename="$(lsb_release -cs)"
 release="$(lsb_release -r | cut -f2)"
@@ -91,10 +98,10 @@ case "$1" in
 		elif [[ $repo =~ ^http\:\/\/ ]]; then
 			repourl="$(echo ${repo} | sed 's/\/$//')"
 		else
-			echo -e $RED"Please pass a correct repository name or url as argument!"$END
+			show_error "Please pass a correct repository name or url as argument!"
 			exit 1
 		fi
-		if [[ $# -gt 1 && ! $1 = -* && ! $2 = -* ]]; then
+		if [[ $# -gt 1 && ! $1 =~ ^- && ! $2 =~ ^- ]]; then
 			codename="$1"
 			section="$2"
 			repo="${repo} ${codename} ${section}"
@@ -106,39 +113,40 @@ done
 repofile="$(echo ${repourl} | sed 's/http:\/\///g' | sed 's/\//_/g')"
 # Check if root
 if [[ ! $(whoami) = "root" ]]; then
-	echo -e $RED"Root access is needed to continue!"$END
+	show_error "Root access is needed to continue!"
 	exit 1
 fi
-version() {
-echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
-}
 # Check if the repository is present or not
 if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${repourl}/\? ${codename} ${section}"` && ! "$force" = "yes" ]]; then
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
-		echo -e $RED"The repository \"${repo}\" is not present on the system. Do you want to add it first? (y/n)"$END
+		show_error "The repository \"${repo}\" is not present on the system. Do you want to add it first? (y/n)"
 		read response
 	fi
 	case $response in
 		[yY])
-			echo -e $BLUE"Adding the repository..."$END
+			show_info "Adding the repository..."
 			if [[ $(version "$release") -gt $(version 11.04) || "$codename" = "oneiric" || "$codename" = "precise" || "$codename" = "quantal" ]]; then
 				add-apt-repository -y "$repo"
 			else
 				add-apt-repository "$repo"
 			fi;;
 		*)
-			echo -e $RED"You must add the repository to continue!"$END
+			show_error "You must add the repository to continue!"
 			exit 1;;
 	esac
 fi
 # Switch to a temporary directory
-if [[ -d "$tempdir" ]]; then
-	rm -rf "$tempdir"
+if [[ ! -d "$tempdir" ]]; then
+	mkdir -p "$tempdir"
 fi
-mkdir -p "$tempdir"
-cd "$tempdir"
+if [[ -d "$tempdir" ]]; then
+	cd "$tempdir"
+else
+	show_error "Failed to create temporary directory!"
+	exit 1
+fi
 # Determine urls and file names
 for arch in "${architectures[@]}"; do
 	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/binary-${arch}/Packages.gz" )
@@ -147,13 +155,13 @@ done
 urls=( "${urls[@]}" "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
 files=( "${files[@]}" "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
 # Fetch files to the temporary directory
-echo -e $BLUE"Fetching index files..."$END
+show_info "Fetching index files..."
 for ((i=0; i < ${#urls[@]}; i++))
 do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
 		wget -nv "${urls[i]}" -O "${files[i]}".gz
 		if [[ -s "${files[i]}".gz ]]; then
-			gunzip -cf "${files[i]}".gz > "${files[i]}"
+			gunzip -f "${files[i]}".gz
 		fi
 	else
 		wget -nv "${urls[i]}" -O "${files[i]}"
@@ -164,18 +172,15 @@ for file in "${files[@]}"; do
 	if [[ -s "$file" ]]; then
 		mv -f "$file" "/var/lib/apt/lists/"
 	else
-		echo -e $RED"Some index files could not be downloaded or lost :("$END
+		show_error "Some index files could not be downloaded or lost :("
 		echo -e "\vPossible reasons may be,\n\v\t[*] The repository may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
 		exit 1
 	fi
 	if [[ ! -s "/var/lib/apt/lists/${file}" ]]; then
-		echo -e $RED"An error occured. Please retry :("$END
+		show_error "An error occured. Please retry :("
 		exit 1
 	fi
 done
-# Delete the temporary directory
-cd ..
-rm -rf "$tempdir"
 # Show success message
-echo -e $GREEN"The lists for the repository \"${repo}\" have been successfully updated!"$END
+show_success "The lists for the repository \"${repo}\" have been successfully updated!"
 exit 0
