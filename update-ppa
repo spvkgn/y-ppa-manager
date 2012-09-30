@@ -84,7 +84,8 @@ case "$1" in
 			ppaname="$(echo ${repo} | cut -f2 -d\/)"
 			repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
 			# Try to find the codename from the list file
-			if [[ `ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1` ]]; then
+			ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1
+			if [[ $? -eq 0 ]]; then
 				codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
 			fi
 		elif [[ $repo =~ ^http\:\/\/ ]]; then

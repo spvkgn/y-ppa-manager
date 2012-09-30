@@ -4,6 +4,10 @@
 - add support for updating PPAs having older release names
 - fix bug with update-ppa not working on Linux Mint
 - fix issue with PPA Restore function not working with spaces
+- update-ppa: support for more repository formats (experimental). Examples: update-ppa http://archive.ubuntu.com/ubuntu or update-ppa http://archive.ubuntu.com/ubuntu quantal main
+- update-ppa: Support specifying custom codename and section for a ppa. Example: update-ppa ppa:user/repository quantal main
+- update-ppa: Download compressed .gz files instead of normal files
+- update-ppa: Support force update lists without adding the repository.
 
 
 0.0.9.1:
