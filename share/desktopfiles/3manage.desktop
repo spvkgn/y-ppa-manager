@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
-Name=Manage existing PPAs
+Name=Manage PPAs
 Comment=Manage PPAs enabled on your computer
-GenericName=Manage existing PPAs
+GenericName=Manage PPAs
 Exec=y-ppa-cmd manage
 Icon=y-manage
 Terminal=false

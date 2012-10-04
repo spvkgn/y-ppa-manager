@@ -62,7 +62,7 @@ class IndicatorY:
         item.connect("activate", item_run, "_yppa_search")
         menu.append(item)
 
-        item = gtk.MenuItem("Manage existing PPAs")
+        item = gtk.MenuItem("Manage PPAs")
         item.connect("activate", item_run, "_yppa_manage")
         menu.append(item)
 

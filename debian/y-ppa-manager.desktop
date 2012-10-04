@@ -24,7 +24,7 @@ Exec=y-ppa-cmd search
 TargetEnvironment=Unity
 
 [YPPAManager4 Shortcut Group]
-Name=Manage existing PPAs
+Name=Manage PPAs
 Exec=y-ppa-cmd manage
 TargetEnvironment=Unity
 
