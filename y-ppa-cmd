@@ -245,6 +245,20 @@ remove_a_PPA()
 		let n=n+1
 	done < /tmp/.temp_sources2.list
 
+	#add PPAs from /etc/apt/sources.list
+	IFS=$'\n'
+	n=1
+	while read curline; do
+		ppausername=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f2)
+		ppaname=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f3)
+		ppaubuver=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
+		if [[ $ppausername ]]; then
+			echo "$ppausername--$ppaname--$ppaubuver" | tee -a /tmp/.non_disabled2.list > /dev/null 2>&1;
+		fi
+
+		let n=n+1
+	done < /etc/apt/sources.list	
+
 #trying to fix -ubuntuversion not existing
 #	cat /tmp/.non_disabled2.list
 
@@ -272,11 +286,18 @@ remove_a_PPA()
 		
         		checkAPT
         		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Removing "$DEL_PPA" and updating software sources"
-        		
-        		#to modify to real path:
-			rm /etc/apt/sources.list.d/"$DEL_PPA".list > /dev/null 2>&1;
-			#rm /home/andrei/Desktop/sources.list.d/"$DEL_PPA".list > /dev/null 2>&1;
-			apt-get update
+		
+			if [[ -e /etc/apt/sources.list.d/"$DEL_PPA".list ]]; then
+				rm /etc/apt/sources.list.d/"$DEL_PPA".list > /dev/null 2>&1;
+			else
+				ubuntudist=${DEL_PPA##*--}
+				nolast_part=$(echo "$DEL_PPA" | sed -e "s/--$ubuntudist//g")
+				ppaname=${nolast_part##*--}
+				ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
+				sed -i "/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d" /etc/apt/sources.list
+				echo $DEL_PPA DEL_PPA
+			fi
+			#apt-get update
 			rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
 			notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$DEL_PPA" successfully!"
 			remove_a_PPA
@@ -435,7 +456,7 @@ list_packages_PPA()
 		ppaname=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f3)
 		ppaubuver=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
 		if [[ $ppausername ]]; then
-			echo "$ppausername-$ppaname-$ppaubuver" | tee -a /tmp/.non_disabled.list > /dev/null 2>&1;
+			echo "$ppausername--$ppaname--$ppaubuver" | tee -a /tmp/.non_disabled.list > /dev/null 2>&1;
 		fi
 
 		let n=n+1
@@ -449,13 +470,12 @@ list_packages_PPA()
 
 		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
 			ubuntudist=$(cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
-			ppa_temp_url=`cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | sed -e 's/^deb-src.*//g' -e '/^$/d' -e 's/^deb //g' -e 's/ /\//g' -e "s/\/ubuntu\/$UBUVER\/main/\/ubuntu\/dists\/$ubuntudist\/main/g" -e "s/#.*//g"`
-			echo ppa temp url $ppa_temp_url
+			ppa_temp_url=`cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | sed -e 's/^deb-src.*//g' -e '/^$/d' -e 's/^deb //g' -e 's/ /\//g' -e "s/\/ubuntu\/$ubuntudist\/main/\/ubuntu\/dists\/$ubuntudist\/main/g" -e "s/#.*//g"`
 		else
-			ubuntudist=${LIST_PPA_PACKAGES##*-}
-			nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/-$ubuntudist//g")
-			ppaname=${nolast_part##*-}
-			ppausername=$(echo "$nolast_part" | sed -e "s/-$ppaname//g")
+			ubuntudist=${LIST_PPA_PACKAGES##*--}
+			nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/--$ubuntudist//g")
+			ppaname=${nolast_part##*--}
+			ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
 			ppa_temp_url=http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu/dists/$ubuntudist/main
 
 		fi
