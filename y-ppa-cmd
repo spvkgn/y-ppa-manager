@@ -226,7 +226,6 @@ remove_a_PPA()
 	checkAPT
 	
 	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
-	touch /tmp/.temp_sourcesnames2.list
 
 	sourcesLIST=`ls /etc/apt/sources.list.d | grep .list$ > /tmp/.temp_sources2.list ; cat /tmp/.temp_sources2.list`
 
@@ -295,9 +294,8 @@ remove_a_PPA()
 				ppaname=${nolast_part##*--}
 				ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
 				sed -i "/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d" /etc/apt/sources.list
-				echo $DEL_PPA DEL_PPA
 			fi
-			#apt-get update
+			apt-get update
 			rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
 			notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$DEL_PPA" successfully!"
 			remove_a_PPA
@@ -414,7 +412,7 @@ purge_a_PPA()
 
 list_packages_PPA()
 {
-
+	CLEARTEMP
 	touch /tmp/.temp_sourcesnames.list
 	touch /tmp/.non_disabled.list
 
@@ -464,9 +462,9 @@ list_packages_PPA()
 
 	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
 
-	LIST_PPA_PACKAGES=$(yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=400 --height=300 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)"  --button="Close:1" --button="Update PPA:2" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
-
-	if [[ $? -eq 0 ]]; then
+	LIST_PPA_PACKAGES=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=400 --height=300 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)"  --button="Close:1" --button="Update PPA:2" --button="View source:3" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
+	ret=$?
+	if [[ $ret -eq 0 ]]; then
 
 		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
 			ubuntudist=$(cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
@@ -527,7 +525,35 @@ list_packages_PPA()
 		fi	
 
 		CLEARTEMP
-	
+	elif [[ $ret -eq 2 ]]; then
+
+		ubuntudist=${LIST_PPA_PACKAGES##*--}
+		nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/--$ubuntudist//g")
+		ppaname=${nolast_part##*--}
+		ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
+
+		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
+			update_this_ppa=$(cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | grep "deb http://ppa.launchpad.net" | sed -e 's/deb //g')
+		else
+			update_this_ppa=$(cat /etc/apt/sources.list | grep "^deb " | grep "$ppausername/$ppaname" | sed -e 's/deb //g')
+		fi
+		if [[ $dosudo = gksu ]]; then
+			gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'update-ppa "$update_this_ppa""
+		elif [[ $dosudo = kdesudo ]]; then
+			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'update-ppa "$update_this_ppa""
+		fi
+		CLEARTEMP
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager" "The \""$update_this_ppa"\" PPA source has been updated successfully"
+		list_packages_PPA
+
+	elif [[ $ret -eq 3 ]]; then
+		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
+			xdg-open "/etc/apt/sources.list.d/$LIST_PPA_PACKAGES.list"
+		else
+			xdg-open /etc/apt/sources.list
+		fi
+		CLEARTEMP
+		list_packages_PPA
 	else
 		CLEARTEMP
 		exit
