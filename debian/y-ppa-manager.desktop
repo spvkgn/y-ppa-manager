@@ -18,19 +18,14 @@ Name=Add PPA
 Exec=gksu -m "Y PPA Manager requires admin privileges for this task" -S "bash -c" "y-ppa-cmd add"
 TargetEnvironment=Unity
 
-[YPPAManager2 Shortcut Group]
-Name=Remove PPA
-Exec=gksu -m "Y PPA Manager requires admin privileges for this task" -S "bash -c" "y-ppa-cmd remove"
-TargetEnvironment=Unity
-
 [YPPAManager3 Shortcut Group]
 Name=Search in all Launchpad PPAs
 Exec=y-ppa-cmd search
 TargetEnvironment=Unity
 
 [YPPAManager4 Shortcut Group]
-Name=List packages in a PPA
-Exec=y-ppa-cmd list
+Name=Manage existing PPAs
+Exec=y-ppa-cmd manage
 TargetEnvironment=Unity
 
 [YPPAManager5 Shortcut Group]

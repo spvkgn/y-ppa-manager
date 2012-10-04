@@ -12,6 +12,7 @@
 - list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running
 - list PPAs: option to view the PPA .list file
 - list PPAs: option to update a single PPA
+- merge "PPA Remove" and "PPA Purge" into a new Manage PPAs dialog
 
 
 0.0.9.1:

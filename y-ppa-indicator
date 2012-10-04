@@ -17,10 +17,8 @@ def item_run(w, yitem):
         os.system("/usr/bin/y-ppa-cmd search")
     elif yitem == "_yppa_add":
         os.system("gksu -S -m 'Y PPA Manager requires admin privileges for this task' /usr/bin/y-ppa-cmd add")
-    elif yitem == "_yppa_rem":
-        os.system("gksu -S -m 'Y PPA Manager requires admin privileges for this task' /usr/bin/y-ppa-cmd remove")
-    elif yitem == "_yppa_list":
-        os.system("/usr/bin/y-ppa-cmd list")
+    elif yitem == "_yppa_manage":
+        os.system("/usr/bin/y-ppa-cmd manage")
     elif yitem == "_yppa_install":
         os.system("/usr/bin/y-ppa-cmd install")
     elif yitem == "_yppa_adv":
@@ -60,16 +58,12 @@ class IndicatorY:
         item.connect("activate", item_run, "_yppa_add")
         menu.append(item)
 
-        item = gtk.MenuItem("Remove PPA")
-        item.connect("activate", item_run, "_yppa_rem")
-        menu.append(item)
-
         item = gtk.MenuItem("Search in all Launchpad PPAs")
         item.connect("activate", item_run, "_yppa_search")
         menu.append(item)
 
-        item = gtk.MenuItem("List packages")
-        item.connect("activate", item_run, "_yppa_list")
+        item = gtk.MenuItem("Manage existing PPAs")
+        item.connect("activate", item_run, "_yppa_manage")
         menu.append(item)
 
         item = gtk.MenuItem("Install packages")
