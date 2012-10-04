@@ -427,6 +427,19 @@ list_packages_PPA()
 #		let n=n+1
 #	done < /tmp/.non_disabled.list
 
+	#add PPAs from /etc/apt/sources.list
+	IFS=$'\n'
+	n=1
+	while read curline; do
+		ppausername=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f2)
+		ppaname=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f3)
+		ppaubuver=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
+		if [[ $ppausername ]]; then
+			echo "$ppausername-$ppaname-$ppaubuver" | tee -a /tmp/.non_disabled.list > /dev/null 2>&1;
+		fi
+
+		let n=n+1
+	done < /etc/apt/sources.list
 
 	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
 
@@ -434,8 +447,18 @@ list_packages_PPA()
 
 	if [[ $? -eq 0 ]]; then
 
-		ppa_temp_url=`cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | sed -e 's/^deb-src.*//g' -e '/^$/d' -e 's/^deb //g' -e 's/ /\//g' -e "s/\/ubuntu\/$UBUVER\/main/\/ubuntu\/dists\/$UBUVER\/main/g" -e "s/#.*//g"`
-		echo ppa temp url $ppa_temp_url
+		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
+			ubuntudist=$(cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
+			ppa_temp_url=`cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | sed -e 's/^deb-src.*//g' -e '/^$/d' -e 's/^deb //g' -e 's/ /\//g' -e "s/\/ubuntu\/$UBUVER\/main/\/ubuntu\/dists\/$ubuntudist\/main/g" -e "s/#.*//g"`
+			echo ppa temp url $ppa_temp_url
+		else
+			ubuntudist=${LIST_PPA_PACKAGES##*-}
+			nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/-$ubuntudist//g")
+			ppaname=${nolast_part##*-}
+			ppausername=$(echo "$nolast_part" | sed -e "s/-$ppaname//g")
+			ppa_temp_url=http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu/dists/$ubuntudist/main
+
+		fi
 
 
 		if [[ "i686" = `uname -m` ]]; then

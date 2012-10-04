@@ -8,6 +8,8 @@
 - update-ppa: Support specifying custom codename and section for a ppa. Example: update-ppa ppa:user/repository quantal main
 - update-ppa: Download compressed .gz files instead of normal files
 - update-ppa: Support force update lists without adding the repository.
+- list PPAs: support listing Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages
+- list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running
 
 
 0.0.9.1:
