@@ -274,7 +274,7 @@ remove_a_PPA()
 	sourcesNAMES=`cat /tmp/.non_disabled2.list`
 
 
-	DEL_PPA=$(yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=400 --height=300 --title="Remove a PPA" --text="Select a PPA to remove (only non-disabled PPAs are listed)" --column="PPA to remove" --button="Close:1" --button="Remove:0" $sourcesNAMES)
+	DEL_PPA=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=400 --height=300 --title="Remove a PPA" --text="Select a PPA to remove (only non-disabled PPAs are listed)" --column="PPA to remove" --button="Close:1" --button="View source:2" --button="Remove:0" $sourcesNAMES)
 	ret=$?
 
 
@@ -302,7 +302,16 @@ remove_a_PPA()
 			
 
 		fi
-		
+	elif [[ $ret -eq 2 ]]; then
+		if [[ -e /etc/apt/sources.list.d/"$DEL_PPA".list ]]; then
+			xdg-open "/etc/apt/sources.list.d/$DEL_PPA.list"
+		else
+			xdg-open /etc/apt/sources.list
+		fi
+		CLEARTEMP
+		rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
+		remove_a_PPA
+
 	else
 
 		CLEARTEMP

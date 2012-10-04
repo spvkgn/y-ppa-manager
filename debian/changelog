@@ -1,3 +1,9 @@
+y-ppa-manager (0.0.9.2-1~webupd8~lucid) lucid; urgency=medium
+ 
+  * lots of under the hood changes and bug fixes
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Tue, 14 Aug 2012 16:33:38 +0300
+
 y-ppa-manager (0.0.9.1-1~webupd8~lucid) lucid; urgency=medium
  
   * minor bugfix
