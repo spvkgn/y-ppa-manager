@@ -8,11 +8,11 @@
 - update-ppa: Support specifying custom codename and section for a ppa. Example: update-ppa ppa:user/repository quantal main
 - update-ppa: Download compressed .gz files instead of normal files
 - update-ppa: Support force update lists without adding the repository.
-- list PPAs: support listing Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental)
-- list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running
-- list PPAs: option to view the PPA .list file
-- list PPAs: option to update a single PPA
 - merge "PPA Remove" and "PPA Purge" into a new Manage PPAs dialog
+- Manage PPAs: support Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental) for listing packages in the PPA / remove PPA / purge PPA
+- Manage PPAs: option to view/edit the .list source file
+- Manage PPAs: option to update a single PPA
+- list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running (it might be different - e.g.: a package is not available in PPA X for Ubuntu Quantal, so an user running Ubuntu Quantal modifies the PPA source file to Ubuntu Precise).
 
 
 0.0.9.1:
