@@ -602,7 +602,7 @@ function y_ppa_fix_gpg_badsig() {
 
 function advanced_options() {
 
-Y_ADVANCED=`yad --list --no-headers --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --column="" "Purge a PPA" "Scan and remove duplicate PPAs" "Try to import all missing GPG keys" "Try to fix all GPG BADSIG errors" "Backup repositories" "Restore repositories backup" "Re-enable working PPAs after Ubuntu upgrade" "Update release name in working PPAs" --width=350 --height=270 --title="Advanced - Y PPA Manager" --button="Close:1" --button="gtk-ok:0"`
+Y_ADVANCED=`yad --list --no-headers --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --column="" "Scan and remove duplicate PPAs" "Try to import all missing GPG keys" "Try to fix all GPG BADSIG errors" "Backup repositories" "Restore repositories backup" "Re-enable working PPAs after Ubuntu upgrade" "Update release name in working PPAs" --width=350 --height=270 --title="Advanced - Y PPA Manager" --button="Close:1" --button="gtk-ok:0"`
 
 Y_ADVANCED_fix=`echo "$Y_ADVANCED" | sed -e "s/|//"`
 
