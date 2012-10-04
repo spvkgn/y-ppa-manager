@@ -16,14 +16,8 @@ If you run y-ppa-cmd, one of the commands below must be present.
 .B add
 open the Add PPA dialog
 .TP
-.B remove
-open the Remove PPA dialog
-.TP
-.B purge
-open the Purge PPA dialog
-.TP
-.B list
-open the list PPAs you have added dialog
+.B manage
+open the manage PPAs dialog
 .TP
 .B advanced
 launch the advanced options dialog
@@ -46,24 +40,18 @@ open the Help dialog
 .SS Add PPA
 Add a PPA (in the "ppa:webupd8/gthumb" form). It will add the PPA and update package lists for the PPA.
 
-.SS Delete PPA
-Displays all the enabled PPAs (disabled PPAs will not be listed) and you can delete any PPA from that list. Using this, only the PPA file will be deleted, nothing else will be removed (the GPG key and applications installed from that PPA will remain on your computer). To completely purge a PPA, see the "Purge PPA" feature under "Advanced".
-
-.SS List packages in a PPA enabled on your computer
-Lists all the packages that are available for your Ubuntu version in the selected PPA (only PPAs that you have added to your system and are enabled will show up here)
+.SS Manage PPAs
+Manage the PPAs enabled on your computer. From this dialog you can remove a PPA, purge it, update it, edit the PPA source or list the packages available in a PPA for your Ubuntu version.
 
 .SS Search in all Launchpad PPAs
 Performs a search in all the Launchpad PPAs for the package you enter in the search form. The regular search uses the Launchpad PPA search so it may return empty PPAs if the PPAs have a description that matches your search, or a PPA with packages for a different Ubuntu version then your current Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for - see info regarding the settings below). The advanced search will only return the exact matches for your search and will display the PPAs and package versions at a glance.
 
-.SS Purge PPA:
-uses the "ppa-purge" tool to downgrade the packages in the selected PPA to the version in the official Ubuntu repositories and disables that PPA.
-
-.SS Install Packages:
-a simple GUI to quickly install one or more packages (separated by a space)
-
 .PP
 .B You will be able to perform the following operations on a PPA:
 add it, list all the packages in that PPA for your Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for) - including the package versions, download selected packages from a PPA, copy PPA link (so you can then paste it in a web browser).
+
+.SS Install Packages:
+a simple GUI to quickly install one or more packages (separated by a space)
 
 .SS Advanced
 
