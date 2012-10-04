@@ -41,7 +41,7 @@ open the Help dialog
 Add a PPA (in the "ppa:webupd8/gthumb" form). It will add the PPA and update package lists for the PPA.
 
 .SS Manage PPAs
-Manage the PPAs enabled on your computer. From this dialog you can remove a PPA, purge it, update it, edit the PPA source or list the packages available in a PPA for your Ubuntu version.
+Manage the PPAs enabled on your computer. From this dialog you can remove a PPA, purge it, update it, edit the PPA source or list the packages available in a PPA for your Ubuntu version. Purge PPA uses the "ppa-purge" tool to downgrade the packages in the selected PPA to the version in the official Ubuntu repositories and disables that PPA. The "list packages" feature lists all the packages that are available for your Ubuntu version in the selected PPA (only PPAs that you have added to your system and are enabled will show up here).
 
 .SS Search in all Launchpad PPAs
 Performs a search in all the Launchpad PPAs for the package you enter in the search form. The regular search uses the Launchpad PPA search so it may return empty PPAs if the PPAs have a description that matches your search, or a PPA with packages for a different Ubuntu version then your current Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for - see info regarding the settings below). The advanced search will only return the exact matches for your search and will display the PPAs and package versions at a glance.
