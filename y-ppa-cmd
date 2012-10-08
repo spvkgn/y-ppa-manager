@@ -285,7 +285,6 @@ list_packages_PPA()
 	LIST_PPA_PACKAGES=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=600 --height=500 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)" --button="Remove PPA:4" --button="Purge PPA:5" --button="Update PPA:2" --button="Edit source:3" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
 	ret=$?
 
-	fixdotname=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/./_/g')
 	stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
 	ppausername=$(echo "$stripppa" | cut -f1 -d/)
 	ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
@@ -354,19 +353,17 @@ list_packages_PPA()
 
 	elif [[ $ret -eq 3 ]]; then
 
-		fixdotname=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/\./_/g')
 		stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
 		ppausername=$(echo "$stripppa" | cut -f1 -d/)
-		ppausername_dotfix=$(echo "$stripppa" | cut -f1 -d/ | sed -e 's/\./_/g')
-		ppaname_dotfix=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/ | sed -e 's/\./_/g')
+		ppausername_charfix=$(echo "$stripppa" | cut -f1 -d/ | sed -e 's/\./_/g' -e 's/+/_/g')
+		ppaname_charfix=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/ | sed -e 's/\./_/g' -e 's/+/_/g')
 		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
 		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
 		if [[ `cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu"` ]]; then
-			echo "the file is /etc/apt/sources.list.d/$ppausername_dotfix-$ppaname_dotfix-*.list"
 			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername_dotfix-$ppaname_dotfix-*.list"'"
+				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"'"
 			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername-$ppaname-*.list"'"
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"'"
 			fi
 		else
 			if [[ $dosudo = gksu ]]; then
@@ -382,22 +379,16 @@ list_packages_PPA()
 		stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
 		ppausername=$(echo "$stripppa" | cut -f1 -d/)
 		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
+		ppausername_charfix=$(echo "$stripppa" | cut -f1 -d/ | sed -e 's/\./_/g' -e 's/+/_/g')
+		ppaname_charfix=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/ | sed -e 's/\./_/g' -e 's/+/_/g')
 		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
 		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
 
         	notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Removing "$fullppa_stripdist" and updating software sources"
-		if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
-			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -r -y $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -r -y $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
-			fi
-		else
-			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -r $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -r $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
-			fi		
+		if [[ $dosudo = gksu ]]; then
+			gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update'"
+		elif [[ $dosudo = kdesudo ]]; then
+			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update'"
 		fi
 
 		rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
