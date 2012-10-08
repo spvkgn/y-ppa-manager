@@ -90,10 +90,12 @@ case "$1" in
 			username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo ${repo} | cut -f2 -d\/)"
 			repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
+			username_dotfix=$(echo "$username" | sed -e 's/\./_/g')
+			ppaname_dotfix=$(echo $ppaname | sed -e 's/\./_/g')
 			# Try to find the codename from the list file
-			ls /etc/apt/sources.list.d/$username-$ppaname-*.list > /dev/null 2>&1
+			ls /etc/apt/sources.list.d/$username_dotfix-$ppaname_dotfix-*.list > /dev/null 2>&1
 			if [[ $? -eq 0 ]]; then
-				codename="$(cat /etc/apt/sources.list.d/$username-$ppaname-*.list | head -1 | cut -f3 -d' ')"
+				codename="$(cat /etc/apt/sources.list.d/$username_dotfix-$ppaname_dotfix-*.list | head -1 | cut -f3 -d' ')"
 			fi
 		elif [[ $repo =~ ^http\:\/\/ ]]; then
 			repourl="$(echo ${repo} | sed 's/\/$//')"

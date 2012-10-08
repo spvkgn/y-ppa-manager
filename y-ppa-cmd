@@ -2,7 +2,7 @@
 LANG=en_US.UTF-8
 function CLEARTEMP () 
 {
-	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
+	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups /tmp/.y_ppalist.list > /dev/null 2>&1
 }
 ROOT_UID=0
 #UBUVER=`lsb_release -cs`
@@ -225,7 +225,6 @@ add_a_PPA()
 list_packages_PPA()
 {
 	CLEARTEMP
-	touch /tmp/.temp_sourcesnames.list
 	touch /tmp/.non_disabled.list
 
 	rm /tmp/.Packages > /dev/null 2>&1;
@@ -239,7 +238,12 @@ list_packages_PPA()
 		ppa_disabled_lp_check=`cat /etc/apt/sources.list.d/"$curline" | sed -e 's/^deb-src.*//g' -e '/^$/d' | grep -v "^[[:space:]]*\(#.*\)\?$" | grep "http://ppa.launchpad.net"`
 
 		if [[ $ppa_disabled_lp_check ]]; then
-			echo "$curline" | sed -e "s/\.list\|$null//g" | tee -a /tmp/.non_disabled.list > /dev/null 2>&1;
+			ppausername=$(cat /etc/apt/sources.list.d/"$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f2)
+			ppaname=$(cat /etc/apt/sources.list.d/"$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f3)
+			ppaubuver=$(cat /etc/apt/sources.list.d/"$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
+			if [[ $ppausername ]]; then
+				echo "ppa:$ppausername/$ppaname ($ppaubuver)" | tee -a /tmp/.y_ppalist.list > /dev/null 2>&1;
+			fi
 		fi
 		let n=n+1
 	done < /tmp/.temp_sources.list
@@ -258,6 +262,8 @@ list_packages_PPA()
 #		let n=n+1
 #	done < /tmp/.non_disabled.list
 
+
+
 	#add PPAs from /etc/apt/sources.list
 	IFS=$'\n'
 	n=1
@@ -266,30 +272,27 @@ list_packages_PPA()
 		ppaname=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d '/' -f3)
 		ppaubuver=$(echo "$curline" | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
 		if [[ $ppausername ]]; then
-			echo "$ppausername--$ppaname--$ppaubuver" | tee -a /tmp/.non_disabled.list > /dev/null 2>&1;
+			echo "ppa:$ppausername/$ppaname ($ppaubuver)" | tee -a /tmp/.y_ppalist.list > /dev/null 2>&1;
 		fi
 
 		let n=n+1
 	done < /etc/apt/sources.list
 
-	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
+
+	list_sourcesNAMES=$(cat /tmp/.y_ppalist.list)
+#	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
 
 	LIST_PPA_PACKAGES=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=600 --height=500 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)" --button="Remove PPA:4" --button="Purge PPA:5" --button="Update PPA:2" --button="Edit source:3" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
 	ret=$?
+
+	fixdotname=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/./_/g')
+	stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
+	ppausername=$(echo "$stripppa" | cut -f1 -d/)
+	ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
+	ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
+	ppa_temp_url=http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu/dists/$ubuntudist/main
+
 	if [[ $ret -eq 0 ]]; then
-
-		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
-			ubuntudist=$(cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | grep "^deb http://ppa.launchpad.net" | sed -e 's/deb http:\/\/ppa.launchpad.net//g' -e 's/$ main//g' | cut -d ' ' -f2)
-			ppa_temp_url=`cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | sed -e 's/^deb-src.*//g' -e '/^$/d' -e 's/^deb //g' -e 's/ /\//g' -e "s/\/ubuntu\/$ubuntudist\/main/\/ubuntu\/dists\/$ubuntudist\/main/g" -e "s/#.*//g"`
-		else
-			ubuntudist=${LIST_PPA_PACKAGES##*--}
-			nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/--$ubuntudist//g")
-			ppaname=${nolast_part##*--}
-			ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
-			ppa_temp_url=http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu/dists/$ubuntudist/main
-
-		fi
-
 
 		if [[ "i686" = `uname -m` ]]; then
 			arch=i386
@@ -339,31 +342,31 @@ list_packages_PPA()
 		CLEARTEMP
 	elif [[ $ret -eq 2 ]]; then
 
-		ubuntudist=${LIST_PPA_PACKAGES##*--}
-		nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/--$ubuntudist//g")
-		ppaname=${nolast_part##*--}
-		ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
-
-		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
-			update_this_ppa=$(cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list | grep "deb http://ppa.launchpad.net" | sed -e 's/deb //g')
-		else
-			update_this_ppa=$(cat /etc/apt/sources.list | grep "^deb " | grep "$ppausername/$ppaname" | sed -e 's/deb //g')
-		fi
+		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
 		if [[ $dosudo = gksu ]]; then
-			gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'update-ppa "$update_this_ppa"'"
+			gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'update-ppa "$fullppa_stripdist"'"
 		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'update-ppa "$update_this_ppa"'"
+			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'update-ppa "$fullppa_stripdist"'"
 		fi
 		CLEARTEMP
-		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager" "The \""$update_this_ppa"\" PPA source has been updated successfully"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager" "The \""$fullppa_stripdist"\" PPA source has been updated successfully"
 		list_packages_PPA
 
 	elif [[ $ret -eq 3 ]]; then
-		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
+
+		fixdotname=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/\./_/g')
+		stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
+		ppausername=$(echo "$stripppa" | cut -f1 -d/)
+		ppausername_dotfix=$(echo "$stripppa" | cut -f1 -d/ | sed -e 's/\./_/g')
+		ppaname_dotfix=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/ | sed -e 's/\./_/g')
+		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
+		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
+		if [[ `cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu"` ]]; then
+			echo "the file is /etc/apt/sources.list.d/$ppausername_dotfix-$ppaname_dotfix-*.list"
 			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$LIST_PPA_PACKAGES.list"'"
+				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername_dotfix-$ppaname_dotfix-*.list"'"
 			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$LIST_PPA_PACKAGES.list"'"
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername-$ppaname-*.list"'"
 			fi
 		else
 			if [[ $dosudo = gksu ]]; then
@@ -376,71 +379,72 @@ list_packages_PPA()
 		list_packages_PPA
 
 	elif [[ $ret -eq 4 ]]; then
-        	notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Removing "$LIST_PPA_PACKAGES" and updating software sources"
-		if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
+		stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
+		ppausername=$(echo "$stripppa" | cut -f1 -d/)
+		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
+		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
+		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
+
+        	notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Removing "$fullppa_stripdist" and updating software sources"
+		if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
 			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'rm /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list > /dev/null 2>&1 && apt-get update'"
+				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -r -y $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
 			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'rm /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list > /dev/null 2>&1 && apt-get update'"
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -r -y $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
 			fi
 		else
-			ubuntudist=${LIST_PPA_PACKAGES##*--}
-			nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/--$ubuntudist//g")
-			ppaname=${nolast_part##*--}
-			ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
 			if [[ $dosudo = gksu ]]; then
-				gksu -S -m "Y PPA Manager requires admin privileges for this task" -- "bash -c" "sed -i '/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d' /etc/apt/sources.list && apt-get update"
+				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'add-apt-repository -r $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
 			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "bash -c" "sed -i '/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d' /etc/apt/sources.list && apt-get update"
-			fi
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'add-apt-repository -r $fullppa_stripdist && cd /etc/apt/sources.list.d/ && find . -type f -empty | xargs rm && cd - && apt-get update'"
+			fi		
 		fi
+
 		rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
-		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$LIST_PPA_PACKAGES" successfully!"
+		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$fullppa_stripdist" successfully!"
 
 		CLEARTEMP
 		list_packages_PPA
 
 	elif [[ $ret -eq 5 ]]; then
-		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Confirm" --text="  Are you sure you want to purge  \n  the "$LIST_PPA_PACKAGES" PPA?   " --button="Cancel:1" --button="OK:0"
+
+		stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
+		ppausername=$(echo "$stripppa" | cut -f1 -d/)
+		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
+		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
+		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
+
+		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Confirm" --text="  Are you sure you want to purge  \n  the "$fullppa_stripdist" PPA?   " --button="Cancel:1" --button="OK:0"
 		if [[ $? -eq 0 ]]; then
 			checkAPT
 			testConnection
-			if [[ -e /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES".list ]]; then
-				the_ppa_to_purge=`cat /etc/apt/sources.list.d/"$LIST_PPA_PACKAGES"\.list | sed -e 's/^deb-src.*//g' -e '/^$/d' -e "s/deb http:\/\/ppa.launchpad.net\/\|\/ubuntu $UBUVER main//g" -e "s/#.*//g"`
-			else
-				ubuntudist=${LIST_PPA_PACKAGES##*--}
-				nolast_part=$(echo "$LIST_PPA_PACKAGES" | sed -e "s/--$ubuntudist//g")
-				ppaname=${nolast_part##*--}
-				ppausername=$(echo "$nolast_part" | sed -e "s/--$ppaname//g")
-				the_ppa_to_purge=$(echo "$ppausername/$ppaname")
-			fi
 			#xterm -hold -e ppa-purge ppa:$the_ppa_to_purge
 			PPA_PURGE_AUTO=`grep "ppa-purge=auto" /etc/y-ppa-manager.conf`
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
-				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Please wait while purging "$the_ppa_to_purge""
+				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Please wait while purging "$fullppa_stripdist""
 				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" ]]; then
 					if [[ $dosudo = gksu ]]; then
-						gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y ppa:$the_ppa_to_purge"
+						gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y $fullppa_stripdist"
 					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y ppa:$the_ppa_to_purge"
+						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y $fullppa_stripdist"
 					fi
 				else
 					if [[ $dosudo = gksu ]]; then
-						gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -y ppa:$the_ppa_to_purge"
+						gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -y ppa:$fullppa_stripdist"
 					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-purge -y ppa:$the_ppa_to_purge"
+						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-purge -y $fullppa_stripdist"
 					fi
 				fi
 			else
 				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging!"
 				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" ]]; then
-					xterm -hold -e sudo ppa-purge -d $UBUVER ppa:$the_ppa_to_purge
+					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
-					xterm -hold -e sudo ppa-purge ppa:$the_ppa_to_purge
+					xterm -hold -e sudo ppa-purge $fullppa_stripdist
 				fi
 			fi
-			notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Purged PPA: "$the_ppa_to_purge""
+			notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Purged  "$fullppa_stripdist""
 			rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1
 			list_packages_PPA
 		else
