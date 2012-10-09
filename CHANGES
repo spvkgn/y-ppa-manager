@@ -2,6 +2,7 @@
 - fixed a bug with search results dialog and apt-get
 - implement transient notifications for GNOME Shell
 - fix issue with PPA Restore function not working with spaces
+- fixed bugs occuring for PPAs with "." or "+" characters in their names
 - update-ppa: add support for updating PPAs having older release names
 - update-ppa: fix bug with update-ppa not working on Linux Mint
 - update-ppa: support for more repository formats (experimental). Examples: update-ppa http://archive.ubuntu.com/ubuntu or update-ppa http://archive.ubuntu.com/ubuntu quantal main
@@ -9,10 +10,12 @@
 - update-ppa: Download compressed .gz files instead of normal files
 - update-ppa: Support force update lists without adding the repository.
 - merge "PPA Remove" and "PPA Purge" into a new Manage PPAs dialog
-- Manage PPAs: support Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental) for listing packages in the PPA / remove PPA / purge PPA
+- Manage PPAs: support Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental) for listing packages in the PPA / remove PPA / purge PPA. The duplicate PPAs removal feature doesn't yet support this.
 - Manage PPAs: option to view/edit the .list source file
 - Manage PPAs: option to update a single PPA
-- list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running (it might be different - e.g.: a package is not available in PPA X for Ubuntu Quantal, so an user running Ubuntu Quantal modifies the PPA source file to Ubuntu Precise).
+- list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running (it might be different - e.g.: a package is not available in PPA X for Ubuntu Quantal, so an user running Ubuntu Quantal modifies the PPA source file to Ubuntu Precise)
+- Manage PPAs: display the actual PPA name (e.g.: ppa:webupd8team/gthumb) in this dialog, instead of the PPA .list file name
+- use pkexec instead of gksu / kdesu
 
 
 0.0.9.1:
