@@ -16,19 +16,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# Define functions
 show_info() {
 echo -e "\033[0;34m$@\033[0m"
 }
+
 show_success() {
 echo -e "\033[0;32m$@\033[0m"
 }
+
 show_error() {
 echo -e "\033[0;31m$@\033[0m" 1>&2
 }
+
 version() {
 echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
 }
+
+initialize() {
 # Set variables
 section="main"
 tempdir="/var/lib/apt/lists/partial"
@@ -59,6 +63,9 @@ case `lsb_release -cs` in
 	maya)
 		codename="precise";;
 esac
+}
+
+parse_args() {
 # Parse the arguement
 while [[ $# -gt 0 ]]; do
 case "$1" in
@@ -81,36 +88,71 @@ case "$1" in
 		echo -e "Options:"
 		echo -e "\t-a, --add\tadd the repository if not present on the system"
 		echo -e "\t-f, --force\tforce update lists without adding the repository"
+		echo -e "\t-r, --read\tread repository list from a file"
 		echo -e "\t-h, --help\tshow this help message and exit"
 		exit;;
+	-r|--read)
+		parse_file "$@"
+		shift 2;;
 	*)
-		repo="$1"
-		shift
-		if [[ $repo =~ ^ppa\:.*\/ ]]; then
-			username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
-			ppaname="$(echo ${repo} | cut -f2 -d\/)"
-			repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
-			username_charfix=$(echo "$username" | sed -e 's/[.+]/_/g')
-			ppaname_charfix=$(echo $ppaname | sed -e 's/[.+]/_/g')
-			# Try to find the codename from the list file
-			ls /etc/apt/sources.list.d/$username_charfix-$ppaname_charfix-*.list > /dev/null 2>&1
-			if [[ $? -eq 0 ]]; then
-				codename="$(cat /etc/apt/sources.list.d/$username_charfix-$ppaname_charfix-*.list | head -1 | cut -f3 -d' ')"
-			fi
-		elif [[ $repo =~ ^http\:\/\/ ]]; then
-			repourl="$(echo ${repo} | sed 's/\/$//')"
-		else
-			show_error "Please pass a correct repository name or url as argument!"
-			exit 1
-		fi
-		if [[ $# -gt 1 && ! $1 =~ ^- && ! $2 =~ ^- ]]; then
-			codename="$1"
-			section="$2"
-			repo="${repo} ${codename} ${section}"
-			shift 2
-		fi;;
+		parse_repo "$@"
+		shift;;
 esac
 done
+}
+
+parse_file() {
+sourcesfile="$2"
+if [[ -f "$sourcesfile" && `grep "deb http://" "$sourcesfile"` ]]; then
+	while read line; do
+		if [[ $(echo "$line" | wc -w) -eq 1 || $(echo "$line" | wc -w) -eq 3 ]]; then
+			if [[ `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "$line"` || "$force" = "yes" ]]; then
+				parse_repo ${line}
+				update_repo
+			else
+				show_error "Skipped ${line}"
+			fi
+				
+		fi
+	done < <(grep ^deb.*http\:\/\/ "$sourcesfile" | sed -e 's/deb //g')
+	exit
+else
+	show_error "Error reading file!"
+	exit 1
+fi
+}
+
+parse_repo() {
+repo="$1"
+if [[ $repo =~ ^ppa\:.*\/ ]]; then
+	username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
+	ppaname="$(echo ${repo} | cut -f2 -d\/)"
+	repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
+	fixname=$(echo ${username}-${ppaname} | sed -e 's/[.+]/_/g')
+	# Try to find the codename from the list file
+	ls /etc/apt/sources.list.d/${fixname}-*.list > /dev/null 2>&1
+	if [[ $? -eq 0 ]]; then
+		codename="$(cat /etc/apt/sources.list.d/${fixname}-*.list | head -1 | cut -f3 -d' ')"
+	fi
+elif [[ $repo =~ ^http\:\/\/ ]]; then
+	repourl="$(echo ${repo} | sed 's/\/$//')"
+else
+	show_error "Please pass a correct repository name or url as argument!"
+	exit 1
+fi
+if [[ $# -gt 2 && ! $2 =~ ^- && ! $3 =~ ^- ]]; then
+	codename="$2"
+	section="$3"
+	repo="${repo} ${codename} ${section}"
+	shift 2
+fi
+}
+
+update_repo() {
+# Unset arrays
+unset urls files
+# Reset error counter
+errors="0"
 # Determine the file names
 repofile="$(echo ${repourl} | sed 's/http:\/\///g' | sed 's/\//_/g')"
 # Check if root
@@ -124,7 +166,7 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 		response="y"
 	else
 		show_error "The repository \"${repo}\" is not present on the system. Do you want to add it first? (y/n)"
-		read response
+		read response </dev/tty
 	fi
 	case $response in
 		[yY])
@@ -156,10 +198,10 @@ for arch in "${architectures[@]}"; do
 done
 urls=( "${urls[@]}" "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
 files=( "${files[@]}" "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
-# Fetch files to the temporary directory
+# Fetch files to the temporary directory and move them
+show_info "Updating repository \"${repo}\""
 show_info "Fetching index files..."
-for ((i=0; i < ${#urls[@]}; i++))
-do
+for ((i=0; i < ${#urls[@]}; i++)); do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
 		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}".gz
 		if [[ -s "${files[i]}".gz ]]; then
@@ -168,21 +210,27 @@ do
 	else
 		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}"
 	fi
-done
-# Move files to the correct location
-for file in "${files[@]}"; do
-	if [[ -s "$file" ]]; then
-		mv -f "$file" "/var/lib/apt/lists/"
+	if [[ -s "${files[i]}" ]]; then
+		mv -f "${files[i]}" "/var/lib/apt/lists/"
+		if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
+			show_error "An error occured. Please retry :("
+			exit 1
+		fi
 	else
-		show_error "Some index files could not be downloaded or lost :("
-		echo -e "\vPossible reasons may be,\n\v\t[*] The repository may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\n\vOld index files, if available, will be used instead."
-		exit 1
-	fi
-	if [[ ! -s "/var/lib/apt/lists/${file}" ]]; then
-		show_error "An error occured. Please retry :("
-		exit 1
+		errors=$((errors+1))
 	fi
 done
 # Show success message
-show_success "The lists for the repository \"${repo}\" have been successfully updated!"
-exit 0
+if [[ "$errors" = "0" ]]; then
+	show_success "The lists for the repository \"${repo}\" have been successfully updated!"
+	return 0
+else
+	show_error "Some index files could not be downloaded or lost :("
+	echo -e "Possible reasons may be,\n\t[*] The repository may not be available for your Ubuntu version.\n\t[*] Faulty or no internet connection.\nOld index files, if available, will be used instead."
+	return 1
+fi
+}
+
+initialize
+parse_args "$@"
+update_repo
