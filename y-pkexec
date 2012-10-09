@@ -7,7 +7,7 @@ case $1 in
 	manage)
 		pkexec y-ppa-cmd manage;;
 	search)
-		pkexec list-search-ppas;;
+		pkexec y-ppa-search;;
 	settings)
 		pkexec y-ppa-cmd settings;;
 	install)

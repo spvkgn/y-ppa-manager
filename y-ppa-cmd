@@ -1,5 +1,13 @@
 #!/bin/bash
 LANG=en_US.UTF-8
+check_root() {
+if [[ ! $(whoami) = "root" ]]; then
+	exec pkexec "$0" "$@"
+fi
+}
+
+check_root "$@"
+
 function CLEARTEMP () 
 {
 	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups /tmp/.y_ppalist.list > /dev/null 2>&1
@@ -57,22 +65,11 @@ function checkAPT()
 		fi
 	done
 }
-
-function ONLYROOT ()
-{
-
-if [[ "$UID" -ne "$ROOT_UID" ]]; then 
-	yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Cannot run as regular user" --text="  Please run y-ppa-manager as an administrator  \n  (e.g. gksu y-ppa-manager)   " --button="gtk-ok:0"
-	echo "Error - Cannot run as regular user! Please run y-ppa-manager as an administrator (e.g. gksu  y-ppa-manager)"
-	exit
-fi
-
-}
      
 function y_add_ppa ()
 {
 
-ONLYROOT
+
 
 #echo 1 $1
 if [[ $(version $RELEASE) -gt $(version 11.04) || $UBUVER = "oneiric" || $UBUVER = "precise" || $UBUVER = "quantal" ]]; then
@@ -144,7 +141,7 @@ advanced_options
 
 add_a_PPA()  
 {
-	ONLYROOT
+	
 #	checkAPT
 
 	ADD_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --entry --title="Add a PPA" --text="Enter a PPA to add (e.g.: ppa:webupd8team/ghtumb)\n" --entry-label="PPA:"`
@@ -799,7 +796,7 @@ case $1 in
 	help)
 	help_dialog ;;
 	search)
-	testConnection && exec y-ppa-search ;;
+	testConnection && y-ppa-search ;;
 	settings)
 	y_ppa_settings ;;
 	install)
@@ -814,6 +811,7 @@ case $1 in
 	echo y-ppa-cmd manage - launch the manage PPAs dialog dialog
 	echo y-ppa-cmd advanced - launch the advanced options dialog
 	echo y-ppa-cmd search - search all Launchpad PPAs dialog
+	echo y-ppa-cmd install - open the package installation dialog
 	echo y-ppa-cmd settings - open the settings dialog
 	echo y-ppa-cmd help - open the Help dialog
 	exit
