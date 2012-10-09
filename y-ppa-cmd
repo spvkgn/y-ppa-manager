@@ -423,10 +423,13 @@ list_packages_PPA()
 function y_ppa_backup() {
 
 b_name=$(date +%F-%H%M)
+dp=`echo $DISPLAY | cut -d '.' -f 1`
+username=`who | grep $dp | cut -d ' ' -f 1 | tail -1`
 
-Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=$HOME/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
+Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=/home/$username/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
 
 ret=$?
+echo username $username
 if [[ $ret -eq 0 ]]; then
 	cp -r /etc/apt/sources.list.d/ /tmp/.sources
 	cd /tmp/.sources/
@@ -472,7 +475,9 @@ advanced_options
 
 
 function y_ppa_restore() {
-Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save  --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
+dp=`echo $DISPLAY | cut -d '.' -f 1`
+username=`who | grep $dp | cut -d ' ' -f 1 | tail -1`
+Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save --filename=/home/$username/ --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
 
 if [[ $? -eq 0 ]]; then
 	tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/ && launchpad-getkeys
