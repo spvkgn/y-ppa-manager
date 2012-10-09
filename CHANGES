@@ -8,8 +8,8 @@
 - update-ppa: support for more repository formats (experimental). Examples: update-ppa http://archive.ubuntu.com/ubuntu or update-ppa http://archive.ubuntu.com/ubuntu quantal main
 - update-ppa: Support specifying custom codename and section for a ppa. Example: update-ppa ppa:user/repository quantal main
 - update-ppa: Download compressed .gz files instead of normal files
-- update-ppa: Support force update lists without adding the repository.
-- merge "PPA Remove" and "PPA Purge" into a new Manage PPAs dialog
+- update-ppa: Support force update lists without adding the repository
+- merge "PPA Remove" and "PPA Purge" into a new Manage PPAs dialog (old List Packages dialog)
 - Manage PPAs: support Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental) for listing packages in the PPA / remove PPA / purge PPA. The duplicate PPAs removal feature doesn't yet support this.
 - Manage PPAs: option to view/edit the .list source file
 - Manage PPAs: option to update a single PPA

@@ -606,7 +606,7 @@ function reset_settings() {
 	rm /tmp/.y-ppa-manager.conf
 	rm /etc/xdg/autostart/y-ppa-indicator.desktop
 
-	notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh "Y PPA Manager" "Settings reseted"
+	notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh "Y PPA Manager" "Settings were reset"
 
 }
 
