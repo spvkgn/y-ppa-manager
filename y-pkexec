@@ -1,0 +1,18 @@
+#!/bin/sh
+case $1 in
+	add)
+		pkexec y-ppa-cmd add;;
+	advanced)
+		pkexec y-ppa-cmd advanced;;
+	manage)
+		pkexec y-ppa-cmd manage;;
+	search)
+		pkexec list-search-ppas;;
+	settings)
+		pkexec y-ppa-cmd settings;;
+	install)
+		pkexec y-ppa-cmd install;;
+	*)
+		y-ppa-indicator &
+		pkexec y-ppa-manager;;
+esac
