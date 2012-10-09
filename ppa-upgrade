@@ -131,7 +131,7 @@ fi
 
 
 changed=false
-for file in /etc/apt/sources.list.d/*; do
+for file in /etc/apt/sources.list.d/* /etc/apt/sources.list; do
 
 	if [[ $file == *.save ]]; then continue; fi
 
@@ -171,15 +171,58 @@ for file in /etc/apt/sources.list.d/*; do
 	if url_exists "$url"; then
 		! $QUIET && echo " yes."
 		if ! $TEST; then
-			if [[ $action == 'uncomment' ]]; then
-				! $QUIET && echo -en "\tEnabling PPA previously disabled by distribution upgrade..."
-				result=$(sed -i "s/^# //g" "$file" &>/dev/null; \
-				         sed -i "s/ # disabled on upgrade.*//g" "$file" &>/dev/null; echo $?
-				)
-			else
-				! $QUIET && echo -en "\tUpdating PPA to use ${NEW_RELEASE^} instead of ${OLD_RELEASE^}..."
-				result=$(sed -i "s/$OLD_RELEASE/$NEW_RELEASE/g" "$file" &>/dev/null; echo $?)
-			fi
+
+			#if [[ "$file" = "/etc/apt/sources.list" ]]; then
+			#	if [[ $action == 'uncomment' ]]; then
+			#		! $QUIET && echo -en "\tEnabling PPA previously disabled by distribution upgrade..."
+			#		line_deb=$(echo "$line" | sed -e "s/^# //g" -e "s/ # disabled on upgrade.*//g")
+			#		line_src=$(echo "$line" | sed -e "s/^# deb /# deb-src /g")
+			#		line_deb_src=$(echo "$line_deb" | sed -e "s/^deb/deb-src/g")
+
+			#		escape_line=$(echo "$line" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+			#		escape_line_deb=$(echo "$line_deb" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+			#		escape_line_src=$(echo "$line_src" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+			#		escape_line_deb_src=$(echo "$line_deb_src" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+					#echo
+					#echo
+					#echo line_deb $line_deb
+					#echo line_src $line_src
+					#echo line_deb_src $line_deb_src
+					#echo escape_line $escape_line
+					#echo escape_line_deb $escape_line_deb
+					#echo escape_line_src $escape_line_src
+					#echo escape_line_deb_src $escape_line_deb_src
+					
+			#		result=$(sed -i "s/${escape_line}/${escape_line_deb}/g" "$file" &>/dev/null; \
+			#		     sed -i "s/${escape_line_src}/${escape_line_deb_src}/g" "$file" &>/dev/null; echo $?
+			#		)
+			#	else
+			#		line_src=$(echo "$line" | sed -e "s/^deb/deb-src/g")
+			#		line_new_release=$(echo "$line" | sed -e "s/$OLD_RELEASE/$NEW_RELEASE/g")
+			#		line_src_new_release=$(echo "$line_src" | sed -e "s/$OLD_RELEASE/$NEW_RELEASE/g")
+					
+			#		escape_line=$(echo "$line" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+			#		escape_line_src=$(echo "$line_src" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+			#		escape_line_new_release=$(echo "$line_new_release" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+			#		escape_line_src_new_release=$(echo "$line_src_new_release" | sed -e 's/\([[\/.*]\|\]\)/\\&/g')
+					
+			#		! $QUIET && echo -en "\tUpdating PPA to use ${NEW_RELEASE^} instead of ${OLD_RELEASE^}..."
+			#		result=$(sed -i "s/${escape_line}/${escape_line_new_release}/g" "$file" &>/dev/null; \
+			#		     sed -i "s/${escape_line_src}/${escape_line_src_new_release}/g" "$file" &>/dev/null; echo $?
+
+			#		)
+			#	fi
+			#else
+				if [[ $action == 'uncomment' ]]; then
+					! $QUIET && echo -en "\tEnabling PPA previously disabled by distribution upgrade..."
+					result=$(sed -i "s/^# //g" "$file" &>/dev/null; \
+				    	     sed -i "s/ # disabled on upgrade.*//g" "$file" &>/dev/null; echo $?
+					)
+				else
+					! $QUIET && echo -en "\tUpdating PPA to use ${NEW_RELEASE^} instead of ${OLD_RELEASE^}..."
+					result=$(sed -i "s/$OLD_RELEASE/$NEW_RELEASE/g" "$file" &>/dev/null; echo $?)
+				fi
+			#fi
 			
 			if [[ $result == 0 ]]; then
 				! $QUIET && echo " done."

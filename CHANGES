@@ -10,7 +10,7 @@
 - update-ppa: Download compressed .gz files instead of normal files
 - update-ppa: Support force update lists without adding the repository
 - merge "PPA Remove" and "PPA Purge" into a new Manage PPAs dialog (old List Packages dialog)
-- Manage PPAs: support Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental) for listing packages in the PPA / remove PPA / purge PPA. The duplicate PPAs removal feature doesn't yet support this.
+- Manage PPAs: initial support Launchpad PPAs (only Launchpad!) from /etc/apt/sources.list and their packages (experimental) for listing packages in the PPA / remove PPA / purge PPA. The duplicate PPAs removal, "Re-enable working PPAs after Ubuntu upgrade" and "Update release name in working PPAs" features don't yet support this.
 - Manage PPAs: option to view/edit the .list source file
 - Manage PPAs: option to update a single PPA
 - list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running (it might be different - e.g.: a package is not available in PPA X for Ubuntu Quantal, so an user running Ubuntu Quantal modifies the PPA source file to Ubuntu Precise)
