@@ -20,7 +20,7 @@ EOF
 
 function testConnection() 
 {
-	testconnection=`wget --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
+	testconnection=`wget --no-check-certificate --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
 	if [[ $? != 0 ]]; then
 		echo  "You are not connected to the Internet. Please check your Internet connection and try again."
 		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
@@ -85,7 +85,7 @@ done
 
 url_exists() {
 	rett=1
-	not_found=$(wget -S --spider "$url" 2>&1 | \
+	not_found=$(wget --no-check-certificate -S --spider "$url" 2>&1 | \
 	            grep -E '^\s*HTTP.*?404')
 	[[ -z "$( echo $not_found)" ]] && rett=0
 	return $rett

@@ -12,19 +12,19 @@ import dbus
 
 def item_run(w, yitem):
     if yitem == "_yppa" :
-        os.system("/usr/bin/y-ppa-manager")
+        os.system("pkexec /usr/bin/y-ppa-manager")
     elif yitem == "_yppa_search":
-        os.system("/usr/bin/y-ppa-cmd search")
+        os.system("pkexec /usr/bin/y-ppa-cmd search")
     elif yitem == "_yppa_add":
-        os.system("gksu -S -m 'Y PPA Manager requires admin privileges for this task' /usr/bin/y-ppa-cmd add")
+        os.system("pkexec /usr/bin/y-ppa-cmd add")
     elif yitem == "_yppa_manage":
-        os.system("/usr/bin/y-ppa-cmd manage")
+        os.system("pkexec /usr/bin/y-ppa-cmd manage")
     elif yitem == "_yppa_install":
-        os.system("/usr/bin/y-ppa-cmd install")
+        os.system("pkexec /usr/bin/y-ppa-cmd install")
     elif yitem == "_yppa_adv":
-        os.system("/usr/bin/y-ppa-cmd advanced")
+        os.system("pkexec /usr/bin/y-ppa-cmd advanced")
     elif yitem == "_yppa_set":
-        os.system("/usr/bin/y-ppa-cmd settings")
+        os.system("pkexec /usr/bin/y-ppa-cmd settings")
     elif yitem == "_yppa_quit":
 	#todo: find a better way to exist main Y PPA Manager window, "killall yad" isn't exactly a good idea
         os.system("killall yad") 

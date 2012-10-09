@@ -3,7 +3,7 @@ Version=1.0
 Name=Y PPA Manager
 Comment=Y PPA Manager
 GenericName=Y PPA Manager
-Exec=/usr/bin/y-ppa-manager
+Exec=y-pkexec
 Icon=y-ppa-manager
 Terminal=false
 X-MultipleArgs=false
@@ -15,30 +15,30 @@ TargetEnvironment=Unity
 
 [YPPAManager1 Shortcut Group]
 Name=Add PPA
-Exec=gksu -m "Y PPA Manager requires admin privileges for this task" -S "bash -c" "y-ppa-cmd add"
+Exec=y-pkexec add
 TargetEnvironment=Unity
 
 [YPPAManager3 Shortcut Group]
 Name=Search in all Launchpad PPAs
-Exec=y-ppa-cmd search
+Exec=y-pkexec search
 TargetEnvironment=Unity
 
 [YPPAManager4 Shortcut Group]
 Name=Manage PPAs
-Exec=y-ppa-cmd manage
+Exec=y-pkexec manage
 TargetEnvironment=Unity
 
 [YPPAManager5 Shortcut Group]
 Name=Install packages
-Exec=y-ppa-cmd install
+Exec=y-pkexec install
 TargetEnvironment=Unity
 
 [YPPAManager6 Shortcut Group]
 Name=Advanced
-Exec=y-ppa-cmd advanced
+Exec=y-pkexec advanced
 TargetEnvironment=Unity
 
 [YPPAManager7 Shortcut Group]
 Name=Settings
-Exec=y-ppa-cmd settings
+Exec=y-pkexec settings
 TargetEnvironment=Unity

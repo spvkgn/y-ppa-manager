@@ -29,19 +29,11 @@ case `lsb_release -cs` in
 esac
 
 
-#check if dosudo or kdesudo is installed; run dosudo firstly, if not installed, use kdesudo:
-if [[ -e /usr/bin/gksu ]]; then 
-	dosudo=gksu
-elif [[ -e /usr/bin/kdesudo ]]; then
-	dosudo=kdesudo
-fi
-
-
 
 #check if the user has an active internet connection
 function testConnection() 
 {
-	testconnection=`wget --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
+	testconnection=`wget --no-check-certificate --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
 	if [[ $? != 0 ]]; then
 		echo  "You are not connected to the Internet. Please check your Internet connection and try again."
 		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
@@ -125,22 +117,14 @@ if [[ -s /tmp/.rmdups ]]; then
 	ret=$?
 	if [[ $ret -eq 0 ]]; then
 		chmod +x /tmp/.rmdups
-		if [[ $dosudo = gksu ]]; then
-			gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
-		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
-		fi
+		sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 
 	elif [[ $ret -eq 2 ]]; then
 		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
 		if [[ $? -eq 0 ]]; then
 			chmod +x /tmp/.rmdups
-			if [[ $dosudo = gksu ]]; then
-				gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1'"
-			fi
+			sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
 			notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
 		else
 			exit 0
@@ -185,8 +169,9 @@ add_a_PPA()
 			username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
 			checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
+			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
-			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa ]]; then
+			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
 				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$ADD_PPA_NO_SPACES is already  \n  added on your system.  " --button="gtk-ok:0"
 				add_a_PPA
 			fi
@@ -203,8 +188,9 @@ add_a_PPA()
 			username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
 			checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
-			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa ]]; then
+			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then
 				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The "$ADD_PPA_NO_SPACES" PPA has been added successfully!"
 			else
 				notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and "$ADD_PPA_NO_SPACES" has not been added!"
@@ -304,7 +290,7 @@ list_packages_PPA()
    	
    		testConnection
    		cd /tmp/
-		wget "$ppa_temp_url"/binary-$arch/Packages
+		wget --no-check-certificate "$ppa_temp_url"/binary-$arch/Packages
 		mv Packages .Packages
 		#echo  $ppa_temp_url/binary-$arch/Packages
 
@@ -342,11 +328,7 @@ list_packages_PPA()
 	elif [[ $ret -eq 2 ]]; then
 
 		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
-		if [[ $dosudo = gksu ]]; then
-			gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'update-ppa "$fullppa_stripdist"'"
-		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'update-ppa "$fullppa_stripdist"'"
-		fi
+		update-ppa "$fullppa_stripdist"
 		CLEARTEMP
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager" "The \""$fullppa_stripdist"\" PPA source has been updated successfully"
 		list_packages_PPA
@@ -360,17 +342,9 @@ list_packages_PPA()
 		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
 		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
 		if [[ `cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu"` ]]; then
-			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"'"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'xdg-open "/etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"'"
-			fi
+			xdg-open /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list
 		else
-			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'xdg-open /etc/apt/sources.list'"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'xdg-open /etc/apt/sources.list'"
-			fi
+			xdg-open /etc/apt/sources.list
 		fi
 		CLEARTEMP
 		list_packages_PPA
@@ -385,20 +359,12 @@ list_packages_PPA()
 		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
 
         	notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Removing "$fullppa_stripdist" and updating software sources"
+		echo "the ls command looks like this: /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"
 
-		ls /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list > /dev/null 2>&1
-		if [[ $? -eq 0 ]]; then
-			if [[ $dosudo = gksu ]]; then
-				gksu -m "Y PPA Manager requires admin privileges for this task" -S -- "sh -c 'rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update'"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "sh -c 'rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update'"
-			fi
+		if [[ `ls /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list` ]]; then
+			rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update
 		else
-			if [[ $dosudo = gksu ]]; then
-				gksu -S -m "Y PPA Manager requires admin privileges for this task" -- "bash -c" "sed -i '/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d' /etc/apt/sources.list && apt-get update"
-			elif [[ $dosudo = kdesudo ]]; then
-				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "bash -c" "sed -i '/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d' /etc/apt/sources.list && apt-get update"
-			fi
+			sed -i "/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d" /etc/apt/sources.list && apt-get update
 		fi
 
 
@@ -427,17 +393,9 @@ list_packages_PPA()
 			if [[ $PPA_PURGE_AUTO ]]; then
 				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Please wait while purging "$fullppa_stripdist""
 				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" ]]; then
-					if [[ $dosudo = gksu ]]; then
-						gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y $fullppa_stripdist"
-					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-purge -d $UBUVER -y $fullppa_stripdist"
-					fi
+					ppa-purge -d $UBUVER -y $fullppa_stripdist
 				else
-					if [[ $dosudo = gksu ]]; then
-						gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-purge -y ppa:$fullppa_stripdist"
-					elif [[ $dosudo = kdesudo ]]; then
-						kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-purge -y $fullppa_stripdist"
-					fi
+					ppa-purge -y ppa:$fullppa_stripdist
 				fi
 			else
 				notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging!"
@@ -475,10 +433,12 @@ ret=$?
 if [[ $ret -eq 0 ]]; then
 	cp -r /etc/apt/sources.list.d/ /tmp/.sources
 	cd /tmp/.sources/
-	tar czvf repositories.backup-$b_name.tar.gz *
+	tar czvf "repositories.backup-$b_name.tar.gz" *
 	cp /tmp/.sources/repositories.backup-$b_name.tar.gz "$Y_PPA_BACKUP"
 	cd -
 	rm -r /tmp/.sources
+	echo "filename to be copied /tmp/.sources/repositories.backup-$b_name.tar.gz"
+	echo Y_PPA_BACKUP $Y_PPA_BACKUP
 
 	if [ -e "$Y_PPA_BACKUP" ]; then
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager" "Repositories backup successfully created"
@@ -518,11 +478,7 @@ function y_ppa_restore() {
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save  --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
 
 if [[ $? -eq 0 ]]; then
-	if [[ $dosudo = gksu ]]; then
-		gksu -S -m "Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf '$Y_PPA_BACKUP' -C /etc/apt/sources.list.d/ && launchpad-getkeys"
-	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" -- "bash -c" "tar zxvf '$Y_PPA_BACKUP' -C /etc/apt/sources.list.d/ && launchpad-getkeys"
-	fi
+	tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/ && launchpad-getkeys
 
 	notify-send -h int:transient:1 -t 10000 -u normal --icon=document-save "Y PPA Manager" "Repositories backup successfully restored. It's advisable to run an update now"
 else
@@ -535,23 +491,11 @@ advanced_options
 
 
 function y_ppa_upgrade_regular() {
-
-if [[ $dosudo = gksu ]]; then
-	gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-upgrade -r"
-elif [[ $dosudo = kdesudo ]]; then
-	kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-upgrade -r"
-fi
-
+ppa-upgrade -r
 }
 
 function y_ppa_upgrade_replace() {
-
-if [[ $dosudo = gksu ]]; then
-	gksu -S -m "Y PPA Manager requires admin privileges for this task" "ppa-upgrade -u"
-elif [[ $dosudo = kdesudo ]]; then
-	kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "ppa-upgrade -u"
-fi
-
+ppa-upgrade -u
 }
 
 
@@ -560,11 +504,7 @@ function y_ppa_import_gpg_keys() {
 	Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will try to import all missing GPG repository keys.   \n   This make take a a while so please be patient.   \n\n   Click OK to continue   " --button="gtk-cancel:1" --button="gtk-ok:0"`
 	ret=$?
 	if [[ $ret -eq 0 ]]; then
-		if [[ $dosudo = gksu ]]; then
-			gksu -S -m "Y PPA Manager requires admin privileges for this task" "launchpad-getkeys"
-		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "launchpad-getkeys"
-		fi
+		launchpad-getkeys
 
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Done importing missing GPG keys"
 		y-ppa-cmd advanced
@@ -580,11 +520,8 @@ function y_ppa_fix_gpg_badsig() {
 	Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will try to fix all GPG BADSIG errors.   \n   This make take a a while so please be patient.   \n\n   Click OK to continue   " --button="gtk-cancel:1" --button="gtk-ok:0"`
 	ret=$?
 	if [[ $ret -eq 0 ]]; then
-		if [[ $dosudo = gksu ]]; then
-			gksu -S -m "Y PPA Manager requires admin privileges for this task" "fix_gpg_badsig"
-		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "fix_gpg_badsig"
-		fi
+		fix_gpg_badsig
+
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Done fixing GPG BADSIG errors"
 		y-ppa-cmd advanced
 	else
@@ -662,13 +599,9 @@ function reset_settings() {
 	echo $'\n' >> /tmp/.y-ppa-manager.conf
 	echo "rankings=false" >> /tmp/.y-ppa-manager.conf
 
-	if [[ $dosudo = gksu ]]; then
-		gksu -S -m "Y PPA Manager requires admin privileges for this task" "sh -c 'rm /etc/y-ppa-manager.conf; cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf'"
-	elif [[ $dosudo = kdesudo ]]; then
-		kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "sh -c 'rm /etc/y-ppa-manager.conf; cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf'"
-	fi
+	rm /etc/y-ppa-manager.conf; cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 	rm /tmp/.y-ppa-manager.conf
-	rm ~/.config/autostart/y-ppa-indicator.desktop
+	rm /etc/xdg/autostart/y-ppa-indicator.desktop
 
 	notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh "Y PPA Manager" "Settings reseted"
 
@@ -749,21 +682,15 @@ Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
 Name=Y PPA Manager Indicator
-Comment=Stand-alone Y PPA Manager Ubuntu indicator" > ~/.config/autostart/y-ppa-indicator.desktop
+Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-indicator.desktop
 
-			yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   The stand-alone Y PPA Manager indicator automatically   \n   starts each time you login. Start it now?   " --button="gtk-cancel:1" --button="gtk-ok:0"
-
-			ret=$?
-			if [[ $ret -eq 0 ]]; then
-				exec y-ppa-indicator &
-			fi
 		elif [[ $Y_indicator = "enabled" ]]; then
-			rm ~/.config/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
+			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
 			yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   The indicator will be started the   \n   next time you run Y PPA Manager   " --button="Ok:1"
 
 		elif [[ $Y_indicator = "disabled" ]]; then
 			killall y-ppa-indicator &
-			rm ~/.config/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
+			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
 		fi
 
 	fi
@@ -794,11 +721,7 @@ initial_settings=$(cat /etc/y-ppa-manager.conf)
 new_settings=$(cat /tmp/.y-ppa-manager.conf)
 
 	if [[ $initial_settings != $new_settings ]]; then
-		if [[ $dosudo = gksu ]]; then
-			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
-		elif [[ $dosudo = kdesudo ]]; then
-			kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf"
-		fi
+		cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 		rm /tmp/.y-ppa-manager.conf > /dev/null 2>&1
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager" "Settings saved"
 		exit 0
@@ -821,13 +744,7 @@ fi
 
 
 function y_ppa_install() {
-
-if [[ $dosudo = gksu ]]; then
-	gksu -S -m "Y PPA Manager requires admin privileges for this task" "python /usr/share/pyshared/y-ppa-manager/install_package.py"
-elif [[ $dosudo = kdesudo ]]; then
-	kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" "python /usr/share/pyshared/y-ppa-manager/install_package.py"
-fi
-
+python /usr/share/pyshared/y-ppa-manager/install_package.py
 }
 
 help_dialog()
@@ -882,7 +799,7 @@ case $1 in
 	help)
 	help_dialog ;;
 	search)
-	testConnection && exec list_search_ppas ;;
+	testConnection && exec y-ppa-search ;;
 	settings)
 	y_ppa_settings ;;
 	install)

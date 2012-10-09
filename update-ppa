@@ -161,12 +161,12 @@ show_info "Fetching index files..."
 for ((i=0; i < ${#urls[@]}; i++))
 do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
-		wget -nv "${urls[i]}" -O "${files[i]}".gz
+		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}".gz
 		if [[ -s "${files[i]}".gz ]]; then
 			gunzip -f "${files[i]}".gz
 		fi
 	else
-		wget -nv "${urls[i]}" -O "${files[i]}"
+		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}"
 	fi
 done
 # Move files to the correct location

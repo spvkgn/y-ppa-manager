@@ -9,22 +9,10 @@ if [[ $ret -eq 0 ]]; then
 	Y_MAIN_DIALOG &
 	y-ppa-cmd help &
 else
-	if [[ `grep "indicator=enabled" /etc/y-ppa-manager.conf` ]]; then
-		killall y-ppa-indicator > /dev/null 2>&1
-	fi
+	[[ `grep "indicator=enabled" /etc/y-ppa-manager.conf` ]] && killall y-ppa-indicator > /dev/null 2>&1
 	exit 0
 fi
 }
 
-function Y_RUN() {
-if [[ $Y_RUN_INDICATOR_TRUE ]]; then
-	Y_MAIN_DIALOG &
-	y-ppa-indicator &
-else
-	Y_MAIN_DIALOG &
-fi
-}
-
-
-Y_RUN
-
+[[ `grep "indicator=disabled" /etc/y-ppa-manager.conf` ]] && killall y-ppa-indicator > /dev/null 2>&1
+Y_MAIN_DIALOG &
