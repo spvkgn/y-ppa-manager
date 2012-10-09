@@ -131,7 +131,7 @@ fi
 
 
 changed=false
-for file in /etc/apt/sources.list.d/*; do
+for file in /etc/apt/sources.list.d/* /etc/apt/sources.list; do
 
 	if [[ $file == *.save ]]; then continue; fi
 
