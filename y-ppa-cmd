@@ -2,7 +2,7 @@
 LANG=en_US.UTF-8
 check_root() {
 if [[ ! $(whoami) = "root" ]]; then
-	exec pkexec "$0" "$@"
+	exec sudo "$0" "$@"
 fi
 }
 

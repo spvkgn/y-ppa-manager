@@ -12,19 +12,19 @@ import dbus
 
 def item_run(w, yitem):
     if yitem == "_yppa" :
-        os.system("pkexec /usr/bin/y-ppa-manager")
+        os.system("y-pkexec")
     elif yitem == "_yppa_search":
-        os.system("pkexec /usr/bin/y-ppa-cmd search")
+        os.system("y-pkexec search")
     elif yitem == "_yppa_add":
-        os.system("pkexec /usr/bin/y-ppa-cmd add")
+        os.system("y-pkexec add")
     elif yitem == "_yppa_manage":
-        os.system("pkexec /usr/bin/y-ppa-cmd manage")
+        os.system("y-pkexec manage")
     elif yitem == "_yppa_install":
-        os.system("pkexec /usr/bin/y-ppa-cmd install")
+        os.system("y-pkexec install")
     elif yitem == "_yppa_adv":
-        os.system("pkexec /usr/bin/y-ppa-cmd advanced")
+        os.system("y-pkexec advanced")
     elif yitem == "_yppa_set":
-        os.system("pkexec /usr/bin/y-ppa-cmd settings")
+        os.system("y-pkexec settings")
     elif yitem == "_yppa_quit":
 	#todo: find a better way to exist main Y PPA Manager window, "killall yad" isn't exactly a good idea
         os.system("killall yad") 
