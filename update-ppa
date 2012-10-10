@@ -28,14 +28,11 @@ show_error() {
 echo -e "\033[0;31m$@\033[0m" 1>&2
 }
 
-version() {
-echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }';
-}
-
 initialize() {
 # Set variables
 section="main"
 tempdir="/var/lib/apt/lists/partial"
+helpcheck="/tmp/add-apt-repository-help.tmp"
 # Detect the required info
 codename="$(lsb_release -cs)"
 release="$(lsb_release -r | cut -f2)"
@@ -172,11 +169,14 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 	case $response in
 		[yY])
 			show_info "Adding the repository..."
-			if [[ $(version "$release") -gt $(version 11.04) || "$codename" = "oneiric" || "$codename" = "precise" || "$codename" = "quantal" ]]; then
+			# Detect if add-apt-repository supports the -y argument
+			add-apt-repository --help > "$helpcheck"
+			if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
 				add-apt-repository -y "$repo"
 			else
 				add-apt-repository "$repo"
-			fi;;
+			fi
+			rm -f "$helpcheck";;
 		*)
 			show_error "You must add the repository to continue!"
 			exit 1;;
