@@ -1,5 +1,5 @@
 #!/bin/bash
-RELEASE=$(lsb_release -r | cut -f2)
+
 case `lsb_release -cs` in
 	helena)
 		UBUVER="karmic" ;;
