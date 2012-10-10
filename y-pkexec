@@ -17,10 +17,10 @@ esac
 if [[ "$(lsb_release -rs)" > "11.04" || $UBUVER = "oneiric" || $UBUVER = "precise" ]]; then
 	auth="pkexec"
 else
-	if [[ -e /usr/bin/kdesudo ]]; then
-		auth="kdesudo -d --comment=\"Y PPA Manager requires admin privileges for this task\""
-	elif [[ -e /usr/bin/gksu ]]; then 
+	if [[ -e /usr/bin/gksu ]]; then 
 		auth="gksu -S -m \"Y PPA Manager requires admin privileges for this task\""
+	elif [[ -e /usr/bin/kdesudo ]]; then
+		auth="kdesudo -d --comment=\"Y PPA Manager requires admin privileges for this task\""
 	else
 		echo "No authentication program found."
 		exit 1
