@@ -17,6 +17,8 @@ case `lsb_release -cs` in
 esac
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
+dp=$(echo $DISPLAY | cut -d '.' -f 1)
+loggeduser=$(who | grep $dp | cut -d ' ' -f 1 | tail -1)
 function CLEARTEMP ()
 {
 	rm /tmp/.Packages* /tmp/.package_search_list_results /tmp/.packagename /tmp/.packageversion /tmp/.list_search_results /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/+ppas* /tmp/.packagedldlink /tmp/.package_search_with_dld /tmp/.added_ppa /tmp/.y_* /tmp/.list_search_results_ranks /tmp/.list_search_results_number_rankings /tmp/.pparankings_onwers /tmp/.pparankings_ppanames /tmp/.pparankings_ubuver /tmp/.list_search_results_final /tmp/.pparankings_arch /tmp/.y_ppas_status /tmp/.y_ppas_status_regular /tmp/.list_search_results_tmp  > /dev/null 2>&1

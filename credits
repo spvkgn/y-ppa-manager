@@ -4,5 +4,5 @@ Thanks to:
 - tiheum for base Y PPA Manager icon (the Y PPA Manager icon is based on the Faenza icons) and the add/remove/settings/advanced/search/list icons: http://tiheum.deviantart.com/art/Faenza-Icons-173323228
 - tm for dupes find snippet: http://snipplr.com/view/26669/find-duplicate-files-recursively-bash4-assoc-arrays/
 - Christian Dannie Storgaard for the PPA upgrade feature
-- Satyajit Sahoo (Satya) for the "update-ppa" feature
+- Satyajit Sahoo (Satya) for the "update-ppa" feature, bug reports and fixes!
 - Lorenzo Carbonell for the package installation feature

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+dp=$(echo $DISPLAY | cut -d '.' -f 1)
+loggeduser=$(who | grep $dp | cut -d ' ' -f 1 | tail -1)
+
 usage() {
 cat << EOF
 usage: $(basename $0) [[-u|--upgrade] OLD_RELEASE NEW_RELEASE]
