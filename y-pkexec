@@ -1,32 +1,65 @@
 #!/bin/bash
+
 release="$(lsb_release -rs)"
 codename="$(lsb_release -cs)"
 if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" ]]; then
-	auth="pkexec"
+	case $1 in
+		add)
+			pkexec y-ppa-cmd add;;
+		advanced)
+			pkexec y-ppa-cmd advanced;;
+		manage)
+			pkexec y-ppa-cmd manage;;
+		search)
+			pkexec y-ppa-search;;
+		settings)
+			pkexec y-ppa-cmd settings;;
+		install)
+			pkexec y-ppa-cmd install;;
+		*)
+			y-ppa-indicator &
+			pkexec y-ppa-manager;;
+	esac
+
 else
-	if [[ -e /usr/bin/gksu ]]; then 
-		auth="gksu -S -m \"Y PPA Manager requires admin privileges for this task\""
+	if [[ -e /usr/bin/gksu ]]; then
+		case $1 in
+			add)
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-cmd add;;
+			advanced)
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-cmd advanced;;
+			manage)
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-cmd manage;;
+			search)
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-search;;
+			settings)
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-cmd settings;;
+			install)
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-cmd install;;
+			*)
+				y-ppa-indicator &
+				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-manager;;
+		esac
 	elif [[ -e /usr/bin/kdesudo ]]; then
-		auth="kdesudo -d --comment=\"Y PPA Manager requires admin privileges for this task\""
+		case $1 in
+			add)
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-cmd add;;
+			advanced)
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-cmd advanced;;
+			manage)
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-cmd manage;;
+			search)
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-search;;
+			settings)
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-cmd settings;;
+			install)
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-cmd install;;
+			*)
+				y-ppa-indicator &
+				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-manager;;
+		esac
 	else
 		echo "No authentication program found."
 		exit 1
 	fi
 fi
-case $1 in
-	add)
-		"$auth" y-ppa-cmd add;;
-	advanced)
-		"$auth" y-ppa-cmd advanced;;
-	manage)
-		"$auth" y-ppa-cmd manage;;
-	search)
-		"$auth" y-ppa-search;;
-	settings)
-		"$auth" y-ppa-cmd settings;;
-	install)
-		"$auth" y-ppa-cmd install;;
-	*)
-		y-ppa-indicator &
-		"$auth" y-ppa-manager;;
-esac
