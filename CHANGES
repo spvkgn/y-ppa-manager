@@ -15,7 +15,7 @@
 - Manage PPAs: option to update a single PPA
 - list PPAs: display the packages for the Ubuntu version available in the .list file, not from the Ubuntu version the user is currently running (it might be different - e.g.: a package is not available in PPA X for Ubuntu Quantal, so an user running Ubuntu Quantal modifies the PPA source file to Ubuntu Precise)
 - Manage PPAs: display the actual PPA name (e.g.: ppa:webupd8team/gthumb) in this dialog, instead of the PPA .list file name
-- use policykit (pkexec) instead of gksu / kdesu
+- use policykit (pkexec) instead of gksu / kdesu for Ubuntu versions newer than 11.04 (11.04 not included)
 - install_package.py should handle errors better
 
 
