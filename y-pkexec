@@ -1,5 +1,5 @@
 #!/bin/bash
-
+export XAUTHORITY=~/.Xauthority
 release="$(lsb_release -rs)"
 codename="$(lsb_release -cs)"
 if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" ]]; then

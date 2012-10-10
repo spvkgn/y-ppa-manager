@@ -2,6 +2,8 @@
 
 dp=$(echo $DISPLAY | cut -d '.' -f 1)
 loggeduser=$(who | grep $dp | cut -d ' ' -f 1 | tail -1)
+homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
+export XAUTHORITY="$homedir/.Xauthority"
 
 usage() {
 cat << EOF

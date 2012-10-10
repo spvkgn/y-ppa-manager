@@ -19,6 +19,8 @@ ROOT_UID=0
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
 dp=$(echo $DISPLAY | cut -d '.' -f 1)
 loggeduser=$(who | grep $dp | cut -d ' ' -f 1 | tail -1)
+homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
+export XAUTHORITY="$homedir/.Xauthority"
 
 function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
 RELEASE=$(lsb_release -r | cut -f2)
