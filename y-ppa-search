@@ -75,6 +75,7 @@ if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
 else
 	add-apt-repository $1 && update-ppa $1 > /dev/null 2>&1
 fi
+rm -f "$helpcheck";;
 }
 
 add_searched_ppa()
@@ -240,6 +241,7 @@ search_ppa_packages_results_dialog()
 					else
 						add-apt-repository ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					fi
+					rm -f "$helpcheck";;
 					CLEARTEMP
 				else
 					CLEARTEMP
@@ -724,6 +726,7 @@ search_advanced_ppa_packages_results_dialog()
 					else
 						add-apt-repository ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					fi
+					rm -f "$helpcheck";;
 					CLEARTEMP
 				else
 					CLEARTEMP

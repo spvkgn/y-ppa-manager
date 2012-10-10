@@ -10,7 +10,7 @@ X-MultipleArgs=false
 Type=Application
 Categories=GNOME;System;
 StartupWMClass=Y-PPA-Manager
-X-Ayatana-Desktop-Shortcuts=YPPAManager1;YPPAManager2;YPPAManager3;YPPAManager4;YPPAManager5;YPPAManager6;YPPAManager7;
+X-Ayatana-Desktop-Shortcuts=YPPAManager1;YPPAManager3;YPPAManager4;YPPAManager5;YPPAManager6;YPPAManager7;
 TargetEnvironment=Unity
 
 [YPPAManager1 Shortcut Group]
