@@ -98,6 +98,7 @@ class InstallPackageDialog(gtk.Dialog):
 		inpackages = []
 		nopackages = []
 		noupgradables = []
+
 		for package in packages:
 			try:
 				print "%s is installed %s and is upgradable %s"%(package,cache[package].is_installed,cache[package].is_upgradable)
@@ -171,7 +172,15 @@ class InstallPackageDialog(gtk.Dialog):
 				md.run()
 				md.destroy()
 				self.progress.show_terminal(expanded=False)
-				self.set_size_request(400, 200)			
+				self.set_size_request(400, 200)
+		else:
+			md = gtk.MessageDialog(parent=self,
+			flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+			type=gtk.MESSAGE_ERROR,
+			buttons=gtk.BUTTONS_OK,
+			message_format="You didn't enter any package to install!")
+			md.run()
+			md.destroy()
 		self.progress.show_terminal(expanded=False)
 		self.set_size_request(400, 200)
 
