@@ -113,7 +113,6 @@ if [[ -f "$sourcesfile" && `grep "deb http://" "$sourcesfile"` ]]; then
 			update_repo
 		else
 			show_error "Skipped ${line}"
-				
 		fi
 	done < <(grep ^deb.*http\:\/\/ "$sourcesfile" | sed -e 's/deb //g')
 	exit
@@ -218,6 +217,7 @@ for ((i=0; i < ${#urls[@]}; i++)); do
 			exit 1
 		fi
 	else
+		rm -f "${files[i]}"
 		errors=$((errors+1))
 	fi
 done
