@@ -122,22 +122,26 @@ class InstallPackageDialog(gtk.Dialog):
 					message += "\nThere are <b>no packages</b> called:\n '%s'"%tpackages
 				else:
 					message += '\nThere is <b>no package</b> called "%s"'%nopackages[0]
+				dbuttons=gtk.BUTTONS_OK
 			if len(inpackages)>0:
 				if len(inpackages)>1:
 					tpackages = ', '.join(inpackages)
 					message += "\n<b>Only</b> these packages: '%s'\n will be installed"%tpackages
+
 				else:
 					message += "\n<b>Only</b>: %s will be installed"%inpackages[0]
 				message +="\n\n<b>Continue?</b>"
 				ans_exit = False
+				dbuttons=gtk.BUTTONS_YES_NO
 			else:
 				message += "\n\nThere is <b>no package</b> to install"
 				message += "\nInstallation will <b>not continue</b>"
 				ans_exit = True
+				dbuttons=gtk.BUTTONS_OK
 			md = gtk.MessageDialog(parent=self,
 			flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
 			type=gtk.MESSAGE_ERROR,
-			buttons=gtk.BUTTONS_YES_NO,
+			buttons=dbuttons,
 			message_format=None)
 			md.set_markup(message)
 			ans = md.run()
