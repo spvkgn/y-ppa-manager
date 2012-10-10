@@ -265,7 +265,7 @@ list_packages_PPA()
 	list_sourcesNAMES=$(cat /tmp/.y_ppalist.list)
 #	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
 
-	LIST_PPA_PACKAGES=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=600 --height=500 --title="Display packages - Y PPA Manager" --text="Select the PPA you want to list packages (and versions) for \n(only non-disabled PPAs are listed)" --button="Remove PPA:4" --button="Purge PPA:5" --button="Update PPA:2" --button="Edit source:3" --button="List packages:0" --column "PPA" --list $list_sourcesNAMES)
+	LIST_PPA_PACKAGES=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=600 --height=500 --title="Manage PPAs - Y PPA Manager" --text="Select the PPA from the list below (only non-disabled PPAs are listed):" --button="Remove:4" --button="Purge:5" --button="Update:2" --button="Edit source:3" --button="List packages:0" --button="Close:6" --column "PPA" --list $list_sourcesNAMES)
 	ret=$?
 
 	stripppa=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ppa://g')
@@ -437,8 +437,7 @@ if [[ $ret -eq 0 ]]; then
 	cp /tmp/.sources/repositories.backup-$b_name.tar.gz "$Y_PPA_BACKUP"
 	cd -
 	rm -r /tmp/.sources
-	echo "filename to be copied /tmp/.sources/repositories.backup-$b_name.tar.gz"
-	echo Y_PPA_BACKUP $Y_PPA_BACKUP
+	chown "$username" "$Y_PPA_BACKUP"
 
 	if [ -e "$Y_PPA_BACKUP" ]; then
 		notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager" "Repositories backup successfully created"
