@@ -1,4 +1,4 @@
-y-ppa-manager (0.0.9.2-1~webupd8~3) maverick; urgency=medium
+y-ppa-manager (0.0.9.2-1~webupd8~4) maverick; urgency=medium
  
   * lots of under the hood changesn new features and bug fixes: 
     - http://www.webupd8.org/2012/10/y-ppa-manager-0092-released-with-new.html
