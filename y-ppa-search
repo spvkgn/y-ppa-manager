@@ -17,8 +17,7 @@ case `lsb_release -cs` in
 esac
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
-dp=$(echo $DISPLAY | cut -d '.' -f 1)
-loggeduser=$(who | grep "($dp)" | cut -d ' ' -f 1 | tail -1)
+loggeduser=$(who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1)
 homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
@@ -124,9 +123,9 @@ echo "yes then wtf"
 	checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then	
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The ppa:"$PPA_TO_ADD" PPA has been added successfully!"
+		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The ppa:"$PPA_TO_ADD" PPA has been added successfully"
 	else
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and ppa:"$PPA_TO_ADD" has not been added!"
+		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and ppa:"$PPA_TO_ADD" has not been added"
 			
 	fi	
 
@@ -603,9 +602,9 @@ add_searched_advanced_ppa()
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list ]]; then
 			
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The ppa:"$PPA_TO_ADD" PPA has been added successfully!"
+		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The ppa:"$PPA_TO_ADD" PPA has been added successfully"
 	else
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and ppa:"$PPA_TO_ADD" has not been added!"
+		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and ppa:"$PPA_TO_ADD" has not been added"
 			
 	fi	
 

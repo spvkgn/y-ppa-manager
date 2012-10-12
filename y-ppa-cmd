@@ -38,8 +38,8 @@ case `lsb_release -cs` in
 esac
 
 
-dp=$(echo $DISPLAY | cut -d '.' -f 1)
-loggeduser=$(who | grep "($dp)" | cut -d ' ' -f 1 | tail -1)
+loggeduser=$(who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1)
+
 homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
@@ -126,14 +126,14 @@ if [[ -s /tmp/.rmdups ]]; then
 	if [[ $ret -eq 0 ]]; then
 		chmod +x /tmp/.rmdups
 		sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates"
 
 	elif [[ $ret -eq 2 ]]; then
 		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
 		if [[ $? -eq 0 ]]; then
 			chmod +x /tmp/.rmdups
 			sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
-			sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates!"
+			sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates"
 		else
 			exit 0
 		fi
@@ -143,7 +143,7 @@ if [[ -s /tmp/.rmdups ]]; then
 
 	fi
 else
-	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information "Y PPA Manager" "No PPA duplicates found!"
+	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information "Y PPA Manager" "No PPA duplicates found"
 	echo no dupes found
 fi
 
@@ -199,9 +199,9 @@ add_a_PPA()
 			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The "$ADD_PPA_NO_SPACES" PPA has been added successfully!"
+				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The "$ADD_PPA_NO_SPACES" PPA has been added successfully"
 			else
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and "$ADD_PPA_NO_SPACES" has not been added!"
+				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error "Y PPA Manager" "An error occured and "$ADD_PPA_NO_SPACES" has not been added"
 			
 			fi	
 		
@@ -378,7 +378,7 @@ list_packages_PPA()
 
 
 		rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$fullppa_stripdist" successfully!"
+		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager - Done" "Removed PPA: "$fullppa_stripdist" successfully"
 
 		CLEARTEMP
 		list_packages_PPA
@@ -406,7 +406,7 @@ list_packages_PPA()
 					ppa-purge -y ppa:$fullppa_stripdist
 				fi
 			else
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging!"
+				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging"
 				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
@@ -434,8 +434,7 @@ list_packages_PPA()
 function y_ppa_backup() {
 
 b_name=$(date +%F-%H%M)
-dp=`echo $DISPLAY | cut -d '.' -f 1`
-username=`who | grep "($dp)" | cut -d ' ' -f 1 | tail -1`
+username=`who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1`
 homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
 
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=$homedir/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
@@ -485,8 +484,7 @@ advanced_options
 
 
 function y_ppa_restore() {
-dp=`echo $DISPLAY | cut -d '.' -f 1`
-username=`who | grep "($dp)" | cut -d ' ' -f 1 | tail -1`
+username=`who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1`
 homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save --filename=$homedir/ --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
 
