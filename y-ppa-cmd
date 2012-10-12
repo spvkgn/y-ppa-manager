@@ -38,7 +38,8 @@ case `lsb_release -cs` in
 esac
 
 
-loggeduser=$(cat /tmp/.y-whoami)
+dp=$(echo $DISPLAY | cut -d '.' -f 1)
+loggeduser=$(who | grep "($dp)" | cut -d ' ' -f 1 | tail -1)
 homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
@@ -433,7 +434,8 @@ list_packages_PPA()
 function y_ppa_backup() {
 
 b_name=$(date +%F-%H%M)
-username=$(cat /tmp/.y-whoami)
+dp=`echo $DISPLAY | cut -d '.' -f 1`
+username=`who | grep "($dp)" | cut -d ' ' -f 1 | tail -1`
 homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
 
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=$homedir/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
@@ -483,7 +485,8 @@ advanced_options
 
 
 function y_ppa_restore() {
-username=$(cat /tmp/.y-whoami)
+dp=`echo $DISPLAY | cut -d '.' -f 1`
+username=`who | grep "($dp)" | cut -d ' ' -f 1 | tail -1`
 homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save --filename=$homedir/ --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
 

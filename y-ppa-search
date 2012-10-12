@@ -17,7 +17,8 @@ case `lsb_release -cs` in
 esac
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
-loggeduser=$(cat /tmp/.y-whoami)
+dp=$(echo $DISPLAY | cut -d '.' -f 1)
+loggeduser=$(who | grep "($dp)" | cut -d ' ' -f 1 | tail -1)
 homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
