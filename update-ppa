@@ -64,50 +64,52 @@ esac
 
 parse_args() {
 # Parse the arguements
-if [[ $1 =~ ^- ]]; then
-	echo $1 | awk -F '' '{for (i=2;i<=NF;i++) print $i}'
-fi
 while [[ $# -gt 0 ]]; do
-case "$1" in
-	-a|--add)
-		add="yes"
-		shift;;
-	-f|--force)
-		force="yes"
-		shift;;
-	-n|--nocheck)
-		nocheck="yes"
-		shift;;
-	-h|--help)
-		echo -e "Usage: update-ppa [options...] <sourceline>"
-		echo -e ""
-		echo -e "update-ppa is a script to selectively update lists for an apt repository."
-		echo -e ""
-		echo -e "Examples:"
-		echo -e "\tupdate-ppa ppa:user/repository"
-		echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu"
-		echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu quantal main"
-		echo -e ""
-		echo -e "Options:"
-		echo -e "\t-a, --add\tadd the repository if not present on the system"
-		echo -e "\t-n, --nocheck\tdo not verify file checksums"
-		echo -e "\t-f, --force\tforce update lists without adding the repository"
-		echo -e "\t-r, --read\tread repository list from a file"
-		echo -e "\t-h, --help\tshow this help message and exit"
-		exit;;
-	-r|--read)
-		sourcesfile="$2"
-		parse_file;;
-	*)
-		if [[ $# -gt 2 && ! $2 =~ ^- && ! $3 =~ ^- ]]; then
-			repoarr=( $1 $2 $3 )
-			shift 3
-		else
-			repoarr=( $1 )
+	case "$1" in
+		-a|--add)
+			add="yes";;
+		-f|--force)
+			force="yes";;
+		-n|--nocheck)
+			nocheck="yes";;
+		-h|--help)
+			echo -e "Usage: update-ppa [options...] <sourceline>"
+			echo -e ""
+			echo -e "update-ppa is a script to selectively update lists for an apt repository."
+			echo -e ""
+			echo -e "Examples:"
+			echo -e "\tupdate-ppa ppa:user/repository"
+			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu"
+			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu quantal main"
+			echo -e ""
+			echo -e "Options:"
+			echo -e "\t-a, --add\tadd the repository if not present on the system"
+			echo -e "\t-n, --nocheck\tdo not verify file checksums"
+			echo -e "\t-f, --force\tforce update lists without adding the repository"
+			echo -e "\t-r, --read\tread repository list from a file"
+			echo -e "\t-h, --help\tshow this help message and exit"
+			exit;;
+		-r|--read)
+			sourcesfile="$2"
+			parse_file;;
+		-?|--*)
+			echo -e "Unrecognized option $1. Try --help for all available options."
+			exit;;
+		-*)
+			args=$1
 			shift
-		fi
-		parse_repo;;
-esac
+			set -- $(echo "$args" | cut -c 2- | sed 's/./-& /g') "$@"
+			continue;;
+		*)
+			if [[ $# -gt 2 && ! $2 =~ ^- && ! $3 =~ ^- ]]; then
+				repoarr=( $1 $2 $3 )
+				shift 2
+			else
+				repoarr=( $1 )
+			fi
+			parse_repo;;
+	esac
+	shift
 done
 }
 
@@ -169,7 +171,7 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
-		show_error "The repository \"$repo\" is not present on the system. Do you want to add it first? (y/n)"
+		show_error "The repository $repo is not present on the system. Do you want to add it first? (y/n)"
 		read response </dev/tty
 	fi
 	case $response in
@@ -199,7 +201,7 @@ else
 	errors=$((errors+1))
 fi
 # Start update
-show_info "Updating repository \"$repo\""
+show_info "Updating repository $repo"
 show_info "Fetching index files..."
 # Determine urls and file names
 urls=( "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
@@ -236,7 +238,7 @@ for ((i=0; i < ${#files[@]}; i++)); do
 done
 # Show success message
 if [[ "$errors" = "0" ]]; then
-	show_success "The lists for the repository \"$repo\" have been successfully updated!"
+	show_success "The lists for the repository $repo have been successfully updated!"
 	return 0
 else
 	show_error "Some index files could not be downloaded or lost :("
