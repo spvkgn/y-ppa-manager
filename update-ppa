@@ -108,11 +108,11 @@ parse_file() {
 if [[ -f "$sourcesfile" && `grep "deb http://" "$sourcesfile"` ]]; then
 	while read line; do
 		if [[ `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "$line"` || "$force" = "yes" ]]; then
-			repoarr=( ${line} )
+			repoarr=( $line )
 			parse_repo
 			update_repo
 		else
-			show_error "Skipped ${line}"
+			show_error "Skipped $line"
 		fi
 	done < <(grep ^deb.*http\:\/\/ "$sourcesfile" | sed -e 's/deb //g')
 	exit
@@ -128,7 +128,7 @@ if [[ ${repoarr[0]} =~ ^ppa\:.*\/ ]]; then
 	username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo ${repo} | cut -f2 -d\/)"
 	repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
-	fixname=$(echo ${username}-${ppaname} | sed -e 's/[.+]/_/g')
+	fixname="$(echo ${username}-${ppaname} | sed -e 's/[.+]/_/g')"
 	# Try to find the codename from the list file
 	ls /etc/apt/sources.list.d/${fixname}-*.list > /dev/null 2>&1
 	if [[ $? -eq 0 ]]; then
@@ -162,7 +162,7 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
-		show_error "The repository \"${repo}\" is not present on the system. Do you want to add it first? (y/n)"
+		show_error "The repository \"$repo\" is not present on the system. Do you want to add it first? (y/n)"
 		read response </dev/tty
 	fi
 	case $response in
@@ -203,12 +203,12 @@ show_info "Updating repository \"${repo}\""
 show_info "Fetching index files..."
 for ((i=0; i < ${#urls[@]}; i++)); do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
-		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}".gz
+		wget -nv "${urls[i]}" -O "${files[i]}".gz
 		if [[ -s "${files[i]}".gz ]]; then
 			gunzip -f "${files[i]}".gz
 		fi
 	else
-		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}"
+		wget -nv "${urls[i]}" -O "${files[i]}"
 	fi
 	if [[ -s "${files[i]}" ]]; then
 		mv -f "${files[i]}" "/var/lib/apt/lists/"
@@ -223,7 +223,7 @@ for ((i=0; i < ${#urls[@]}; i++)); do
 done
 # Show success message
 if [[ "$errors" = "0" ]]; then
-	show_success "The lists for the repository \"${repo}\" have been successfully updated!"
+	show_success "The lists for the repository \"$repo\" have been successfully updated!"
 	return 0
 else
 	show_error "Some index files could not be downloaded or lost :("
