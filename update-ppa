@@ -63,7 +63,10 @@ esac
 }
 
 parse_args() {
-# Parse the arguement
+# Parse the arguements
+if [[ $1 =~ ^- ]]; then
+	echo $1 | awk -F '' '{for (i=2;i<=NF;i++) print $i}'
+fi
 while [[ $# -gt 0 ]]; do
 case "$1" in
 	-a|--add)
@@ -72,8 +75,11 @@ case "$1" in
 	-f|--force)
 		force="yes"
 		shift;;
+	-n|--nocheck)
+		nocheck="yes"
+		shift;;
 	-h|--help)
-		echo -e "Usage: update-ppa <sourceline>"
+		echo -e "Usage: update-ppa [options...] <sourceline>"
 		echo -e ""
 		echo -e "update-ppa is a script to selectively update lists for an apt repository."
 		echo -e ""
@@ -84,6 +90,7 @@ case "$1" in
 		echo -e ""
 		echo -e "Options:"
 		echo -e "\t-a, --add\tadd the repository if not present on the system"
+		echo -e "\t-n, --nocheck\tdo not verify file checksums"
 		echo -e "\t-f, --force\tforce update lists without adding the repository"
 		echo -e "\t-r, --read\tread repository list from a file"
 		echo -e "\t-h, --help\tshow this help message and exit"
@@ -147,7 +154,7 @@ fi
 
 update_repo() {
 # Unset arrays
-unset urls files
+unset urls files md5sums
 # Reset error counter
 errors="0"
 # Determine the file names
@@ -189,34 +196,40 @@ if [[ -d "$tempdir" ]]; then
 	cd "$tempdir"
 else
 	show_error "Failed to create temporary directory!"
-	exit 1
+	errors=$((errors+1))
 fi
+# Start update
+show_info "Updating repository \"$repo\""
+show_info "Fetching index files..."
 # Determine urls and file names
+urls=( "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
+files=( "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
+# Get the release file to determine checksums
+wget -nv "${urls[0]}" -O "${files[0]}"
+md5sums=( "" "" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/source/Sources.gz | cut -d ' ' -f 2)" )
 for arch in "${architectures[@]}"; do
 	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/binary-${arch}/Packages.gz" )
 	files=( "${files[@]}" "${repofile}_dists_${codename}_${section}_binary-${arch}_Packages" )
+	md5sums=( "${md5sums[@]}" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/binary-${arch}/Packages.gz | cut -d ' ' -f 2)" )
 done
-urls=( "${urls[@]}" "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
-files=( "${files[@]}" "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
 # Fetch files to the temporary directory and move them
-show_info "Updating repository \"${repo}\""
-show_info "Fetching index files..."
-for ((i=0; i < ${#urls[@]}; i++)); do
+for ((i=1; i < ${#urls[@]}; i++)); do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
 		wget -nv "${urls[i]}" -O "${files[i]}".gz
-		if [[ -s "${files[i]}".gz ]]; then
+		if [[ "${md5sums[i]}" = "$(md5sum ${files[i]}.gz | cut -d ' ' -f 1)" || "$nocheck" = "yes" ]]; then
 			gunzip -f "${files[i]}".gz
+		else
+			show_error "Could not verify file!"
+			rm -f "${files[i]}".gz
+			errors=$((errors+1))
 		fi
 	else
 		wget -nv "${urls[i]}" -O "${files[i]}"
 	fi
-	if [[ -s "${files[i]}" ]]; then
-		mv -f "${files[i]}" "/var/lib/apt/lists/"
-		if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
-			show_error "An error occured. Please retry :("
-			exit 1
-		fi
-	else
+done
+for ((i=0; i < ${#files[@]}; i++)); do
+	mv -f "${files[i]}" "/var/lib/apt/lists/"
+	if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
 		rm -f "${files[i]}"
 		errors=$((errors+1))
 	fi
