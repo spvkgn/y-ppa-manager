@@ -119,7 +119,7 @@ echo "yes then wtf"
 	ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g"`
 	username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
-	checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+	checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 	checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then	
@@ -599,8 +599,12 @@ add_searched_advanced_ppa()
 			
 	ppafilename1=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g"`
 	ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/\//-/g"`
+	username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
+	ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
+	checkinppaa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
+	checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
-	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list ]]; then
+	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
 			
 		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add "Y PPA Manager - Done" "The ppa:"$PPA_TO_ADD" PPA has been added successfully"
 	else

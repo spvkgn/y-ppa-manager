@@ -195,7 +195,7 @@ add_a_PPA()
 			ppafilename2=`echo "$ADD_PPA_NO_SPACES" | sed -e "s/^ppa://g" -e "s/\//-/g"`
 			username="$(echo $ADD_PPA_NO_SPACES | cut -f1 -d\/ | cut -f2 -d\:)"
 			ppaname="$(echo $ADD_PPA_NO_SPACES | cut -f2 -d\/)"
-			checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu $UBUVER main"`
+			checkinppa=`cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then
