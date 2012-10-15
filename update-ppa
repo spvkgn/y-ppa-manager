@@ -93,7 +93,7 @@ while [[ $# -gt 0 ]]; do
 			sourcesfile="$2"
 			parse_file;;
 		-?|--*)
-			echo -e "Unrecognized option $1. Try --help for all available options."
+			echo -e "Unrecognized option '$1'. Try '--help' for all available options."
 			exit;;
 		-*)
 			args=$1
@@ -121,12 +121,12 @@ if [[ -f "$sourcesfile" && `grep "deb http://" "$sourcesfile"` ]]; then
 			parse_repo
 			update_repo
 		else
-			show_error "Skipped $line"
+			show_error "Skipped '$line'"
 		fi
 	done < <(grep ^deb.*http\:\/\/ "$sourcesfile" | sed -e 's/deb //g')
 	exit
 else
-	show_error "Error reading file!"
+	show_error "Error reading file '$sourcesfile'!"
 	exit 1
 fi
 }
@@ -171,7 +171,7 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
-		show_error "The repository $repo is not present on the system. Do you want to add it first? (y/n)"
+		show_error "The repository '$repo' is not present on the system. Do you want to add it first? (y/n)"
 		read response </dev/tty
 	fi
 	case $response in
@@ -201,13 +201,13 @@ else
 	errors=$((errors+1))
 fi
 # Start update
-show_info "Updating repository $repo"
+show_info "Updating repository '$repo'"
 show_info "Fetching index files..."
 # Determine urls and file names
 urls=( "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
 files=( "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
 # Get the release file to determine checksums
-wget -nv "${urls[0]}" -O "${files[0]}"
+wget --no-check-certificate -nv "${urls[0]}" -O "${files[0]}"
 md5sums=( "" "" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/source/Sources.gz | cut -d ' ' -f 2)" )
 for arch in "${architectures[@]}"; do
 	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/binary-${arch}/Packages.gz" )
@@ -217,7 +217,7 @@ done
 # Fetch files to the temporary directory and move them
 for ((i=1; i < ${#urls[@]}; i++)); do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
-		wget -nv "${urls[i]}" -O "${files[i]}".gz
+		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}".gz
 		if [[ "${md5sums[i]}" = "$(md5sum ${files[i]}.gz | cut -d ' ' -f 1)" || "$nocheck" = "yes" ]]; then
 			gunzip -f "${files[i]}".gz
 		else
@@ -226,7 +226,7 @@ for ((i=1; i < ${#urls[@]}; i++)); do
 			errors=$((errors+1))
 		fi
 	else
-		wget -nv "${urls[i]}" -O "${files[i]}"
+		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}"
 	fi
 done
 for ((i=0; i < ${#files[@]}; i++)); do
@@ -238,7 +238,7 @@ for ((i=0; i < ${#files[@]}; i++)); do
 done
 # Show success message
 if [[ "$errors" = "0" ]]; then
-	show_success "The lists for the repository $repo have been successfully updated!"
+	show_success "The lists for the repository '$repo' have been successfully updated!"
 	return 0
 else
 	show_error "Some index files could not be downloaded or lost :("
