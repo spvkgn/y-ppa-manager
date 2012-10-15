@@ -63,44 +63,53 @@ esac
 }
 
 parse_args() {
-# Parse the arguement
+# Parse the arguements
 while [[ $# -gt 0 ]]; do
-case "$1" in
-	-a|--add)
-		add="yes"
-		shift;;
-	-f|--force)
-		force="yes"
-		shift;;
-	-h|--help)
-		echo -e "Usage: update-ppa <sourceline>"
-		echo -e ""
-		echo -e "update-ppa is a script to selectively update lists for an apt repository."
-		echo -e ""
-		echo -e "Examples:"
-		echo -e "\tupdate-ppa ppa:user/repository"
-		echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu"
-		echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu quantal main"
-		echo -e ""
-		echo -e "Options:"
-		echo -e "\t-a, --add\tadd the repository if not present on the system"
-		echo -e "\t-f, --force\tforce update lists without adding the repository"
-		echo -e "\t-r, --read\tread repository list from a file"
-		echo -e "\t-h, --help\tshow this help message and exit"
-		exit;;
-	-r|--read)
-		sourcesfile="$2"
-		parse_file;;
-	*)
-		if [[ $# -gt 2 && ! $2 =~ ^- && ! $3 =~ ^- ]]; then
-			repoarr=( $1 $2 $3 )
-			shift 3
-		else
-			repoarr=( $1 )
+	case "$1" in
+		-a|--add)
+			add="yes";;
+		-f|--force)
+			force="yes";;
+		-n|--nocheck)
+			nocheck="yes";;
+		-h|--help)
+			echo -e "Usage: update-ppa [options...] <sourceline>"
+			echo -e ""
+			echo -e "update-ppa is a script to selectively update lists for an apt repository."
+			echo -e ""
+			echo -e "Examples:"
+			echo -e "\tupdate-ppa ppa:user/repository"
+			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu"
+			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu quantal main"
+			echo -e ""
+			echo -e "Options:"
+			echo -e "\t-a, --add\tadd the repository if not present on the system"
+			echo -e "\t-n, --nocheck\tdo not verify file checksums"
+			echo -e "\t-f, --force\tforce update lists without adding the repository"
+			echo -e "\t-r, --read\tread repository list from a file"
+			echo -e "\t-h, --help\tshow this help message and exit"
+			exit;;
+		-r|--read)
+			sourcesfile="$2"
+			parse_file;;
+		-?|--*)
+			echo -e "Unrecognized option '$1'. Try '--help' for all available options."
+			exit;;
+		-*)
+			args=$1
 			shift
-		fi
-		parse_repo;;
-esac
+			set -- $(echo "$args" | cut -c 2- | sed 's/./-& /g') "$@"
+			continue;;
+		*)
+			if [[ $# -gt 2 && ! $2 =~ ^- && ! $3 =~ ^- ]]; then
+				repoarr=( $1 $2 $3 )
+				shift 2
+			else
+				repoarr=( $1 )
+			fi
+			parse_repo;;
+	esac
+	shift
 done
 }
 
@@ -108,16 +117,16 @@ parse_file() {
 if [[ -f "$sourcesfile" && `grep "deb http://" "$sourcesfile"` ]]; then
 	while read line; do
 		if [[ `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "$line"` || "$force" = "yes" ]]; then
-			repoarr=( ${line} )
+			repoarr=( $line )
 			parse_repo
 			update_repo
 		else
-			show_error "Skipped ${line}"
+			show_error "Skipped '$line'"
 		fi
 	done < <(grep ^deb.*http\:\/\/ "$sourcesfile" | sed -e 's/deb //g')
 	exit
 else
-	show_error "Error reading file!"
+	show_error "Error reading file '$sourcesfile'!"
 	exit 1
 fi
 }
@@ -128,7 +137,7 @@ if [[ ${repoarr[0]} =~ ^ppa\:.*\/ ]]; then
 	username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo ${repo} | cut -f2 -d\/)"
 	repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
-	fixname=$(echo ${username}-${ppaname} | sed -e 's/[.+]/_/g')
+	fixname="$(echo ${username}-${ppaname} | sed -e 's/[.+]/_/g')"
 	# Try to find the codename from the list file
 	ls /etc/apt/sources.list.d/${fixname}-*.list > /dev/null 2>&1
 	if [[ $? -eq 0 ]]; then
@@ -147,7 +156,7 @@ fi
 
 update_repo() {
 # Unset arrays
-unset urls files
+unset urls files md5sums
 # Reset error counter
 errors="0"
 # Determine the file names
@@ -162,7 +171,7 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 	if [[ "$add" = "yes" ]]; then
 		response="y"
 	else
-		show_error "The repository \"${repo}\" is not present on the system. Do you want to add it first? (y/n)"
+		show_error "The repository '$repo' is not present on the system. Do you want to add it first? (y/n)"
 		read response </dev/tty
 	fi
 	case $response in
@@ -189,41 +198,47 @@ if [[ -d "$tempdir" ]]; then
 	cd "$tempdir"
 else
 	show_error "Failed to create temporary directory!"
-	exit 1
+	errors=$((errors+1))
 fi
+# Start update
+show_info "Updating repository '$repo'"
+show_info "Fetching index files..."
 # Determine urls and file names
+urls=( "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
+files=( "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
+# Get the release file to determine checksums
+wget --no-check-certificate -nv "${urls[0]}" -O "${files[0]}"
+md5sums=( "" "" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/source/Sources.gz | cut -d ' ' -f 2)" )
 for arch in "${architectures[@]}"; do
 	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/binary-${arch}/Packages.gz" )
 	files=( "${files[@]}" "${repofile}_dists_${codename}_${section}_binary-${arch}_Packages" )
+	md5sums=( "${md5sums[@]}" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/binary-${arch}/Packages.gz | cut -d ' ' -f 2)" )
 done
-urls=( "${urls[@]}" "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
-files=( "${files[@]}" "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
 # Fetch files to the temporary directory and move them
-show_info "Updating repository \"${repo}\""
-show_info "Fetching index files..."
-for ((i=0; i < ${#urls[@]}; i++)); do
+for ((i=1; i < ${#urls[@]}; i++)); do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
 		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}".gz
-		if [[ -s "${files[i]}".gz ]]; then
+		if [[ "${md5sums[i]}" = "$(md5sum ${files[i]}.gz | cut -d ' ' -f 1)" || "$nocheck" = "yes" ]]; then
 			gunzip -f "${files[i]}".gz
+		else
+			show_error "Could not verify file!"
+			rm -f "${files[i]}".gz
+			errors=$((errors+1))
 		fi
 	else
 		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}"
 	fi
-	if [[ -s "${files[i]}" ]]; then
-		mv -f "${files[i]}" "/var/lib/apt/lists/"
-		if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
-			show_error "An error occured. Please retry :("
-			exit 1
-		fi
-	else
+done
+for ((i=0; i < ${#files[@]}; i++)); do
+	mv -f "${files[i]}" "/var/lib/apt/lists/"
+	if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
 		rm -f "${files[i]}"
 		errors=$((errors+1))
 	fi
 done
 # Show success message
 if [[ "$errors" = "0" ]]; then
-	show_success "The lists for the repository \"${repo}\" have been successfully updated!"
+	show_success "The lists for the repository '$repo' have been successfully updated!"
 	return 0
 else
 	show_error "Some index files could not be downloaded or lost :("
