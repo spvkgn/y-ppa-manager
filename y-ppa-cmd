@@ -87,9 +87,21 @@ if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
 else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
 fi
+#work-around for stupid add-apt-repository bug which adds non-existent ppa when using -y
+ERRORREADINGPPA=$(cat /tmp/.added_ppa | grep "Error reading")
+if [[ "$ERRORREADINGPPA" ]]; then
+	first=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 1)
+	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
+	if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
+		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
+		echo "to delete /etc/apt/sources.list.d/"$first"-"$second"-*.list"
+	else
+		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
+	fi
+fi
 rm -f "$helpcheck"
 ERRORGETTINGKEY=$(cat /tmp/.added_ppa | tail -n 1 | grep ^gpg.*0$)
-if [[ $ERRORGETTINGKEY ]]; then
+if [[ "$ERRORGETTINGKEY" ]]; then
 	GPGKEYTOGET=$(cat /tmp/.added_ppa | grep "recv" | cut -d' ' -f17)
 	gpg --ignore-time-conflict --no-options --no-default-keyring --secret-keyring /etc/apt/secring.gpg --trustdb-name /etc/apt/trustdb.gpg --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv $GPGKEYTOGET
 fi

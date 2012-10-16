@@ -1,3 +1,10 @@
+0.0.9.4 (work in progress):
+
+
+0.0.9.3:
+- minor bug fixes, including: xdg-open for ppa links shouldn't open browser as root, ppa add check fixes
+- md5sums support for update-ppa  
+
 0.0.9.2:
 - fixed a bug with search results dialog and apt-get
 - implement transient notifications for GNOME Shell
