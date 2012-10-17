@@ -1,8 +1,9 @@
-y-ppa-manager (0.0.9.3-1~webupd8~1) maverick; urgency=medium
+y-ppa-manager (0.0.9.3-1~webupd8~2) maverick; urgency=medium
  
   * minor bug fixes, including: xdg-open for ppa links shouldn't open browser as root, ppa add check fixes
   * add work-around for the manual ppa add dialog bug: when add-apt-repository is used with -y, it adds the PPA even if it doesnt exist
-  * md5sums support for update-ppa  
+  * md5sums support for update-ppa
+  * add regex search for the YAD list dialogs
  
  -- Alin Andrei <webupd8@gmail.com>  Wed, 17 Oct 2012 16:33:38 +0300
 
