@@ -1,4 +1,4 @@
-y-ppa-manager (0.0.9.3-1~webupd8~2) maverick; urgency=medium
+y-ppa-manager (0.0.9.3-1~webupd8~3) maverick; urgency=medium
  
   * minor bug fixes, including: xdg-open for ppa links shouldn't open browser as root, ppa add check fixes
   * add work-around for the manual ppa add dialog bug: when add-apt-repository is used with -y, it adds the PPA even if it doesnt exist
