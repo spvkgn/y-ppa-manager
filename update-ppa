@@ -230,9 +230,13 @@ for ((i=1; i < ${#urls[@]}; i++)); do
 	fi
 done
 for ((i=0; i < ${#files[@]}; i++)); do
-	mv -f "${files[i]}" "/var/lib/apt/lists/"
-	if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
+	if [[ -s "${files[i]}" ]]; then
+		mv -f "${files[i]}" "/var/lib/apt/lists/"
+	else
 		rm -f "${files[i]}"
+		errors=$((errors+1))
+	fi
+	if [[ ! -s "/var/lib/apt/lists/${files[i]}" ]]; then
 		errors=$((errors+1))
 	fi
 done
