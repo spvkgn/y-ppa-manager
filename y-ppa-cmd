@@ -94,9 +94,6 @@ if [[ "$ERRORREADINGPPA" ]]; then
 	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
 	if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
 		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
-		echo "to delete /etc/apt/sources.list.d/"$first"-"$second"-*.list"
-	else
-		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
 	fi
 fi
 rm -f "$helpcheck"
