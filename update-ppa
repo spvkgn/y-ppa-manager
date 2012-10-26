@@ -132,8 +132,8 @@ fi
 }
 
 parse_repo() {
-repo=${repoarr[0]}
 if [[ ${repoarr[0]} =~ ^ppa\:.*\/ ]]; then
+	repo="${repoarr[0]}"
 	username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo ${repo} | cut -f2 -d\/)"
 	repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
@@ -143,14 +143,17 @@ if [[ ${repoarr[0]} =~ ^ppa\:.*\/ ]]; then
 	if [[ $? -eq 0 ]]; then
 		codename="$(cat /etc/apt/sources.list.d/${fixname}-*.list | head -1 | cut -f3 -d' ')"
 	fi
-elif [[ ${repoarr[0]} =~ ^http\:\/\/ ]]; then
-	repourl="$(echo ${repo} | sed 's/\/$//')"
+elif [[ ${repoarr[0]} =~ ^http\:\/\/ && ${#repoarr[@]} -eq 1 ]]; then
+		repourl="$(echo ${repoarr[0]} | sed 's/\/$//')"
+		repo="${repoarr[0]}"
+elif [[ ${repoarr[0]} =~ ^http\:\/\/ && ${#repoarr[@]} -eq 3 ]]; then
+		repourl="$(echo ${repoarr[0]} | sed 's/\/$//')"
+		repo="${repoarr[0]} ${repoarr[1]} ${repoarr[2]}"
+		codename="${repoarr[1]}"
+		section="${repoarr[2]}"
 else
 	show_error "Please pass a correct repository name or url as argument!"
 	exit 1
-fi
-if [[ ${#repoarr[@]} -eq 3 ]]; then
-	repo="${repoarr[0]} ${repoarr[1]} ${repoarr[2]}"
 fi
 }
 
