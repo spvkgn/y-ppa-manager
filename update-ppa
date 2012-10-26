@@ -132,8 +132,8 @@ fi
 }
 
 parse_repo() {
-repo=${repoarr[0]}
 if [[ ${repoarr[0]} =~ ^ppa\:.*\/ ]]; then
+	repo="${repoarr[0]}"
 	username="$(echo ${repo} | cut -f1 -d\/ | cut -f2 -d\:)"
 	ppaname="$(echo ${repo} | cut -f2 -d\/)"
 	repourl="http://ppa.launchpad.net/${username}/${ppaname}/ubuntu"
@@ -143,14 +143,17 @@ if [[ ${repoarr[0]} =~ ^ppa\:.*\/ ]]; then
 	if [[ $? -eq 0 ]]; then
 		codename="$(cat /etc/apt/sources.list.d/${fixname}-*.list | head -1 | cut -f3 -d' ')"
 	fi
-elif [[ ${repoarr[0]} =~ ^http\:\/\/ ]]; then
-	repourl="$(echo ${repo} | sed 's/\/$//')"
+elif [[ ${repoarr[0]} =~ ^http\:\/\/ && ${#repoarr[@]} -eq 1 ]]; then
+		repourl="$(echo ${repoarr[0]} | sed 's/\/$//')"
+		repo="${repoarr[0]}"
+elif [[ ${repoarr[0]} =~ ^http\:\/\/ && ${#repoarr[@]} -eq 3 ]]; then
+		repourl="$(echo ${repoarr[0]} | sed 's/\/$//')"
+		repo="${repoarr[0]} ${repoarr[1]} ${repoarr[2]}"
+		codename="${repoarr[1]}"
+		section="${repoarr[2]}"
 else
 	show_error "Please pass a correct repository name or url as argument!"
 	exit 1
-fi
-if [[ ${#repoarr[@]} -eq 3 ]]; then
-	repo="${repoarr[0]} ${repoarr[1]} ${repoarr[2]}"
 fi
 }
 
@@ -177,7 +180,7 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 	case $response in
 		[yY])
 			show_info "Adding the repository..."
-			# Detect if add-apt-repository supports the -y argument
+			# Detect if add-apt-repository supports the -y option
 			add-apt-repository --help > "$helpcheck"
 			if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
 				add-apt-repository -y "$repo"
@@ -204,17 +207,24 @@ fi
 show_info "Updating repository '$repo'"
 show_info "Fetching index files..."
 # Determine urls and file names
-urls=( "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
-files=( "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" "${repofile}_dists_${codename}_${section}_source_Sources" )
+urls=( "${repourl}/dists/${codename}/Release" "${repourl}/dists/${codename}/Release.gpg" )
+files=( "${repofile}_dists_${codename}_Release" "${repofile}_dists_${codename}_Release.gpg" )
+md5sums=( "" "" )
 # Get the release file to determine checksums
 wget --no-check-certificate -nv "${urls[0]}" -O "${files[0]}"
-md5sums=( "" "" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/source/Sources.gz | cut -d ' ' -f 2)" )
+# Only update sources if deb-src is present and enabled
+if [[ `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "^deb-src ${repourl}/\? ${codename} ${section}"` ]]; then
+	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/source/Sources.gz" )
+	files=( "${files[@]}" "${repofile}_dists_${codename}_${section}_source_Sources" )
+	md5sums=( "${md5sums[@]}" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/source/Sources.gz | cut -d ' ' -f 2)" )
+fi
+# Get package lists according to architecture
 for arch in "${architectures[@]}"; do
 	urls=( "${urls[@]}" "${repourl}/dists/${codename}/${section}/binary-${arch}/Packages.gz" )
 	files=( "${files[@]}" "${repofile}_dists_${codename}_${section}_binary-${arch}_Packages" )
 	md5sums=( "${md5sums[@]}" "$(sed -n '0,/MD5Sum:/d;p' ${files[0]} | sed -n '/SHA1:/q;p' | grep ${section}/binary-${arch}/Packages.gz | cut -d ' ' -f 2)" )
 done
-# Fetch files to the temporary directory and move them
+# Fetch files to the temporary directory
 for ((i=1; i < ${#urls[@]}; i++)); do
 	if [[ ${urls[i]} =~ .gz$ ]]; then
 		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}".gz
@@ -229,6 +239,7 @@ for ((i=1; i < ${#urls[@]}; i++)); do
 		wget --no-check-certificate -nv "${urls[i]}" -O "${files[i]}"
 	fi
 done
+# Move the downloaded files to correct directory
 for ((i=0; i < ${#files[@]}; i++)); do
 	if [[ -s "${files[i]}" ]]; then
 		mv -f "${files[i]}" "/var/lib/apt/lists/"
