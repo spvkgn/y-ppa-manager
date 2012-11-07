@@ -12,7 +12,6 @@ function CLEARTEMP ()
 {
 	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups /tmp/.y_ppalist.list /tmp/add-apt-repository-help.tmp > /dev/null 2>&1
 }
-helpcheck="/tmp/add-apt-repository-help.tmp"
 ROOT_UID=0
 #UBUVER=`lsb_release -cs`
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
@@ -78,11 +77,7 @@ function checkAPT()
      
 function y_add_ppa ()
 {
-
-
-
-add-apt-repository --help > "$helpcheck"
-if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
+if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
@@ -92,11 +87,10 @@ ERRORREADINGPPA=$(cat /tmp/.added_ppa | grep "Error reading")
 if [[ "$ERRORREADINGPPA" ]]; then
 	first=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 1)
 	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
-	if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
+	if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
 	fi
 fi
-rm -f "$helpcheck"
 ERRORGETTINGKEY=$(cat /tmp/.added_ppa | tail -n 1 | grep ^gpg.*0$)
 if [[ "$ERRORGETTINGKEY" ]]; then
 	GPGKEYTOGET=$(cat /tmp/.added_ppa | grep "recv" | cut -d' ' -f17)
