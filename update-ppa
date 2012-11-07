@@ -32,7 +32,6 @@ initialize() {
 # Set variables
 section="main"
 tempdir="/var/lib/apt/lists/partial"
-helpcheck="/tmp/add-apt-repository-help.tmp"
 # Detect the required info
 codename="$(lsb_release -cs)"
 release="$(lsb_release -r | cut -f2)"
@@ -181,13 +180,11 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 		[yY])
 			show_info "Adding the repository..."
 			# Detect if add-apt-repository supports the -y option
-			add-apt-repository --help > "$helpcheck"
-			if [[ `grep "\-y, --yes" "$helpcheck"` ]]; then
+			if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 				add-apt-repository -y "$repo"
 			else
 				add-apt-repository "$repo"
-			fi
-			rm -f "$helpcheck";;
+			fi;;
 		*)
 			show_error "You must add the repository to continue!"
 			exit 1;;
