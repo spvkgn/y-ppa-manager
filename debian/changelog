@@ -1,3 +1,11 @@
+y-ppa-manager (0.0.9.4-1~webupd8~0) maverick; urgency=medium
+ 
+  * temporary work-around for checking display for the loggeduser variable, since the display can be e.g. :5 or :5.0, etc. and also avoid grep fiding the time instead of the display by using ($DISPLAY) instead of $DISPLAY. This affects the notifications and opening a PPA in the default web browser (which will now hopefully work for all users).
+  * Don't use an extra file for helpcheck (thanks Satya)
+  * other fixes
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Fri, 09 Nov 2012 01:33:41 +0300
+
 y-ppa-manager (0.0.9.3-1~webupd8~3) maverick; urgency=medium
  
   * minor bug fixes, including: xdg-open for ppa links shouldn't open browser as root, ppa add check fixes
