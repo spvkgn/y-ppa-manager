@@ -1,4 +1,5 @@
 #!/bin/bash
+LANG=en_US.UTF-8
 release="$(lsb_release -rs)"
 codename="$(lsb_release -cs)"
 if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" ]]; then
