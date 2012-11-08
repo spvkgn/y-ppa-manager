@@ -37,7 +37,12 @@ case `lsb_release -cs` in
 esac
 
 
-loggeduser=$(who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1)
+loggeduser=$(who | grep "($DISPLAY)" | cut -d ' ' -f 1 | tail -1)
+
+if [[ ! $loggeduser ]]; then
+	DISPLAY2=$(echo "$DISPLAY" | cut -d '.' -f 1)
+	loggeduser=$(who | grep "($DISPLAY2)" | cut -d ' ' -f 1 | tail -1)
+fi
 
 homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
 ######policykit fix for KDE not setting XAUTHORITY
