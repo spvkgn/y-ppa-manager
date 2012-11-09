@@ -414,7 +414,7 @@ search_ppa_dialog()
 						apackage=`echo $packageEXISTSinPPA >> .y_apackage`
 						apackageFILE=`cat .y_apackage`
 	
-						apackageppaTMP=`echo "$aPackageSource" | sed -e 's/\.Packages\.//' -e 's/\./\//g'`
+						apackageppaTMP=`echo "$aPackageSource" | sed -e 's/\.Packages\.//' -e 's/\./\//'`
 						apackageppa=`echo ppa:"$apackageppaTMP" >> .y_apackageppa`
 						apackageppaFILE=`cat .y_apackageppa`
 
