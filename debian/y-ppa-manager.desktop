@@ -3,6 +3,7 @@ Version=1.0
 Name=Y PPA Manager
 Comment=Y PPA Manager
 GenericName=Y PPA Manager
+Keywords=Launchpad PPA; PPA; manager; yppa; repository; add ppa; manage ppas; search ppa; 
 Exec=y-pkexec
 Icon=y-ppa-manager
 Terminal=false

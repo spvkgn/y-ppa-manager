@@ -32,7 +32,7 @@ fi
 
 function CLEARTEMP ()
 {
-	rm /tmp/.Packages* /tmp/.package_search_list_results /tmp/.packagename /tmp/.packageversion /tmp/.list_search_results /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/+ppas* /tmp/.packagedldlink /tmp/.package_search_with_dld /tmp/.added_ppa /tmp/.y_* /tmp/.list_search_results_ranks /tmp/.list_search_results_number_rankings /tmp/.pparankings_onwers /tmp/.pparankings_ppanames /tmp/.pparankings_ubuver /tmp/.list_search_results_final /tmp/.pparankings_arch /tmp/.y_ppas_status /tmp/.y_ppas_status_regular /tmp/.list_search_results_tmp /tmp/add-apt-repository-help.tmp /tmp/.non-disabled.list /tmp/.temp_sources.list  > /dev/null 2>&1
+	rm /tmp/.Packages* /tmp/.package_search_list_results /tmp/.packagename /tmp/.packageversion /tmp/.list_search_results /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/+ppas* /tmp/.packagedldlink /tmp/.package_search_with_dld /tmp/.added_ppa /tmp/.y_* /tmp/.list_search_results_ranks /tmp/.list_search_results_number_rankings /tmp/.pparankings_onwers /tmp/.pparankings_ppanames /tmp/.pparankings_ubuver /tmp/.list_search_results_final /tmp/.pparankings_arch /tmp/.y_ppas_status /tmp/.y_ppas_status_regular /tmp/.list_search_results_tmp /tmp/add-apt-repository-help.tmp /tmp/.non_disabled.list /tmp/.temp_sources.list  > /dev/null 2>&1
 }
 function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
 RELEASE=$(lsb_release -r | cut -f2)

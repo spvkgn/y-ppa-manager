@@ -1,8 +1,9 @@
-0.0.9.4 (work in progress):
+0.0.9.5 (work in progress):
 
 0.0.9.4:
 - temporary work-around for checking display for the loggeduser variable, since the display can be e.g. :5 or :5.0, etc. and also avoid grep fiding the time instead of the display by using ($DISPLAY) instead of $DISPLAY. This affects the notifications and opening a PPA in the default web browser (which will now hopefully work for all users).
 - Don't use an extra file for helpcheck (thanks Satya)
+- Fix advanced PPA search not working properly with PPAs which have a dot in the name
 - other fixes
 
 0.0.9.3:
