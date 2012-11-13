@@ -14,6 +14,8 @@ case `lsb_release -cs` in
 		UBUVER="oneiric" ;;
 	maya)
 		UBUVER="precise" ;;
+	nadia)
+		UBUVER="quantal" ;;
 esac
 
 loggeduser=$(who | grep "($DISPLAY)" | cut -d ' ' -f 1 | tail -1)

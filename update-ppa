@@ -58,6 +58,8 @@ case `lsb_release -cs` in
 		codename="oneiric";;
 	maya)
 		codename="precise";;
+	nadia)
+		codename="quantal" ;;
 esac
 }
 
