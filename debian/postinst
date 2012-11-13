@@ -17,6 +17,8 @@ if [ "$1" = "configure" ]; then
 			UBUVER="oneiric" ;;
 		maya)
 			UBUVER="precise" ;;
+		nadia)
+			UBUVER="quantal" ;;
 	esac
 
 
