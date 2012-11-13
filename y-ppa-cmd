@@ -49,7 +49,7 @@ fi
 homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
-if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" ]]; then
+if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" ]]; then
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
@@ -719,7 +719,7 @@ Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-i
 	
 	if [[ $Y_dist != $current_ubuntu_version ]]; then
 
-		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" ]]; then
+		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" ]]; then
 			sed -i "s/searchdist=.*/searchdist=$Y_dist/g" /tmp/.y-ppa-manager.conf
 #			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #			rm /tmp/.y-ppa-manager.conf
