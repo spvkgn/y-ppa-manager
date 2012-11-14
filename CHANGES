@@ -1,4 +1,7 @@
-0.0.9.6 (work in progress):
+0.0.9.7 (work in progress):
+
+0.0.9.6:
+- elementary OS Luna support
 
 0.0.9.5:
 - add keywords to the desktop file, fixes LP: #1077793
