@@ -36,6 +36,8 @@ case `lsb_release -cs` in
 		UBUVER="precise" ;;
 	nadia)
 		UBUVER="quantal" ;;
+	luna)
+		UBUVER="precise" ;;
 esac
 
 
@@ -411,14 +413,14 @@ list_packages_PPA()
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
 				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Please wait while purging "$fullppa_stripdist""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "luna" ]]; then
 					ppa-purge -d $UBUVER -y $fullppa_stripdist
 				else
 					ppa-purge -y ppa:$fullppa_stripdist
 				fi
 			else
 				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove "Y PPA Manager" "Close the terminal window when you're done purging"
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "luna" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
 					xterm -hold -e sudo ppa-purge $fullppa_stripdist
@@ -660,7 +662,7 @@ fi
 
 #temporarely_disabled  Y_SETTINGS=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="PPA-Purge:CB" $ppa_purge_opt --field="Display PPA rankings for deep search (slow):CB" $rankings_opt --field="Ubuntu version*" "$current_ubuntu_version" --field="Downloads folder:DIR" "$current_downloads_folder" --text="   * Linux Mint users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
 
-Y_SETTINGS=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu Indicator:CB" $indicator_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
+Y_SETTINGS=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu Indicator:CB" $indicator_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint, elementary OS users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
 
 ret=$?
 

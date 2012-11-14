@@ -1,3 +1,9 @@
+y-ppa-manager (0.0.9.5-1~webupd8~lucid) lucid; urgency=medium
+ 
+  * Linux Mint 14 Nadia support and minor bug fixes
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Tue, 13 Nov 2012 22:14:36 +0200
+ 
 y-ppa-manager (0.0.9.4-1~webupd8~1) maverick; urgency=medium
  
   * temporary work-around for checking display for the loggeduser variable, since the display can be e.g. :5 or :5.0, etc. and also avoid grep fiding the time instead of the display by using ($DISPLAY) instead of $DISPLAY. This affects the notifications and opening a PPA in the default web browser (which will now hopefully work for all users).

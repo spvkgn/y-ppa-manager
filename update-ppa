@@ -60,6 +60,8 @@ case `lsb_release -cs` in
 		codename="precise";;
 	nadia)
 		codename="quantal" ;;
+	luna)
+		codename="precise" ;;
 esac
 }
 

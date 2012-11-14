@@ -16,6 +16,9 @@ case `lsb_release -cs` in
 		UBUVER="precise" ;;
 	nadia)
 		UBUVER="quantal" ;;
+	luna)
+		UBUVER="precise" ;;
+
 esac
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
 ON_USER=$(who | awk '{print $1}' | sed '/^root$/d' | uniq)
