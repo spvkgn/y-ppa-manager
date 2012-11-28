@@ -1,3 +1,9 @@
+y-ppa-manager (0.0.9.7-1~webupd8~lucid) lucid; urgency=medium
+ 
+  * add notification warnings when opening ppa link in browser is not supported for the default browser and copy the link to the clipboard instead when this happen. supported browsers: firefox (including firefox-trunk), midori and web aka epiphany. this is a work-around for bug lp: #1079744
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Wed, 14 Nov 2012 23:54:54 +0200
+
 y-ppa-manager (0.0.9.6-1~webupd8~lucid) lucid; urgency=medium
  
   * elementary OS Luna support
