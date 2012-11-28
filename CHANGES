@@ -1,7 +1,7 @@
 0.0.9.8 (work in progress):
 
 0.0.9.7:
-- add notification warnings when opening ppa link in browser is not supported for the default browser and copy the link to the clipboard instead when this happen. supported browsers: firefox (including firefox-trunk), midori and web aka epiphany. this is a work-around for bug lp: #1079744
+- copy the PPA link to the clipboard instead of opening the PPA in the default web browser. this change is required because since we've started using pkexec, opening links in the browser doesn't work with Chromium, Google Chrome or Opera. It also doesn't work with Firefox if Firefox isn't running. this is a work-around for bug lp: #1079744
 
 0.0.9.6:
 - elementary OS Luna support

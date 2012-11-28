@@ -331,28 +331,14 @@ list_packages_PPA()
 
 		#ZENITY_PPA_PACKAGES="$PPA_PACKAGES ($PPA_VERSIONS)"
 
-		LIST_PACKAGES=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Open PPA in browser:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
+		LIST_PACKAGES=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
 		if [[ $? -eq 0 ]]; then	
 
 		
 			#echo "http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2"" | xclip -selection clipboard
 			#sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --expire-time="8000" --icon=gtk-paste "Y PPA Manager" ""$ppa_name" PPA link has been copied to the clipboard. Paste the link (CTRL + V) in a web browser."
 			#open PPA link in browser:
-			#check the default web browser:
-			midorib=$(grep x-scheme-handler/http=midori "$homedir"/.local/share/applications/mimeapps.list)
-			epiphanyb=$(grep x-scheme-handler/http=epiphany "$homedir"/.local/share/applications/mimeapps.list)
-			firefoxb=$(grep x-scheme-handler/http=firefox "$homedir"/.local/share/applications/mimeapps.list)
-			firefox2b=$(grep x-scheme-handler/http=exo-web "$homedir"/.local/share/applications/mimeapps.list | wc -l) #apparently if 2 "exo-web" show up, the default browser if firefox-nightly (it can also be "firefox-nightly" but that's already covered by the firefoxb variable
-			firefox_running=$(sudo -u "$loggeduser" ps aux | grep [f]irefox | grep "$loggeduser") #"[f]irefox" makes ps aux | grep not spawn another instance which would result in always having a result; this way, we'll get an output only if firefox is actually running
-			firefoxtrunk_running=$(sudo -u "$loggeduser" ps aux | grep [f]irefox-trunk | grep "$loggeduser")
-
-			if [[ $firefoxb && $firefox_running || "$firefox2b" -gt 1 && $firefoxtrunk_running || $midorib || $epiphanyb ]]; then
-				sudo -u "$loggeduser" xdg-open "http://launchpad.net/~$url_part_1/+archive/$url_part_2"
-			elif [[ ! $firefox_running && $firefoxb || ! $firefoxtrunk_running && "$firefox2b" -gt 1 ]]; then
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info "Y PPA Manager - Link copied to clipboard" "This feature only works if Firefox is running (and it's not). The PPA link has been copied to the clipboard instead."; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
-			else
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info "Y PPA Manager - Link copied to clipboard" "This feature is not available for your default web browser. The PPA link has been copied to the clipboard instead."; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
-			fi
+			sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info "Y PPA Manager - Link copied to clipboard" "The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V."; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
 			########
 			CLEARTEMP
 			list_packages_PPA
