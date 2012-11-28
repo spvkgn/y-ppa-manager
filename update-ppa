@@ -56,12 +56,10 @@ case `lsb_release -cs` in
 		codename="natty";;
 	lisa)
 		codename="oneiric";;
-	maya)
+	maya|luna)
 		codename="precise";;
 	nadia)
-		codename="quantal" ;;
-	luna)
-		codename="precise" ;;
+		codename="quantal";;
 esac
 }
 
