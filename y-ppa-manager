@@ -11,6 +11,7 @@ if [[ $ret -eq 0 ]]; then
 	y-ppa-cmd help &
 else
 	[[ `grep "indicator=enabled" /etc/y-ppa-manager.conf` ]] && killall y-ppa-indicator > /dev/null 2>&1
+	rm -f "/tmp/.yppa_username" "/tmp/.yppa_home"
 	exit 0
 fi
 }

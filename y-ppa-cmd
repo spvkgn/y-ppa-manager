@@ -10,8 +10,9 @@ check_root "$@"
 
 function CLEARTEMP () 
 {
-	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups /tmp/.y_ppalist.list /tmp/add-apt-repository-help.tmp > /dev/null 2>&1
+	rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list /tmp/.temp_sourcesnames.list /tmp/.temp_sources.list /tmp/.non_disabled.list /tmp/+ppas* /tmp/.list_search_results /tmp/.Packages /tmp/.package_search_list_results /tmp/.package_search_list_results2 /tmp/.packagename /tmp/.packageversion /tmp/.packagename2 /tmp/.packageversion2 /tmp/.searched_ppa_names /tmp/.searched_ppas /tmp/.testinternet /tmp/.added_ppa /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups /tmp/.y_ppalist.list /tmp/add-apt-repository-help.tmp /tmp/.y_* > /dev/null 2>&1
 }
+
 ROOT_UID=0
 #UBUVER=`lsb_release -cs`
 #ON_USER=$(echo ~ | awk -F'/' '{ print $1 $2 $3 }' | sed 's/home//g')
@@ -41,14 +42,8 @@ case `lsb_release -cs` in
 esac
 
 
-loggeduser=$(who | grep "($DISPLAY)" | cut -d ' ' -f 1 | tail -1)
-
-if [[ ! $loggeduser ]]; then
-	DISPLAY2=$(echo "$DISPLAY" | cut -d '.' -f 1)
-	loggeduser=$(who | grep "($DISPLAY2)" | cut -d ' ' -f 1 | tail -1)
-fi
-
-homedir=$(awk -F: -v v="$loggeduser" '{if ($1==v) print $6}' /etc/passwd)
+loggeduser=$(cat /tmp/.yppa_username)
+homedir=$(cat /tmp/.yppa_home)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
 if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" ]]; then
@@ -450,8 +445,8 @@ list_packages_PPA()
 function y_ppa_backup() {
 
 b_name=$(date +%F-%H%M)
-username=`who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1`
-homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
+username=$(cat /tmp/.yppa_username)
+homedir=$(cat /tmp/.yppa_home)
 
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=$homedir/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
 
