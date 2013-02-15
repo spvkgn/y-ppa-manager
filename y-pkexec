@@ -10,9 +10,11 @@ fi
 if [[ ! -e /tmp/.yppa_home ]]; then
 	echo ~ > /tmp/.yppa_home
 fi
+loggeduser=$(cat /tmp/.yppa_username)
+homedir=$(cat /tmp/.yppa_home)
 if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "luna" ]]; then
 	if [[ -z "$XAUTHORITY" ]]; then
-		export XAUTHORITY=~/.Xauthority
+		export XAUTHORITY="$homedir/.Xauthority"
 	fi
 	case $1 in
 		add)
