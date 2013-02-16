@@ -14,17 +14,17 @@ def item_run(w, yitem):
     if yitem == "_yppa" :
         os.system("y-pkexec")
     elif yitem == "_yppa_search":
-        os.system("y-pkexec search")
+        os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec search")
     elif yitem == "_yppa_add":
-        os.system("y-pkexec add")
+        os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec add")
     elif yitem == "_yppa_manage":
-        os.system("y-pkexec manage")
+        os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec manage")
     elif yitem == "_yppa_install":
         os.system("y-pkexec install")
     elif yitem == "_yppa_adv":
-        os.system("y-pkexec advanced")
+        os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec advanced")
     elif yitem == "_yppa_set":
-        os.system("y-pkexec settings")
+        os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec settings")
     elif yitem == "_yppa_quit":
 	#todo: find a better way to exist main Y PPA Manager window, "killall yad" isn't exactly a good idea
         os.system("killall yad") 

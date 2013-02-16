@@ -16,17 +16,17 @@ TargetEnvironment=Unity
 
 [YPPAManager1 Shortcut Group]
 Name=Add PPA
-Exec=y-pkexec add
+Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec add"
 TargetEnvironment=Unity
 
 [YPPAManager3 Shortcut Group]
 Name=Search in all Launchpad PPAs
-Exec=y-pkexec search
+Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec search"
 TargetEnvironment=Unity
 
 [YPPAManager4 Shortcut Group]
 Name=Manage PPAs
-Exec=y-pkexec manage
+Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec manage"
 TargetEnvironment=Unity
 
 [YPPAManager5 Shortcut Group]
@@ -36,10 +36,10 @@ TargetEnvironment=Unity
 
 [YPPAManager6 Shortcut Group]
 Name=Advanced
-Exec=y-pkexec advanced
+Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec advanced"
 TargetEnvironment=Unity
 
 [YPPAManager7 Shortcut Group]
 Name=Settings
-Exec=y-pkexec settings
+Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec settings"
 TargetEnvironment=Unity
