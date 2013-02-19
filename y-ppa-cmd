@@ -779,6 +779,11 @@ help_dialog()
 
 }
 
+function manage_ppas_notification () 
+{
+	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=info "Y PPA Manager - Working" "Getting information about your current PPAs. The Manage PPAs dialog will be displayed shortly."
+}
+
 
 #ppa_manager_run()
 #{
@@ -819,7 +824,7 @@ case $1 in
 	advanced)
 	advanced_options ;;
 	manage)
-	list_packages_PPA ;;
+	manage_ppas_notification && list_packages_PPA ;;
 	help)
 	help_dialog ;;
 	search)
