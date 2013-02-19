@@ -144,11 +144,11 @@ if [[ -s /tmp/.rmdups ]]; then
 			sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
 			sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok "Y PPA Manager - Done" "Successfully removed duplicates"
 		else
-			exit 0
+			advanced_options
 		fi
 
-	elif [[ $ret -eq 1 ]]; then
-		exit 0
+	else
+		advanced_options
 
 	fi
 else
