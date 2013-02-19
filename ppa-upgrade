@@ -126,6 +126,7 @@ replace_old_new() {
 Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all existing PPAs and replace the old Ubuntu version with    \n   the new Ubuntu version you enter below (only for PPAs that work   \n   with the new Ubuntu version)   " --field="Current Ubuntu version. E.g. quantal" --field="Previous Ubuntu version. E.g. precise" --button="gtk-cancel:1" --button="gtk-ok:0"`
 ret=$?
 if [[ $ret -eq 0 ]]; then
+	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Updating release name in working PPAs. This may take a while..."
 	NEW_RELEASE=`echo "$Y_UPGRADE_PPA" | cut -d '|' -f1`
 	OLD_RELEASE=`echo "$Y_UPGRADE_PPA" | cut -d '|' -f2`
 	selectok=true
@@ -141,6 +142,7 @@ yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/sh
 
 ret=$?
 if [[ $ret -eq 0 ]]; then
+	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Re-enablling working PPAs after Ubuntu upgrade. This may take a while..."
 	selectok=true
 else
 	selectok=false

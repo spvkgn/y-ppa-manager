@@ -513,12 +513,10 @@ advanced_options
 
 
 function y_ppa_upgrade_regular() {
-sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Re-enablling working PPAs after Ubuntu upgrade. This may take a while..."
 ppa-upgrade -r
 }
 
 function y_ppa_upgrade_replace() {
-sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Updating release name in working PPAs. This may take a while..."
 ppa-upgrade -u
 }
 
