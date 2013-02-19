@@ -283,7 +283,7 @@ search_ppa_dialog()
 		if [[ $checkbox ]]; then
 		
 #regular search:	
-			[[ ! $SEARCH_PPA ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  You did not enter anything  \n  to search for  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
+			[[ ! $SEARCH_PPA ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  You did not enter anything  \n  to search for.  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
 
 			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  (all  non-alphanumeric  characters except \"-\" and \n  space are disallowed).  \n" --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 &&  search_ppa_dialog
 
@@ -293,7 +293,7 @@ search_ppa_dialog()
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" && ! -e /tmp/.already_searching ]]; then
 
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find "Y PPA Manager" "Searching all Launchpad PPAs for "$SEARCH_PPA"..."
+				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find "Y PPA Manager" "Searching all Launchpad PPAs for ""$SEARCH_PPA""..."
 				echo "1" > /tmp/.already_searching
 		
 				cd /tmp/ > /dev/null 2>&1
