@@ -1,4 +1,13 @@
-0.0.9.8 (work in progress):
+0.0.9.9 (work in progress):
+
+0.0.9.8:
+- display notification when the upgrade and update release name PPA options are started
+- add policykit-1 dependency - fixes LP: #1125240
+- better way to determine currently logged in username and home dir
+- fix backup path defaulting to root homedir instead of user homedir in the process
+- sometimes y-pkexec may be called as root by y-ppa-manager so let's fix ~/.Xauthoriy for KDE when that happens
+- lots of notification fixes: fix search notification not being displayed when the search item contains spaces, display notification before launching the Manage PPAs dialog because it may take a while before it s displayed, fix notifications being displayed before ppa-upgrade ran (update release name in working ppas, etc), more
+- show advanded dialog if user cancels duplicate removal
 
 0.0.9.7:
 - copy the PPA link to the clipboard instead of opening the PPA in the default web browser. this change is required because since we've started using pkexec, opening links in the browser doesn't work with Chromium, Google Chrome or Opera. It also doesn't work with Firefox if Firefox isn't running. this is a work-around for bug lp: #1079744

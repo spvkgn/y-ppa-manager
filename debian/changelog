@@ -1,4 +1,4 @@
-y-ppa-manager (0.0.9.7-1~webupd8~lucid1) lucid; urgency=medium
+y-ppa-manager (0.0.9.7-2~webupd8~lucid1) lucid; urgency=medium
  
   * copy the PPA link to the clipboard instead of opening the PPA in the default web browser. this change is required because since weve started using pkexec, opening links in the browser doesnt work with Chromium, Google Chrome or Opera. It also doesnt work with Firefox if Firefox isnt running. this is a work-around for bug lp: #1079744
  
