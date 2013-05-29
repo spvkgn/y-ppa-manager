@@ -60,6 +60,8 @@ case `lsb_release -cs` in
 		codename="precise";;
 	nadia)
 		codename="quantal";;
+	olivia)
+		UBUVER="raring";;
 esac
 }
 
@@ -81,7 +83,7 @@ while [[ $# -gt 0 ]]; do
 			echo -e "Examples:"
 			echo -e "\tupdate-ppa ppa:user/repository"
 			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu"
-			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu quantal main"
+			echo -e "\tupdate-ppa http://archive.ubuntu.com/ubuntu raring main"
 			echo -e ""
 			echo -e "Options:"
 			echo -e "\t-a, --add\tadd the repository if not present on the system"
