@@ -28,3 +28,4 @@ share/desktopfiles /usr/share/y-ppa-manager/
 install_package.py /usr/share/pyshared/y-ppa-manager/
 org.freedesktop.pkexec.y-ppa-manager.policy /usr/share/polkit-1/actions/
 y-pkexec /usr/bin/
+add-apt-repository /usr/lib/y-ppa-manager/

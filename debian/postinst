@@ -19,6 +19,8 @@ if [ "$1" = "configure" ]; then
 			UBUVER="precise" ;;
 		nadia)
 			UBUVER="quantal" ;;
+		olivia)
+			UBUVER="raring" ;;
 		luna)
 			UBUVER="precise" ;;
 	esac
