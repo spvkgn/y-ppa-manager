@@ -82,7 +82,9 @@ function checkAPT()
 
 function y_add_ppa ()
 {
-if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+if [[ `lsb_release -cs` = "olivia" ]]; then
+	/usr/lib/y-ppa-manager/add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1
+elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1
 else
 	add-apt-repository $1 && update-ppa $1 > /dev/null 2>&1
@@ -248,7 +250,9 @@ search_ppa_packages_results_dialog()
 				ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$ppa_name"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
-					if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+					if [[ `lsb_release -cs` = "olivia" ]]; then
+						/usr/lib/y-ppa-manager/add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
+					elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 						add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					else
 						add-apt-repository ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
@@ -738,7 +742,9 @@ search_advanced_ppa_packages_results_dialog()
 				ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$PPA_TO_ADD"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
-					if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+					if [[ `lsb_release -cs` = "olivia" ]]; then
+						/usr/lib/y-ppa-manager/add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
+					elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 						add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					else
 						add-apt-repository ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1

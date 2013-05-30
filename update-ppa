@@ -184,7 +184,9 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 		[yY])
 			show_info "Adding the repository..."
 			# Detect if add-apt-repository supports the -y option
-			if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+			if [[ `lsb_release -cs` = "olivia" ]]; then
+				/usr/lib/y-ppa-manager/add-apt-repository -y "$repo"
+			elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 				add-apt-repository -y "$repo"
 			else
 				add-apt-repository "$repo"

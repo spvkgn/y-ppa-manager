@@ -85,7 +85,9 @@ function checkAPT()
      
 function y_add_ppa ()
 {
-if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+if [[ `lsb_release -cs` = "olivia" ]]; then
+	/usr/lib/y-ppa-manager/add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
+elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
@@ -95,7 +97,7 @@ ERRORREADINGPPA=$(cat /tmp/.added_ppa | grep "Error reading")
 if [[ "$ERRORREADINGPPA" ]]; then
 	first=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 1)
 	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
-	if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+	if [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` || `lsb_release -cs` = "olivia" ]]; then
 		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
 	fi
 fi
