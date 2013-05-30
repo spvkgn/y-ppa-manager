@@ -186,6 +186,9 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 			# Detect if add-apt-repository supports the -y option
 			if [[ `lsb_release -cs` = "olivia" ]]; then
 				/usr/lib/y-ppa-manager/add-apt-repository -y "$repo"
+				mintfix=$(echo "$repo" | sed -e 's/ppa://g' -e 's/\//-/g')
+				mv /etc/apt/sources.list.d/"$mintfix"-olivia.list /etc/apt/sources.list.d/"$mintfix"-raring.list
+        			sed -i 's/olivia/raring/g' /etc/apt/sources.list.d/"$mintfix"-raring.list
 			elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 				add-apt-repository -y "$repo"
 			else
