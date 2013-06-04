@@ -61,7 +61,7 @@ case `lsb_release -cs` in
 	nadia)
 		codename="quantal";;
 	olivia)
-		UBUVER="raring";;
+		codename="raring";;
 esac
 }
 
