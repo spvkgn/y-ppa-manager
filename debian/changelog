@@ -1,3 +1,9 @@
+y-ppa-manager (0.9.9-1~webupd8~lucid2) lucid; urgency=medium
+ 
+  * Linux Mint 15 Olivia support and drop a 0 from the version number
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Thu, 30 May 2013 13:04:18 +0300
+ 
 y-ppa-manager (0.9.9-1~webupd8~lucid1) lucid; urgency=medium
  
   * Linux Mint 15 Olivia support and drop a 0 from the version number
