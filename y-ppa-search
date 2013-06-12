@@ -290,11 +290,11 @@ search_ppa_dialog()
 {
 
 	rm /tmp/+ppas* > /dev/null 2>&1;
-	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. To use Deep Search  \n  you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Deep Search (more acurate, displays detailed info\nbut is slower):CHK" --button="gtk-ok:0"`
+	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. Unless you use the  \n  basic search, you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Basic search (less acurate, displays less info\nbut is faster):CHK" --button="gtk-ok:0"`
 	if [[ $? -eq 0 ]]; then
 		checkbox=`echo $SEARCH_PPA | grep "|FALSE|"`
 		SEARCH_PPA=`echo $SEARCH_PPA | sed -e 's/|.*|//' | tr '[:upper:]' '[:lower:]'`
-		if [[ $checkbox ]]; then
+		if [[ ! $checkbox ]]; then
 		
 #regular search:	
 			[[ ! $SEARCH_PPA ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  You did not enter anything  \n  to search for.  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
@@ -307,7 +307,7 @@ search_ppa_dialog()
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" && ! -e /tmp/.already_searching ]]; then
 
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find "Y PPA Manager" "Searching all Launchpad PPAs for ""$SEARCH_PPA""..."
+				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find "Y PPA Manager" "Searching Launchpad PPAs for ""$SEARCH_PPA""..."
 				echo "1" > /tmp/.already_searching
 		
 				cd /tmp/ > /dev/null 2>&1
@@ -357,7 +357,7 @@ search_ppa_dialog()
 
 			[[ ! $SEARCH_PPA ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  You did not enter anything  \n  to search for  " --button="gtk-ok:0" && rm /tmp/.already_searching && search_ppa_dialog
 
-			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  To use the deep search, you need to enter an  \n  exact package name (all  non-alphanumeric  \n  characters except \"-\" are disallowed).  \n" --button="gtk-ok:0" && rm /tmp/.already_searching &&  search_ppa_dialog
+			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  <b>Please enter an exact package name or use  \n  the basic search.</b> All non-alphanumeric  \n  characters except \"-\" are disallowed.  \n" --button="gtk-ok:0" && rm /tmp/.already_searching &&  search_ppa_dialog
 #			testthesearch=`echo $SEARCH_PPA | cut -d ' ' -f1`
 
 #			[[ $testthesearch ]] && yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  Only test for one package  \n  No spaces or extra characters allowed  " --button="gtk-ok:0" && search_ppa_dialog
@@ -374,7 +374,7 @@ search_ppa_dialog()
 					MSG="You've searched for <b>\"$SEARCH_PPA\"</b> (the package isn't installed on your system):"
 				fi
 
-				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find "Y PPA Manager" "Searching all Launchpad PPAs for "$SEARCH_PPA"..."
+				sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find "Y PPA Manager" "Searching Launchpad PPAs for "$SEARCH_PPA"..."
 				echo "1" > /tmp/.already_searching
 		
 				cd /tmp/ > /dev/null 2>&1
@@ -533,7 +533,7 @@ search_ppa_dialog()
 					advancedsearch=`cat .y_advanced_search_packages`
 #			noresults2=`grep "No matching Personal" +ppas\?name_filter\="$SEARCH_PPA"`
 #	echo noresults: $noresults
-					[[ ! $advancedsearch ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  Your search did not return any results!  \n\n  Did you enter an exact package name?  \n  That is required for the deep search!  \n\n  Please try a new search...  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
+					[[ ! $advancedsearch ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  Your search did not return any results!  \n\n  Did you enter an exact package name?  \n  That is required unless you use the basic search!  \n\n  Please try a new search...  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
 
 					search_advanced_ppa_ppa_results
 
