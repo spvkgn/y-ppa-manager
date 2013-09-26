@@ -1,4 +1,12 @@
-0.0.9.9 (work in progress):
+0.9.9.1:
+- Ubuntu 13.10 only: fix policy kit issue with GNOME 3.10
+- Ubuntu 13.10 only: fix main window issues with GTK 3.8.3+
+- Fix backup not backing up sources.list PPAs
+- use the deep search as default and add checkbox for the basic search instead
+- use single click to open items in the main dialog
+
+0.9.9 (work in progress):
+- support for Linux Mint 15 Olivia as well as the latest Ubuntu 13.10 Saucy Salamander
 
 0.0.9.8:
 - display notification when the upgrade and update release name PPA options are started
