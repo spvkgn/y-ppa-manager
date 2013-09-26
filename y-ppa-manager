@@ -4,7 +4,7 @@ LANG=en_US.UTF-8
 Y_RUN_INDICATOR_TRUE=`grep "indicator=enabled" /etc/y-ppa-manager.conf`
 
 function Y_MAIN_DIALOG() {
-Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --single-click --item-width="182" --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="435" --height="440" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
+Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --single-click --item-width="110" --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="415" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
 ret=$?
 if [[ $ret -eq 0 ]]; then
 	Y_MAIN_DIALOG &
