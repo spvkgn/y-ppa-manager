@@ -461,6 +461,7 @@ Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selectio
 ret=$?
 if [[ $ret -eq 0 ]]; then
 	cp -r /etc/apt/sources.list.d/ /tmp/.sources
+	grep "ppa.launchpad.net" /etc/apt/sources.list >> /tmp/.sources/sourceslist.ppas
 	cd /tmp/.sources/
 	tar czvf "repositories.backup-$b_name.tar.gz" *
 	cp /tmp/.sources/repositories.backup-$b_name.tar.gz "$Y_PPA_BACKUP"
@@ -508,7 +509,17 @@ homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
 Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save --filename=$homedir/ --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
 
 if [[ $? -eq 0 ]]; then
-	tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/ && launchpad-getkeys
+	tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/
+	cat /etc/apt/sources.list.d/sourceslist.ppas
+	while read line
+	do
+		LINEEXISTS=$(grep "$line" /etc/apt/sources.list)
+		if [[ ! "$LINEEXISTS" ]]; then
+			echo "$line" >> /etc/apt/sources.list
+		fi
+	done < /etc/apt/sources.list.d/sourceslist.ppas
+	rm /etc/apt/sources.list.d/sourceslist.ppas
+	launchpad-getkeys
 
 	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=document-save "Y PPA Manager" "Repositories backup successfully restored. It's advisable to run an update now"
 else
