@@ -52,9 +52,8 @@ if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || 
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
-WMNAME=bash
-WMPID=$(pidof ${WMNAME} | awk '{print $1}')
-WMUSER=$(ps -e -o user,comm | grep ${WMNAME} | cut -f1 -d " ")
+
+WMPID=$(ps -u $loggeduser | tail -n 1 | awk '{print $1}')
 DBUS=$(egrep -z 'DBUS_SESSION_BUS_ADDRESS|DISPLAY' /proc/${WMPID}/environ | sed -r -e 's/(.)DBUS_/\1 DBUS_/' -e 's/(.)DISPLAY/\1 DISPLAY/')
 ########
 
@@ -148,14 +147,14 @@ if [[ -s /tmp/.rmdups ]]; then
 	if [[ $ret -eq 0 ]]; then
 		chmod +x /tmp/.rmdups
 		sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager - Done\" \"Successfully removed duplicates\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager - Done\" \"Successfully removed duplicates\""
 
 	elif [[ $ret -eq 2 ]]; then
 		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
 		if [[ $? -eq 0 ]]; then
 			chmod +x /tmp/.rmdups
 			sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
-			su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager - Done\" \"Successfully removed duplicates\""
+			su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager - Done\" \"Successfully removed duplicates\""
 		else
 			advanced_options
 		fi
@@ -165,7 +164,7 @@ if [[ -s /tmp/.rmdups ]]; then
 
 	fi
 else
-	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information \"Y PPA Manager\" \"No PPA duplicates found\""
+	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information \"Y PPA Manager\" \"No PPA duplicates found\""
 	echo no dupes found
 fi
 
@@ -209,7 +208,7 @@ add_a_PPA()
 
 
 #			checkAPT
-			su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"Adding \"$ADD_PPA_NO_SPACES\"\""
+			su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"Adding \"$ADD_PPA_NO_SPACES\"\""
 			y_add_ppa "$ADD_PPA_NO_SPACES"
 			#apt-get update
 			
@@ -221,9 +220,9 @@ add_a_PPA()
 			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then
-				su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager - Done\" \"The \"$ADD_PPA_NO_SPACES\" PPA has been added successfully\""
+				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager - Done\" \"The \"$ADD_PPA_NO_SPACES\" PPA has been added successfully\""
 			else
-				su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"An error occured and \"$ADD_PPA_NO_SPACES\" has not been added\""
+				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"An error occured and \"$ADD_PPA_NO_SPACES\" has not been added\""
 			
 			fi	
 		
@@ -346,7 +345,7 @@ list_packages_PPA()
 			#echo "http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2"" | xclip -selection clipboard
 			#sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --expire-time="8000" --icon=gtk-paste "Y PPA Manager" ""$ppa_name" PPA link has been copied to the clipboard. Paste the link (CTRL + V) in a web browser."
 			#open PPA link in browser:
-			su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info \"Y PPA Manager - Link copied to clipboard\" \"The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V.\""; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
+			su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info \"Y PPA Manager - Link copied to clipboard\" \"The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V.\""; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
 			########
 			CLEARTEMP
 			list_packages_PPA
@@ -362,7 +361,7 @@ list_packages_PPA()
 		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
 		update-ppa "$fullppa_stripdist"
 		CLEARTEMP
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"The \"$fullppa_stripdist\" PPA source has been updated successfully\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"The \"$fullppa_stripdist\" PPA source has been updated successfully\""
 		list_packages_PPA
 
 	elif [[ $ret -eq 3 ]]; then
@@ -390,7 +389,7 @@ list_packages_PPA()
 		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
 		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
 
-        	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Removing \"$fullppa_stripdist\" and updating software sources\""
+        	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Removing \"$fullppa_stripdist\" and updating software sources\""
 		echo "the ls command looks like this: /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"
 
 		if [[ `ls /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list` ]]; then
@@ -402,7 +401,7 @@ list_packages_PPA()
 
 
 		rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1;
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager - Done\" \"Removed PPA: \"$fullppa_stripdist\" successfully\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager - Done\" \"Removed PPA: \"$fullppa_stripdist\" successfully\""
 
 		CLEARTEMP
 		list_packages_PPA
@@ -423,21 +422,21 @@ list_packages_PPA()
 			PPA_PURGE_AUTO=`grep "ppa-purge=auto" /etc/y-ppa-manager.conf`
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
-				su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Please wait while purging \"$fullppa_stripdist\"\""
+				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Please wait while purging \"$fullppa_stripdist\"\""
 				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "luna" ]]; then
 					ppa-purge -d $UBUVER -y $fullppa_stripdist
 				else
 					ppa-purge -y ppa:$fullppa_stripdist
 				fi
 			else
-				su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Close the terminal window when you are done purging\""
+				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Close the terminal window when you are done purging\""
 				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "luna" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
 					xterm -hold -e sudo ppa-purge $fullppa_stripdist
 				fi
 			fi
-			su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager - Done\" \"Purged  \"$fullppa_stripdist\"\""
+			su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager - Done\" \"Purged  \"$fullppa_stripdist\"\""
 			rm /tmp/.temp_sourcesnames2.list /tmp/.temp_sources2.list /tmp/.non_disabled2.list > /dev/null 2>&1
 			list_packages_PPA
 		else
@@ -475,9 +474,9 @@ if [[ $ret -eq 0 ]]; then
 	chown "$username" "$Y_PPA_BACKUP"
 
 	if [ -e "$Y_PPA_BACKUP" ]; then
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager\" \"Repositories backup successfully created\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager\" \"Repositories backup successfully created\""
 	else
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"Error: backup failed.\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"Error: backup failed.\""
 	fi
 	
 else
@@ -526,7 +525,7 @@ if [[ $? -eq 0 ]]; then
 	rm /etc/apt/sources.list.d/sourceslist.ppas
 	launchpad-getkeys
 
-	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=document-save \"Y PPA Manager\" \"Repositories backup successfully restored. It is advisable to run an update now\""
+	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=document-save \"Y PPA Manager\" \"Repositories backup successfully restored. It is advisable to run an update now\""
 else
 	CLEARTEMP
 	exit
@@ -552,7 +551,7 @@ function y_ppa_import_gpg_keys() {
 	if [[ $ret -eq 0 ]]; then
 		launchpad-getkeys
 
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Done importing missing GPG keys\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Done importing missing GPG keys\""
 		y-ppa-cmd advanced
 	else
 		y-ppa-cmd advanced
@@ -568,7 +567,7 @@ function y_ppa_fix_gpg_badsig() {
 	if [[ $ret -eq 0 ]]; then
 		fix_gpg_badsig
 
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Done fixing GPG BADSIG errors\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Done fixing GPG BADSIG errors\""
 		y-ppa-cmd advanced
 	else
 		y-ppa-cmd advanced
@@ -649,7 +648,7 @@ function reset_settings() {
 	rm /tmp/.y-ppa-manager.conf
 	rm /etc/xdg/autostart/y-ppa-indicator.desktop
 
-	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh \"Y PPA Manager\" \"Settings were reset\""
+	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh \"Y PPA Manager\" \"Settings were reset\""
 
 }
 
@@ -769,7 +768,7 @@ new_settings=$(cat /tmp/.y-ppa-manager.conf)
 	if [[ $initial_settings != $new_settings ]]; then
 		cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 		rm /tmp/.y-ppa-manager.conf > /dev/null 2>&1
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager\" \"Settings saved\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager\" \"Settings saved\""
 		exit 0
 	else
 		rm /tmp/.y-ppa-manager.conf > /dev/null 2>&1
@@ -803,7 +802,7 @@ help_dialog()
 
 function manage_ppas_notification () 
 {
-	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=info \"Y PPA Manager - Working\" \"Getting information about your current PPAs. The Manage PPAs dialog will be displayed shortly.\""
+	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=info \"Y PPA Manager - Working\" \"Getting information about your current PPAs. The Manage PPAs dialog will be displayed shortly.\""
 }
 
 

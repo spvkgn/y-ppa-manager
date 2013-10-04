@@ -32,9 +32,7 @@ if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || 
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
-WMNAME=bash
-WMPID=$(pidof ${WMNAME} | awk '{print $1}')
-WMUSER=$(ps -e -o user,comm | grep ${WMNAME} | cut -f1 -d " ")
+WMPID=$(ps -u $loggeduser | tail -n 1 | awk '{print $1}')
 DBUS=$(egrep -z 'DBUS_SESSION_BUS_ADDRESS|DISPLAY' /proc/${WMPID}/environ | sed -r -e 's/(.)DBUS_/\1 DBUS_/' -e 's/(.)DISPLAY/\1 DISPLAY/')
 ########
 
@@ -122,7 +120,7 @@ echo "yes then wtf"
 	fi
 #done check
 
-	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"Adding ppa:\"$PPA_TO_ADD\"\""
+	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"Adding ppa:\"$PPA_TO_ADD\"\""
 	y_add_ppa ppa:"$PPA_TO_ADD"
 	#gksu -S apt-get update
 
@@ -138,9 +136,9 @@ echo "yes then wtf"
 	checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppa || $checksourceslist ]]; then	
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager - Done\" \"The ppa:\"$PPA_TO_ADD\" PPA has been added successfully\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager - Done\" \"The ppa:\"$PPA_TO_ADD\" PPA has been added successfully\""
 	else
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"An error occured and ppa:\"$PPA_TO_ADD\" has not been added\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"An error occured and ppa:\"$PPA_TO_ADD\" has not been added\""
 			
 	fi	
 
@@ -193,7 +191,7 @@ search_ppa_packages_results_dialog()
 			url_part_1=`echo "$ppa_temp_url2" | cut -d '/' -f 1`
 			url_part_2=`echo "$ppa_temp_url2" | cut -d '/' -f 2`
 
-			su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info \"Y PPA Manager - Link copied to clipboard\" \"The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V.\""; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
+			su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info \"Y PPA Manager - Link copied to clipboard\" \"The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V.\""; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
 			########
 			search_ppa_ppa_results
 
@@ -204,7 +202,7 @@ search_ppa_packages_results_dialog()
 				if [[ $ret -eq 0 ]]; then
 					cd $(echo $DOWNLOAD_DIR | sed -e 's/|$//')
 
-					su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"Downloading...\""
+					su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"Downloading...\""
 					for pckg_to_dld in $LIST_PACKAGES; do
 
 						packagetodownload=`echo "$pckg_to_dld" | sed -e "s/|//g" -e "s/  //"`
@@ -225,7 +223,7 @@ search_ppa_packages_results_dialog()
 					done
 					cd -
 					DOWN_DIR_NOTIFY=$(echo $DOWNLOAD_DIR | sed -e 's/|$//')
-					su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"The select file(s) has/have been downloaded to \"$DOWN_DIR_NOTIFY\"\""
+					su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"The select file(s) has/have been downloaded to \"$DOWN_DIR_NOTIFY\"\""
 					search_ppa_packages_results_dialog
 				else
 					search_ppa_packages_results_dialog
@@ -312,7 +310,7 @@ search_ppa_dialog()
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" && ! -e /tmp/.already_searching ]]; then
 
-				su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find \"Y PPA Manager\" \"Searching Launchpad PPAs for \"\"$SEARCH_PPA\"\"...\""
+				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find \"Y PPA Manager\" \"Searching Launchpad PPAs for \"\"$SEARCH_PPA\"\"...\""
 				echo "1" > /tmp/.already_searching
 		
 				cd /tmp/ > /dev/null 2>&1
@@ -379,7 +377,7 @@ search_ppa_dialog()
 					MSG="You've searched for <b>\"$SEARCH_PPA\"</b> (the package isn't installed on your system):"
 				fi
 
-				su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find \"Y PPA Manager\" \"Searching Launchpad PPAs for \"$SEARCH_PPA\"...\""
+				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find \"Y PPA Manager\" \"Searching Launchpad PPAs for \"$SEARCH_PPA\"...\""
 				echo "1" > /tmp/.already_searching
 		
 				cd /tmp/ > /dev/null 2>&1
@@ -485,7 +483,7 @@ search_ppa_dialog()
 						paste --delimiters=" " .pparankings_onwers .pparankings_ppanames .pparankings_ubuver .pparankings_arch > .list_search_results_ranks
 
 
-						su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find \"Y PPA Manager\" \"If the search is taking too long, disable PPA Rankings in the Y PPA Manager settings\""
+						su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=edit-find \"Y PPA Manager\" \"If the search is taking too long, disable PPA Rankings in the Y PPA Manager settings\""
 
 						cat .list_search_results_ranks
 						while read line    
@@ -612,7 +610,7 @@ add_searched_advanced_ppa()
 	fi
 #done check
 
-	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"Adding ppa:\"$PPA_TO_ADD\" and updating software sources\""
+	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager\" \"Adding ppa:\"$PPA_TO_ADD\" and updating software sources\""
 	y_add_ppa ppa:"$PPA_TO_ADD"
 	#gksu -S apt-get update
 
@@ -629,9 +627,9 @@ add_searched_advanced_ppa()
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
 			
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager - Done\" \"The ppa:\"$PPA_TO_ADD\" PPA has been added successfully\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-add \"Y PPA Manager - Done\" \"The ppa:\"$PPA_TO_ADD\" PPA has been added successfully\""
 	else
-		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"An error occured and ppa:\"$PPA_TO_ADD\" has not been added\""
+		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-error \"Y PPA Manager\" \"An error occured and ppa:\"$PPA_TO_ADD\" has not been added\""
 			
 	fi	
 
@@ -683,7 +681,7 @@ search_advanced_ppa_packages_results_dialog()
 			#echo -n "http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2"" | xclip -selection clipboard
 			#sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=gtk-paste "Y PPA Manager" ""$ppa_name" PPA link has been copied to the clipboard. Paste the link (CTRL + V) in a web browser."
 			#open PPA link in browser:
-			su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info \"Y PPA Manager - Link copied to clipboard\" \"The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V.\""; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
+			su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-info \"Y PPA Manager - Link copied to clipboard\" \"The PPA link has been copied to the clipboard. Paste the link in a web browser using CTRL + V.\""; echo -n http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2" | xclip -selection clipboard
 			########
 			search_advanced_ppa_ppa_results
 
@@ -696,7 +694,7 @@ search_advanced_ppa_packages_results_dialog()
 					cd $(echo $DOWNLOAD_DIR | sed -e 's/|$//')
 					
 
-					su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"Downloading...\""
+					su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"Downloading...\""
 					for pckg_to_dld in $LIST_PACKAGES; do
 
 						packagetodownload=`echo "$pckg_to_dld" | sed -e "s/|//g" -e "s/  //"`
@@ -718,7 +716,7 @@ search_advanced_ppa_packages_results_dialog()
 					done
 					cd -
 					DOWN_DIR_NOTIFY=$(echo $DOWNLOAD_DIR | sed -e 's/|$//')
-					su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"The select file(s) has/have been downloaded to \"$DOWN_DIR_NOTIFY\"\""
+					su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=go-down \"Y PPA Manager\" \"The select file(s) has/have been downloaded to \"$DOWN_DIR_NOTIFY\"\""
 					search_advanced_ppa_packages_results_dialog
 				else
 					search_advanced_ppa_packages_results_dialog
