@@ -2,9 +2,17 @@
 LANG=en_US.UTF-8
 #echo "$$" > /tmp/y_pid
 Y_RUN_INDICATOR_TRUE=`grep "indicator=enabled" /etc/y-ppa-manager.conf`
+function version { echo "$@" | awk -F. '{ printf("%d%03d\n", $1,$2); }'; }
+GTKVERS=`apt-cache policy libgtk-3-0 | sed -n '2p' | cut -c14- | cut -f1 -d -`
 
 function Y_MAIN_DIALOG() {
-Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="460" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
+if [[ $(version $GTKVERS) < $(version 3.8) ]]; then
+	echo a
+	Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --item-width="182" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="435" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
+else
+	echo b
+	Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="460" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
+fi
 ret=$?
 if [[ $ret -eq 0 ]]; then
 	Y_MAIN_DIALOG &

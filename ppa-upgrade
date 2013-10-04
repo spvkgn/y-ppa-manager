@@ -31,6 +31,11 @@ if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || 
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
+WMNAME=bash
+WMPID=$(pidof ${WMNAME} | awk '{print $1}')
+WMUSER=$(ps -e -o user,comm | grep ${WMNAME} | cut -f1 -d " ")
+DBUS=$(egrep -z 'DBUS_SESSION_BUS_ADDRESS|DISPLAY' /proc/${WMPID}/environ | sed -r -e 's/(.)DBUS_/\1 DBUS_/' -e 's/(.)DISPLAY/\1 DISPLAY/')
+########
 
 usage() {
 cat << EOF
@@ -128,7 +133,7 @@ replace_old_new() {
 Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all existing PPAs and replace the old Ubuntu version with    \n   the new Ubuntu version you enter below (only for PPAs that work   \n   with the new Ubuntu version)   " --field="Current Ubuntu version. E.g. raring" --field="Previous Ubuntu version. E.g. quantal" --button="gtk-cancel:1" --button="gtk-ok:0"`
 ret=$?
 if [[ $ret -eq 0 ]]; then
-	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Updating release name in working PPAs. This may take a while..."
+	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Updating release name in working PPAs. This may take a while...\""
 	NEW_RELEASE=`echo "$Y_UPGRADE_PPA" | cut -d '|' -f1`
 	OLD_RELEASE=`echo "$Y_UPGRADE_PPA" | cut -d '|' -f2`
 	selectok=true
@@ -144,7 +149,7 @@ yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/sh
 
 ret=$?
 if [[ $ret -eq 0 ]]; then
-	sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Re-enablling working PPAs after Ubuntu upgrade. This may take a while..."
+	su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Re-enablling working PPAs after Ubuntu upgrade. This may take a while...\""
 	selectok=true
 else
 	selectok=false
@@ -273,9 +278,9 @@ done
 
 if $changed && ! $QUIET; then
 		apt-get update
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical "Y PPA Manager" "Done updating PPAs"
+		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Done updating PPAs\""
 		y-ppa-cmd advanced
 elif $selectok; then
-		sudo -u "$loggeduser" notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information "Y PPA Manager" "There are no PPAs to update"
+		su ${WMUSER} -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-information \"Y PPA Manager\" \"There are no PPAs to update\""
 		y-ppa-cmd advanced
 fi
