@@ -51,7 +51,6 @@ class IndicatorY:
 
         # Create menu
         menu = gtk.Menu()
-        self.ind.set_menu(menu)
 
         # List items
         item = gtk.MenuItem("Add PPA")
@@ -92,6 +91,7 @@ class IndicatorY:
         item.connect("activate", item_run, "_yppa_quit")
         menu.append(item)
 
+        self.ind.set_menu(menu)
         menu.show_all()
 
 if __name__ == "__main__":
