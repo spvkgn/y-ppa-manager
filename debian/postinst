@@ -70,7 +70,7 @@ if [ "$1" = "configure" ]; then
 	gtk-update-icon-cache --ignore-theme-index -f -q '/usr/share/icons/ubuntu-mono-dark' && gtk-update-icon-cache --ignore-theme-index -f -q '/usr/share/icons/ubuntu-mono-light' || true
 		fi
 		if  [ -x /usr/share/icons/Faience ]; then
-	gtk-update-icon-cache --ignore-theme-index -f -q ' /usr/share/icons/Faience' || true
+	gtk-update-icon-cache --ignore-theme-index -f -q '/usr/share/icons/Faience' || true
 		fi
 	fi
 fi
