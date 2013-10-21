@@ -44,7 +44,7 @@ Add a PPA (in the "ppa:webupd8/gthumb" form). It will add the PPA and update pac
 Manage the PPAs enabled on your computer. From this dialog you can remove a PPA, purge it, update it, edit the PPA source or list the packages available in a PPA for your Ubuntu version. Purge PPA uses the "ppa-purge" tool to downgrade the packages in the selected PPA to the version in the official Ubuntu repositories and disables that PPA. The "list packages" feature lists all the packages that are available for your Ubuntu version in the selected PPA (only PPAs that you have added to your system and are enabled will show up here).
 
 .SS Search in all Launchpad PPAs
-Performs a search in all the Launchpad PPAs for the package you enter in the search form. The regular search uses the Launchpad PPA search so it may return empty PPAs if the PPAs have a description that matches your search, or a PPA with packages for a different Ubuntu version then your current Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for - see info regarding the settings below). The advanced search will only return the exact matches for your search and will display the PPAs and package versions at a glance.
+Performs a search in all the Launchpad PPAs for the package you enter in the search form. The regular search uses the Launchpad PPA search so it may return empty PPAs if the PPAs have a description that matches your search, or a PPA with packages for a different Ubuntu version then your current Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for - see info regarding the settings below). The advanced search (this is the default search starting with Y PPA Manager 0.9.9.1) will only return the exact matches for your search and will display the PPAs and package versions at a glance.
 
 .PP
 .B You will be able to perform the following operations on a PPA:
@@ -65,7 +65,7 @@ will attempt to fix all missing GPG keys for all the PPAs added to your system. 
 will try to fix all GPG BADSIG errors which are sometimes displayed when running a "sudo apt-get update".
 
 .B Advanced > Backup repositories:
-backs up all the PPAs on your computer (and exist under /etc/apt/sources.list.d). This feature does not back up the GPG keys, however, the restore feature automatically imports all missing GPG keys so basically, a GPG keys backup is not required.
+backs up all the PPAs on your computer (all under /etc/apt/sources.list.d and the PPAs in /etc/apt/sources.list - but only Launchpad PPAs). This feature does not back up the GPG keys, however, the restore feature automatically imports all missing GPG keys so basically, a GPG keys backup is not required.
 
 .B Advanced > Restore repositories backup:
 restores a repositories backup which you've previously performed using Y PPA Manager. It also imports all missing GPG keys.
