@@ -1,8 +1,9 @@
-y-ppa-manager (0.9.9.1-1~webupd8~lucid) lucid; urgency=medium
+y-ppa-manager (0.9.9.1-2~webupd8~quantal) quantal; urgency=medium
  
   * Ubuntu 13.10: fix policy kit issue with GNOME 3.10
   * Ubuntu 13.10: fix main window issues with GTK 3.8.3+
   * Ubuntu 13.10: fix appindicator
+  * Ubuntu 13.10: fix package installation not working
   * Notification fixes for GNOME Shell
   * Fix backup not backing up sources.list PPAs
   * use the deep search as default and add checkbox for the basic search instead
