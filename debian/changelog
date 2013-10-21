@@ -1,8 +1,15 @@
-y-ppa-manager (0.9.9.1-1~webupd8~lucid4) lucid; urgency=medium
+y-ppa-manager (0.9.9.1-1~webupd8~lucid) lucid; urgency=medium
  
-  * unreleased
+  * Ubuntu 13.10: fix policy kit issue with GNOME 3.10
+  * Ubuntu 13.10: fix main window issues with GTK 3.8.3+
+  * Ubuntu 13.10: fix appindicator
+  * Notification fixes for GNOME Shell
+  * Fix backup not backing up sources.list PPAs
+  * use the deep search as default and add checkbox for the basic search instead
+  * use single click to open items in the main dialog
+  * added Faience indicator icon (thanks to Giovani Cascaes!)
  
- -- Alin Andrei <webupd8@gmail.com>  Tue, 04 Jun 2013 23:30:13 +0300
+ -- Alin Andrei <webupd8@gmail.com>  Mon, 21 Oct 2013 14:20:34 +0300
 
 y-ppa-manager (0.9.9-1~webupd8~lucid4) lucid; urgency=medium
  

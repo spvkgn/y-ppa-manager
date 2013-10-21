@@ -161,7 +161,7 @@ class InstallPackageDialog(gtk.Dialog):
 			try:
 				self.set_size_request(800, 650)
 				self.progress.show_terminal(expanded=True)
-				cache.commit(self.progress.fetch, self.progress.install)					
+				cache.commit(self.progress.acquire, self.progress.install)					
 			except LockFailedException,e:
 				print e
 				md = gtk.MessageDialog(parent=self,
