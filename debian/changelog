@@ -1,4 +1,4 @@
-y-ppa-manager (0.9.9.1-2~webupd8~quantal) quantal; urgency=medium
+y-ppa-manager (0.9.9.1-2~webupd8~precise) precise; urgency=medium
  
   * Ubuntu 13.10: fix policy kit issue with GNOME 3.10
   * Ubuntu 13.10: fix main window issues with GTK 3.8.3+

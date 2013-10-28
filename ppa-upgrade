@@ -255,6 +255,10 @@ for file in /etc/apt/sources.list.d/*; do
 					result=$(sed -i "s/^# //g" "$file" &>/dev/null; \
 				    	     sed -i "s/ # disabled on upgrade.*//g" "$file" &>/dev/null; echo $?
 					)
+					#fix Ubuntu 13.04+ not updating deb-src line:
+				    	newdist=$(grep "^deb http" "$file" | cut -d ' ' -f3)
+				    	olddist=$(grep ^deb-src "$file" | cut -d ' ' -f3)
+				    	sed -i "s/$olddist/$newdist/g" "$file" &>/dev/null
 				else
 					! $QUIET && echo -en "\tUpdating PPA to use ${NEW_RELEASE^} instead of ${OLD_RELEASE^}..."
 					result=$(sed -i "s/$OLD_RELEASE/$NEW_RELEASE/g" "$file" &>/dev/null; echo $?)
