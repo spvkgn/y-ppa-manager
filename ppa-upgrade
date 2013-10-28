@@ -185,7 +185,8 @@ for file in /etc/apt/sources.list.d/*; do
 		action='upgrade'
 	else
 		# Check if this PPA was disabled on upgrade
-		line="$(grep -whE "disabled on upgrade" "$file" | head -1)"
+		#line="$(grep -whE "disabled on upgrade" "$file" | head -1)"
+		line=$(grep " # .*$UBUVER.*" "$file" | head -1)
 		action='uncomment'
 	fi
 	
@@ -198,10 +199,10 @@ for file in /etc/apt/sources.list.d/*; do
 	
 	# Check if PPA with an updated URL exists
 	if [[ $action == 'uncomment' ]]; then
-		url="$(echo $line | sed -e "s/^# /#/g" -e "s/# disabled on upgrade.*//g" | cut -d\  -f2- | tr \  \/)"
+		url="$(echo $line | sed -e "s/^# /#/g" -e "s/ # .*$UBUVER.*//g" | cut -d\  -f2- | tr \  \/)"
 		url=${url//ubuntu/ubuntu\/dists}
 	else
-		url="$(echo $line | sed -e "s/^# /#/g" -e "s/# disabled on upgrade.*//g" | cut -d\  -f2- | tr \  \/)"
+		url="$(echo $line | sed -e "s/^# /#/g" -e "s/ # .*$UBUVER.*//g" | cut -d\  -f2- | tr \  \/)"
 		url=${url//$OLD_RELEASE/dists\/$NEW_RELEASE}
 	fi
 	
@@ -254,7 +255,7 @@ for file in /etc/apt/sources.list.d/*; do
 				if [[ $action == 'uncomment' ]]; then
 					! $QUIET && echo -en "\tEnabling PPA previously disabled by distribution upgrade..."
 					result=$(sed -i "s/^# //g" "$file" &>/dev/null; \
-				    	     sed -i "s/ # disabled on upgrade.*//g" "$file" &>/dev/null; echo $?
+				    	     sed -i "s/ # .*$UBUVER.*//g" "$file" &>/dev/null; echo $?
 					)
 					#fix Ubuntu 13.04+ not updating deb-src line:
 				    	newdist=$(grep "^deb http" "$file" | cut -d ' ' -f3)
