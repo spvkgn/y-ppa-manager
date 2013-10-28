@@ -44,6 +44,7 @@ Change or list PPAs that can be upgraded from OLD_RELEASE to NEW_RELEASE.
 OPTIONS:
    -h, --help           Show this message
    -t, --test           Don't make any changes
+   -r, --regular        Re-enable PPAs automatically disabled after Ubuntu upgrade
    -u, --upgrade        Upgrade PPAs using OLD_RELEASE to use the NEW_RELEASE
    -a, --auto-upgrade   Automatically upgrade PPAs to use the current release (experimental)
    -q, --quiet          Don't output anything. Useful for scripts.
