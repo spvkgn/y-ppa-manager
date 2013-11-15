@@ -97,23 +97,17 @@ if [[ `lsb_release -cs` = "olivia" ]]; then
 	mv /etc/apt/sources.list.d/"$mintfix"-olivia.list /etc/apt/sources.list.d/"$mintfix"-raring.list
         sed -i 's/olivia/raring/g' /etc/apt/sources.list.d/"$mintfix"-raring.list
 	update-ppa $1 > /dev/null 2>&1
-elif [[ `lsb_release -cs` = "petra" ]]; then
-	/usr/lib/y-ppa-manager/add-apt-repository -y $1 &> /tmp/.added_ppa
-	mintfix=$(echo "$1" | sed -e 's/ppa://g' -e 's/\//-/g')
-	mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
-        sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
-	update-ppa $1 > /dev/null 2>&1
 elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
 fi
 #work-around for stupid add-apt-repository bug which adds non-existent ppa when using -y
-ERRORREADINGPPA=$(cat /tmp/.added_ppa | grep "Error reading")
+ERRORREADINGPPA=$(grep "Error reading" /tmp/.added_ppa || grep "Cannot add" /tmp/.added_ppa)
 if [[ "$ERRORREADINGPPA" ]]; then
 	first=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 1)
 	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
-	if [[ `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+	if [[ `lsb_release -cs` = "olivia" || `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
 	fi
 fi

@@ -93,12 +93,6 @@ if [[ `lsb_release -cs` = "olivia" ]]; then
 	mv /etc/apt/sources.list.d/"$mintfix"-olivia.list /etc/apt/sources.list.d/"$mintfix"-raring.list
         sed -i 's/olivia/raring/g' /etc/apt/sources.list.d/"$mintfix"-raring.list
 	update-ppa $1 > /dev/null 2>&1
-elif [[ `lsb_release -cs` = "petra" ]]; then
-	/usr/lib/y-ppa-manager/add-apt-repository -y $1 
-	mintfix=$(echo "$1" | sed -e 's/ppa://g' -e 's/\//-/g')
-	mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
-        sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
-	update-ppa $1 > /dev/null 2>&1
 elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1
 else
@@ -270,12 +264,6 @@ search_ppa_packages_results_dialog()
 						mintfix=$(echo "$ppa_name" | sed -e 's/\//-/g')
 						mv /etc/apt/sources.list.d/"$mintfix"-olivia.list /etc/apt/sources.list.d/"$mintfix"-raring.list
        						sed -i 's/olivia/raring/g' /etc/apt/sources.list.d/"$mintfix"-raring.list
-						update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
-					elif [[ `lsb_release -cs` = "petra" ]]; then
-						/usr/lib/y-ppa-manager/add-apt-repository -y ppa:"$ppa_name"
-						mintfix=$(echo "$ppa_name" | sed -e 's/\//-/g')
-						mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
-       						sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
 						update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 						add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
@@ -772,12 +760,6 @@ search_advanced_ppa_packages_results_dialog()
 						mintfix=$(echo "$PPA_TO_ADD" | sed -e 's/\//-/g')
 						mv /etc/apt/sources.list.d/"$mintfix"-olivia.list /etc/apt/sources.list.d/"$mintfix"-raring.list
       						sed -i 's/olivia/raring/g' /etc/apt/sources.list.d/"$mintfix"-raring.list
-						update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
-					elif [[ `lsb_release -cs` = "petra" ]]; then
-						/usr/lib/y-ppa-manager/add-apt-repository -y ppa:"$PPA_TO_ADD"
-						mintfix=$(echo "$PPA_TO_ADD" | sed -e 's/\//-/g')
-						mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
-      						sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
 						update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 						add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1

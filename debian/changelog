@@ -1,4 +1,4 @@
-y-ppa-manager (0.9.9.1-3~webupd8~precise) precise; urgency=medium
+y-ppa-manager (0.9.9.1-4~webupd8~precise) precise; urgency=medium
  
   * Fixed: Re-enable working PPAs after Ubuntu upgrade to work on non-english systems (lp: #1244986)
   * Fixed: a couple more small bugs
