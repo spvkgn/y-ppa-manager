@@ -346,8 +346,9 @@ list_packages_PPA()
 
 		#ZENITY_PPA_PACKAGES="$PPA_PACKAGES ($PPA_VERSIONS)"
 
-		LIST_PACKAGES=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
-		if [[ $? -eq 0 ]]; then	
+		LIST_PACKAGES=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --always-print-result --multiple --separator=" " --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Install:2" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
+		ret=$?
+		if [[ $ret -eq 0 ]]; then	
 
 		
 			#echo "http://launchpad.net/~"$url_part_1"/+archive/"$url_part_2"" | xclip -selection clipboard
@@ -358,9 +359,23 @@ list_packages_PPA()
 			CLEARTEMP
 			list_packages_PPA
 	
-		elif [[ $? -eq 1 ]]; then
+		elif [[ $ret -eq 1 ]]; then
 			CLEARTEMP	
 			list_packages_PPA
+		elif [[ $ret -eq 2 ]]; then
+			packagestoinstall=$(echo $LIST_PACKAGES | sed -e 's/([^)]*)//g' -e 's/LIST_PACKAGES//g' -e 's/    / /g' -e 's/  / /g' -e 's/^ //g' -e 's/ $//g')
+			packagestoinstall_with_comma=$(echo $packagestoinstall | sed -e 's/ /, /g')
+			echo LIST_PACKAGES $LIST_PACKAGES >> /tmp/.y-test
+			echo packagestoinstall $packagestoinstall >> /tmp/.y-test
+			echo packagestoinstall_with_comma $packagestoinstall_with_comma >> /tmp/.y-test
+			INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+			if [[ $? -eq 0 ]]; then
+					python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
+					CLEARTEMP
+			else
+					CLEARTEMP
+					list_packages_PPA
+			fi
 		fi	
 
 		CLEARTEMP
