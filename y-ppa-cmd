@@ -45,6 +45,35 @@ case `lsb_release -cs` in
 		UBUVER="precise" ;;
 esac
 
+# Temporary work-around for Linux Mint 16 add-apt-repository
+if [ `lsb_release -cs` = "petra" ]; then
+	if ! grep -q "petra" /usr/share/python-apt/templates/LinuxMint.info 2>/dev/null; then
+	echo "
+Suite: petra
+RepositoryType: deb
+BaseURI: http://packages.linuxmint.com/
+MatchURI: packages.linuxmint.com
+MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
+MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
+Description: Linux Mint 16 'Petra'
+Component: main
+CompDescription: Main packages
+CompDescriptionLong: Main packages
+Component: upstream
+CompDescription: Upstream packages
+CompDescriptionLong: Upstream packages
+Component: import
+CompDescription: Imported packages
+CompDescriptionLong: Imported packages
+Component: backport
+CompDescription: Backports
+CompDescriptionLong: Backported packages
+Component: romeo
+CompDescription: Unstable packages
+CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
+	fi
+fi
+
 
 loggeduser=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)

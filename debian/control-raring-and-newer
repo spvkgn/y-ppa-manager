@@ -8,7 +8,7 @@ Homepage: https://launchpad.net/y-ppa-manager
 
 Package: y-ppa-manager
 Architecture: all
-Depends: yad (>= 0.15.0), libnotify-bin, ppa-purge, python3-software-properties, wget, xterm, launchpad-getkeys (>= 0.3.2), python, python-launchpadlib, python-appindicator, python-gtk2, python-apt, python-vte, xclip, policykit-1
+Depends: yad (>= 0.24.1), libnotify-bin, ppa-purge, python3-software-properties, wget, xterm, launchpad-getkeys (>= 0.3.2), python, python-launchpadlib, python-appindicator, python-gtk2, python-apt, python-vte, xclip, policykit-1
 Recommends: gksu | kdesudo
 Description: Y PPA Manager
  Easily manage PPAs: add, remove, purge and search in all Launchpad PPAs using a graphical interface. The search feature allows you to add the found PPAs, list the packages and their versions in a PPA or download some packages in the PPA.
