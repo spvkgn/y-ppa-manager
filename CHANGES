@@ -1,3 +1,7 @@
+0.9.9.2:
+- Ubuntu 14.04 Trusty Tahr and Linux Mint 16 Petra support
+- Added install button on Manage PPAs -> List Packages
+
 0.9.9.1:
 - Ubuntu 13.10: fix policy kit issue with GNOME 3.10
 - Ubuntu 13.10: fix main window issues with GTK 3.8.3+
@@ -7,8 +11,10 @@
 - use the deep search as default and add checkbox for the basic search instead
 - use single click to open items in the main dialog
 - added Faience indicator icon (thanks to Giovani Cascaes!)
+- Fixed: Re-enable working PPAs after Ubuntu upgrade to work on non-english systems (lp: #1244986)
+- Fixed: a couple more small bugs
 
-0.9.9 (work in progress):
+0.9.9:
 - support for Linux Mint 15 Olivia as well as the latest Ubuntu 13.10 Saucy Salamander
 
 0.0.9.8:
