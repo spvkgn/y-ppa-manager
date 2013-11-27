@@ -109,7 +109,7 @@ else
 	add-apt-repository $1 &> /tmp/.added_ppa && update-ppa $1
 fi
 #work-around for stupid add-apt-repository bug which adds non-existent ppa when using -y
-ERRORREADINGPPA=$(cat /tmp/.added_ppa | grep "Error reading")
+ERRORREADINGPPA=$(grep "Error reading" /tmp/.added_ppa || grep "Cannot add" /tmp/.added_ppa)
 if [[ "$ERRORREADINGPPA" ]]; then
 	first=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 1)
 	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
