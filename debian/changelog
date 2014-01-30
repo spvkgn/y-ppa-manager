@@ -1,4 +1,10 @@
-y-ppa-manager (0.9.9.2-3~webupd8~lucid) lucid; urgency=medium
+y-ppa-manager (0.9.9.3-1~webupd8~saucy) saucy; urgency=medium
+ 
+  * Unreleased
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Wed, 27 Nov 2013 14:20:34 +0300
+
+y-ppa-manager (0.9.9.2-3~webupd8~saucy) saucy; urgency=medium
  
   * Ubuntu 14.04 Trusty Tahr and Linux Mint 16 Petra support
   * Added install button on Manage PPAs -> List Packages

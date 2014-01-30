@@ -96,7 +96,7 @@ function testConnection()
 	testconnection=`wget --no-check-certificate --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
 	if [[ $? != 0 ]]; then
 		echo  "You are not connected to the Internet. Please check your Internet connection and try again."
-		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
+		yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
 		ppa_manager_run
 	else
 		echo Internet connection - ok
@@ -112,7 +112,7 @@ function checkAPT()
 		if ps -U root -u root u | grep $lock | grep -v grep > /dev/null;
 			then 
 				echo "Installation won't work. Please close $lock first then try again.";
-				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Warning - Y PPA Manager" --text="\n\n  Selected action won't work.  \n\n  Please close / wait for <b>$lock</b> to finish and try again!   \n" --button="gtk-ok:0"
+				yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Warning - Y PPA Manager" --text="\n\n  Selected action won't work.  \n\n  Please close / wait for <b>$lock</b> to finish and try again!   \n" --button="gtk-ok:0"
 				exit
 		fi
 	done
@@ -179,7 +179,7 @@ sed -i -e 's/sudo rm -- "/   /g' -e 's/" #.*//g' -e 's/$list/list \n/g' /tmp/.du
 dupes_to_remove=$(cat /tmp/.dupes_to_remove)
 
 if [[ -s /tmp/.rmdups ]]; then
-	yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources detected" --text="   You have $dupes_number duplicate PPA source list file(s)   " --button="gtk-cancel:1" --button="Remove duplicates:0" --button="Show duplicates:2"
+	yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources detected" --text="   You have $dupes_number duplicate PPA source list file(s)   " --button="gtk-cancel:1" --button="Remove duplicates:0" --button="Show duplicates:2"
 	ret=$?
 	if [[ $ret -eq 0 ]]; then
 		chmod +x /tmp/.rmdups
@@ -187,7 +187,7 @@ if [[ -s /tmp/.rmdups ]]; then
 		su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=dialog-ok \"Y PPA Manager - Done\" \"Successfully removed duplicates\""
 
 	elif [[ $ret -eq 2 ]]; then
-		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
+		yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Duplicate PPA sources" --text="$dupes_show \n\n\n   <b>The following PPA source(s) will be removed:</b> \n$dupes_to_remove"   --button="gtk-cancel:1" --button="Remove duplicates:0"
 		if [[ $? -eq 0 ]]; then
 			chmod +x /tmp/.rmdups
 			sh /tmp/.rmdups && rm /tmp/.dupes_to_remove /tmp/.dupes_show /tmp/.rmdups > /dev/null 2>&1
@@ -213,7 +213,7 @@ add_a_PPA()
 	
 #	checkAPT
 
-	ADD_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --entry --title="Add a PPA" --text="Enter a PPA to add (e.g.: ppa:webupd8team/ghtumb)\n" --entry-label="PPA:"`
+	ADD_PPA=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --entry --title="Add a PPA" --text="Enter a PPA to add (e.g.: ppa:webupd8team/ghtumb)\n" --entry-label="PPA:"`
 	
 
 	if [[ $? -eq 0 ]]; then
@@ -238,7 +238,7 @@ add_a_PPA()
 			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
-				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$ADD_PPA_NO_SPACES is already  \n  added on your system.  " --button="gtk-ok:0"
+				yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$ADD_PPA_NO_SPACES is already  \n  added on your system.  " --button="gtk-ok:0"
 				add_a_PPA
 			fi
 #done check
@@ -264,7 +264,7 @@ add_a_PPA()
 			fi	
 		
 		else
-			yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The PPA you've entered is not valid  \n  Please enter a valid PPA (e.g.: ppa:webupd8/gthumb)  " --button="gtk-ok:0"
+			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The PPA you've entered is not valid  \n  Please enter a valid PPA (e.g.: ppa:webupd8/gthumb)  " --button="gtk-ok:0"
 			add_a_PPA
 		fi	
 	else
@@ -334,7 +334,7 @@ list_packages_PPA()
 	list_sourcesNAMES=$(cat /tmp/.y_ppalist.list)
 #	list_sourcesNAMES=`cat /tmp/.non_disabled.list`
 
-	LIST_PPA_PACKAGES=$(yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=600 --height=500 --title="Manage PPAs - Y PPA Manager" --search-column="1" --regex-search --text="Select the PPA from the list below (only non-disabled PPAs are listed):" --button="Remove:4" --button="Purge:5" --button="Update:2" --button="Edit source:3" --button="List packages:0" --button="Close:6" --column "PPA" --list $list_sourcesNAMES)
+	LIST_PPA_PACKAGES=$(yad --center --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator="" --list --width=600 --height=500 --title="Manage PPAs - Y PPA Manager" --search-column="1" --regex-search --text="Select the PPA from the list below (only non-disabled PPAs are listed):" --button="Remove:4" --button="Purge:5" --button="Update:2" --button="Edit source:3" --button="List packages:0" --button="Close:6" --column "PPA" --list $list_sourcesNAMES)
 	ret=$?
 	echo LIST_PPA_PACKAGES $LIST_PPA_PACKAGES
 
@@ -375,7 +375,7 @@ list_packages_PPA()
 
 		#ZENITY_PPA_PACKAGES="$PPA_PACKAGES ($PPA_VERSIONS)"
 
-		LIST_PACKAGES=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --always-print-result --multiple --separator=" " --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Install:2" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
+		LIST_PACKAGES=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --always-print-result --multiple --separator=" " --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Install:2" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
 		ret=$?
 		if [[ $ret -eq 0 ]]; then	
 
@@ -394,7 +394,7 @@ list_packages_PPA()
 		elif [[ $ret -eq 2 ]]; then
 			packagestoinstall=$(echo $LIST_PACKAGES | sed -e 's/([^)]*)//g' -e 's/LIST_PACKAGES//g' -e 's/    / /g' -e 's/  / /g' -e 's/^ //g' -e 's/ $//g')
 			packagestoinstall_with_comma=$(echo $packagestoinstall | sed -e 's/ /, /g')
-			INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+			INSTALL_ONLY=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 			if [[ $? -eq 0 ]]; then
 					python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					CLEARTEMP
@@ -463,7 +463,7 @@ list_packages_PPA()
 		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
 		fullppa_stripdist=$(echo "$LIST_PPA_PACKAGES" | sed -e 's/ (.*//g')
 
-		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Confirm" --text="  Are you sure you want to purge  \n  the "$fullppa_stripdist" PPA?   " --button="Cancel:1" --button="OK:0"
+		yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Confirm" --text="  Are you sure you want to purge  \n  the "$fullppa_stripdist" PPA?   " --button="Cancel:1" --button="OK:0"
 		if [[ $? -eq 0 ]]; then
 			checkAPT
 			testConnection
@@ -509,7 +509,7 @@ b_name=$(date +%F-%H%M)
 username=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)
 
-Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=$homedir/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
+Y_PPA_BACKUP=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=$homedir/repositories.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
 
 ret=$?
 if [[ $ret -eq 0 ]]; then
@@ -539,7 +539,7 @@ advanced_options
 
 #b_name=$(date +%F-%H%M)
 
-#Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=/home/$ON_USER/full-sources.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
+#Y_PPA_BACKUP=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --filename=/home/$ON_USER/full-sources.backup-$b_name.tar.gz --save  --button="Cancel:1" --button="Save:0" --width=700 --height=500 --title="Save the backup..."`
 
 #if [[ $? -eq 0 ]]; then
 #	cd /etc/apt/
@@ -559,7 +559,7 @@ advanced_options
 function y_ppa_restore() {
 username=`who | grep "$DISPLAY" | cut -d ' ' -f 1 | tail -1`
 homedir=`awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd`
-Y_PPA_BACKUP=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save --filename=$homedir/ --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
+Y_PPA_BACKUP=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --file-selection --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save --filename=$homedir/ --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select backup to restore..."`	
 
 if [[ $? -eq 0 ]]; then
 	tar zxvf "$Y_PPA_BACKUP" -C /etc/apt/sources.list.d/
@@ -595,7 +595,7 @@ ppa-upgrade -u
 
 function y_ppa_import_gpg_keys() {
 
-	Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will try to import all missing GPG repository keys.   \n   This make take a a while so please be patient.   \n\n   Click OK to continue   " --button="gtk-cancel:1" --button="gtk-ok:0"`
+	Y_UPGRADE_PPA=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will try to import all missing GPG repository keys.   \n   This make take a a while so please be patient.   \n\n   Click OK to continue   " --button="gtk-cancel:1" --button="gtk-ok:0"`
 	ret=$?
 	if [[ $ret -eq 0 ]]; then
 		launchpad-getkeys
@@ -611,7 +611,7 @@ function y_ppa_import_gpg_keys() {
 
 function y_ppa_fix_gpg_badsig() {
 
-	Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will try to fix all GPG BADSIG errors.   \n   This make take a a while so please be patient.   \n\n   Click OK to continue   " --button="gtk-cancel:1" --button="gtk-ok:0"`
+	Y_UPGRADE_PPA=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will try to fix all GPG BADSIG errors.   \n   This make take a a while so please be patient.   \n\n   Click OK to continue   " --button="gtk-cancel:1" --button="gtk-ok:0"`
 	ret=$?
 	if [[ $ret -eq 0 ]]; then
 		fix_gpg_badsig
@@ -625,7 +625,7 @@ function y_ppa_fix_gpg_badsig() {
 }
 
 #function y_full_restore() {
-#Y_PPA_BACKUP=`yad --file-selection --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save  --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select a full backup to restore..."`	
+#Y_PPA_BACKUP=`yad --center --file-selection --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --save  --button="Cancel:1" --button="Restore:0" --width=700 --height=500 --title="Select a full backup to restore..."`	
 
 #if [[ $? -eq 0 ]]; then
 #	gksu -S -m "Y PPA Manager requires admin privileges for this task" "tar -xvf "$Y_PPA_BACKUP" -C /etc/apt/"
@@ -640,7 +640,7 @@ function y_ppa_fix_gpg_badsig() {
 
 function advanced_options() {
 
-Y_ADVANCED=`yad --list --no-headers --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --column="" "Scan and remove duplicate PPAs" "Try to import all missing GPG keys" "Try to fix all GPG BADSIG errors" "Backup repositories" "Restore repositories backup" "Re-enable working PPAs after Ubuntu upgrade" "Update release name in working PPAs" --width=350 --height=270 --title="Advanced - Y PPA Manager" --button="Close:1" --button="gtk-ok:0"`
+Y_ADVANCED=`yad --center --list --no-headers --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --column="" "Scan and remove duplicate PPAs" "Try to import all missing GPG keys" "Try to fix all GPG BADSIG errors" "Backup repositories" "Restore repositories backup" "Re-enable working PPAs after Ubuntu upgrade" "Update release name in working PPAs" --width=350 --height=270 --title="Advanced - Y PPA Manager" --button="Close:1" --button="gtk-ok:0"`
 
 Y_ADVANCED_fix=`echo "$Y_ADVANCED" | sed -e "s/|//"`
 
@@ -730,9 +730,9 @@ fi
 #temporarely_disabled  fi
 
 
-#temporarely_disabled  Y_SETTINGS=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="PPA-Purge:CB" $ppa_purge_opt --field="Display PPA rankings for deep search (slow):CB" $rankings_opt --field="Ubuntu version*" "$current_ubuntu_version" --field="Downloads folder:DIR" "$current_downloads_folder" --text="   * Linux Mint users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
+#temporarely_disabled  Y_SETTINGS=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="PPA-Purge:CB" $ppa_purge_opt --field="Display PPA rankings for deep search (slow):CB" $rankings_opt --field="Ubuntu version*" "$current_ubuntu_version" --field="Downloads folder:DIR" "$current_downloads_folder" --text="   * Linux Mint users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
 
-Y_SETTINGS=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu Indicator:CB" $indicator_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint, elementary OS users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
+Y_SETTINGS=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu Indicator:CB" $indicator_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint, elementary OS users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
 
 ret=$?
 
@@ -780,7 +780,7 @@ Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-i
 
 		elif [[ $Y_indicator = "enabled" ]]; then
 			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
-			yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   The indicator will be started the   \n   next time you run Y PPA Manager   " --button="Ok:1"
+			yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   The indicator will be started the   \n   next time you run Y PPA Manager   " --button="Ok:1"
 
 		elif [[ $Y_indicator = "disabled" ]]; then
 			killall y-ppa-indicator &
@@ -796,7 +796,7 @@ Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-i
 #			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #			rm /tmp/.y-ppa-manager.conf
 		else
-			yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  trusty, saucy, raring, quantal, precise, oneiric, natty or lucid (in lowercase) " --button="gtk-ok:0"
+			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  trusty, saucy, raring, quantal, precise, oneiric, natty or lucid (in lowercase) " --button="gtk-ok:0"
 			y_ppa_settings
 		fi
 
@@ -843,7 +843,7 @@ python /usr/share/pyshared/y-ppa-manager/install_package.py
 
 help_dialog()
 {
-	yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Help - Y PPA Manager" --width="500" --height="400" --text-info  --wrap --filename="/usr/share/y-ppa-manager/y_ppa_man_help" --button="Close:1"
+	yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Help - Y PPA Manager" --width="500" --height="400" --text-info  --wrap --filename="/usr/share/y-ppa-manager/y_ppa_man_help" --button="Close:1"
 
 	exit
 
@@ -857,7 +857,7 @@ function manage_ppas_notification ()
 
 #ppa_manager_run()
 #{
-#MANAGE_PPA=$(yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator=" " --list --width=450 --height=250 --title="Y PPA Manager" --button="Help:3" --button="Exit:1" --button="Select:0" --text="Select an action:" --column=" " --no-headers "Add PPA" "Remove PPA" "Purge PPA" "List packages in a PPA on your computer" "Search packages in all Launchpad PPAs")
+#MANAGE_PPA=$(yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --separator=" " --list --width=450 --height=250 --title="Y PPA Manager" --button="Help:3" --button="Exit:1" --button="Select:0" --text="Select an action:" --column=" " --no-headers "Add PPA" "Remove PPA" "Purge PPA" "List packages in a PPA on your computer" "Search packages in all Launchpad PPAs")
 
 #rett=$?
 

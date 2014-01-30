@@ -106,7 +106,7 @@ function checkAPT()
 		if ps -U root -u root u | grep $lock | grep -v grep > /dev/null;
 			then 
 				echo "Installation won't work. Please close $lock first then try again.";
-				yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Warning - Y PPA Manager" --text="\n\n  Selected action won't work.  \n\n  Please close / wait for <b>$lock</b> to finish and try again!   \n" --button="OK:4"
+				yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Warning - Y PPA Manager" --text="\n\n  Selected action won't work.  \n\n  Please close / wait for <b>$lock</b> to finish and try again!   \n" --button="OK:4"
 				search_ppa_ppa_results
 		fi
 	done
@@ -152,7 +152,7 @@ echo PPA_TO_ADD $PPA_TO_ADD
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
 echo "yes then wtf"
-		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
+		yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
 		search_ppa_ppa_results
 	fi
 #done check
@@ -200,7 +200,7 @@ search_ppa_packages_results_dialog()
 
 
 	if [[ ! -s /tmp/.Packages ]]; then
-		yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  This PPA does not have any packages for your Ubuntu  \n  version or the PPA is empty   "
+		yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  This PPA does not have any packages for your Ubuntu  \n  version or the PPA is empty   "
 		search_ppa_ppa_results
 	else
 		PPA_PACKAGES=`grep "^Package: " .Packages | sed -e 's/Package://g' > .packagename`
@@ -212,7 +212,7 @@ search_ppa_packages_results_dialog()
 
 		PPA_SEARCH_LIST_RESULTS=`cat .package_search_list_results`
 		ppa_name=`echo "$SEARCH_LIST_PACKAGES" | sed -e 's/|\|(.*//'`
-		LIST_PACKAGES=`yad --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=400 --search-column="1" --regex-search --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Install:0" --button="Copy PPA link to clipboard:3" --list $PPA_SEARCH_LIST_RESULTS`
+		LIST_PACKAGES=`yad --center --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=400 --search-column="1" --regex-search --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Install:0" --button="Copy PPA link to clipboard:3" --list $PPA_SEARCH_LIST_RESULTS`
 
 		ret=$?
 #		echo RET $ret
@@ -234,7 +234,7 @@ search_ppa_packages_results_dialog()
 
 		elif [[ $ret -eq 1 ]]; then
 
-			DOWNLOAD_DIR=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="Select downloads folder:DIR"  --button="gtk-cancel:1" --button="gtk-ok:0"`
+			DOWNLOAD_DIR=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="Select downloads folder:DIR"  --button="gtk-cancel:1" --button="gtk-ok:0"`
 				ret=$?
 				if [[ $ret -eq 0 ]]; then
 					cd $(echo $DOWNLOAD_DIR | sed -e 's/|$//')
@@ -280,7 +280,7 @@ search_ppa_packages_results_dialog()
 			checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
-				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+				INSTALL_ONLY=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
 					update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
@@ -291,7 +291,7 @@ search_ppa_packages_results_dialog()
 				fi
 			else
 
-				ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$ppa_name"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+				ADD_AND_INSTALL=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$ppa_name"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
 					if [[ `lsb_release -cs` = "olivia" ]]; then
@@ -336,20 +336,20 @@ search_ppa_dialog()
 {
 
 	rm /tmp/+ppas* > /dev/null 2>&1;
-	SEARCH_PPA=`yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. Unless you use the  \n  basic search, you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Basic search (less acurate, displays less info\nbut is faster):CHK" --button="gtk-ok:0"`
+	SEARCH_PPA=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. Unless you use the  \n  basic search, you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Basic search (less acurate, displays less info\nbut is faster):CHK" --button="gtk-ok:0"`
 	if [[ $? -eq 0 ]]; then
 		checkbox=`echo $SEARCH_PPA | grep "|FALSE|"`
 		SEARCH_PPA=`echo $SEARCH_PPA | sed -e 's/|.*|//' | tr '[:upper:]' '[:lower:]'`
 		if [[ ! $checkbox ]]; then
 		
 #regular search:	
-			[[ ! $SEARCH_PPA ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  You did not enter anything  \n  to search for.  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
+			[[ ! $SEARCH_PPA ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  You did not enter anything  \n  to search for.  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
 
-			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  (all  non-alphanumeric  characters except \"-\" and \n  space are disallowed).  \n" --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 &&  search_ppa_dialog
+			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  (all  non-alphanumeric  characters except \"-\" and \n  space are disallowed).  \n" --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 &&  search_ppa_dialog
 
 
-#temporarely_disabled 			[[ -e /tmp/.already_searching ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.  \n\n\n  Tip: if your search takes too long, disable PPA Rankings  \n   in Y PPA Manager settings or use the regular search  " --button="gtk-ok:0" && exit 0
-				[[ -e /tmp/.already_searching ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.   " --button="gtk-ok:0" && exit 0
+#temporarely_disabled 			[[ -e /tmp/.already_searching ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.  \n\n\n  Tip: if your search takes too long, disable PPA Rankings  \n   in Y PPA Manager settings or use the regular search  " --button="gtk-ok:0" && exit 0
+				[[ -e /tmp/.already_searching ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.   " --button="gtk-ok:0" && exit 0
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-. ]}" && ! -e /tmp/.already_searching ]]; then
 
@@ -360,7 +360,7 @@ search_ppa_dialog()
 				wget --no-check-certificate -q https://launchpad.net/ubuntu/+ppas?name_filter="$SEARCH_PPA"
 				noresults=`grep "No matching Personal" +ppas\?name_filter\="$SEARCH_PPA"`
 #	echo noresults: $noresults
-				[[ $noresults ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  Your search did not return any results  \n  Please try a new search  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
+				[[ $noresults ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  Your search did not return any results  \n  Please try a new search  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
 	
 #ppa names:
 				searched_ppa_names=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d ">" -f 2 | sed -e 's/<\/a//g' -e 's/$/)/g' -e 's/^/(/g' > .searched_ppa_names; cat .searched_ppa_names`
@@ -401,15 +401,15 @@ search_ppa_dialog()
 #advanced search
 		else
 
-			[[ ! $SEARCH_PPA ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  You did not enter anything  \n  to search for  " --button="gtk-ok:0" && rm /tmp/.already_searching && search_ppa_dialog
+			[[ ! $SEARCH_PPA ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  You did not enter anything  \n  to search for  " --button="gtk-ok:0" && rm /tmp/.already_searching && search_ppa_dialog
 
-			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  <b>Please enter an exact package name or use  \n  the basic search.</b> All non-alphanumeric  \n  characters except \"-\" are disallowed.  \n" --button="gtk-ok:0" && rm /tmp/.already_searching &&  search_ppa_dialog
+			[[ ! -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Your search is not valid!  \n\n  <b>Please enter an exact package name or use  \n  the basic search.</b> All non-alphanumeric  \n  characters except \"-\" are disallowed.  \n" --button="gtk-ok:0" && rm /tmp/.already_searching &&  search_ppa_dialog
 #			testthesearch=`echo $SEARCH_PPA | cut -d ' ' -f1`
 
-#			[[ $testthesearch ]] && yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  Only test for one package  \n  No spaces or extra characters allowed  " --button="gtk-ok:0" && search_ppa_dialog
+#			[[ $testthesearch ]] && yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  Only test for one package  \n  No spaces or extra characters allowed  " --button="gtk-ok:0" && search_ppa_dialog
 		
-#temporarely_disabled 			[[ -e /tmp/.already_searching ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.  \n\n\n  Tip: if your search takes too long, disable PPA Rankings  \n   in Y PPA Manager settings or use the regular search  " --button="gtk-ok:0" && exit 0
-				[[ -e /tmp/.already_searching ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.  " --button="gtk-ok:0" && exit 0
+#temporarely_disabled 			[[ -e /tmp/.already_searching ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.  \n\n\n  Tip: if your search takes too long, disable PPA Rankings  \n   in Y PPA Manager settings or use the regular search  " --button="gtk-ok:0" && exit 0
+				[[ -e /tmp/.already_searching ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  Y PPA Manager is already performing a search.  \n  Please wait for your previous search to finish and try again.  " --button="gtk-ok:0" && exit 0
 		
 			if [[ "$SEARCH_PPA" && -z "${SEARCH_PPA//[a-zA-Z0-9-.]}" && ! -e /tmp/.already_searching ]]; then
 
@@ -427,7 +427,7 @@ search_ppa_dialog()
 				wget --no-check-certificate -q https://launchpad.net/ubuntu/+ppas?name_filter="$SEARCH_PPA"
 				noresults=`grep "No matching Personal" +ppas\?name_filter\="$SEARCH_PPA"`
 #	echo noresults: $noresults
-				[[ $noresults ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No	 packages" --text="  Your search did not return any results  \n  Please try a new search  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
+				[[ $noresults ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No	 packages" --text="  Your search did not return any results  \n  Please try a new search  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
 	
 #ppa names:
 				searched_ppa_names=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d ">" -f 2 | sed -e 's/<\/a//g' -e 's/$/)/g' -e 's/^/(/g' > .searched_ppa_names; cat .searched_ppa_names`
@@ -579,7 +579,7 @@ search_ppa_dialog()
 					advancedsearch=`cat .y_advanced_search_packages`
 #			noresults2=`grep "No matching Personal" +ppas\?name_filter\="$SEARCH_PPA"`
 #	echo noresults: $noresults
-					[[ ! $advancedsearch ]] && yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  Your search did not return any results!  \n\n  Did you enter an exact package name?  \n  That is required unless you use the basic search!  \n\n  Please try a new search...  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
+					[[ ! $advancedsearch ]] && yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  Your search did not return any results!  \n\n  Did you enter an exact package name?  \n  That is required unless you use the basic search!  \n\n  Please try a new search...  " --button="gtk-ok:0" && rm /tmp/.already_searching > /dev/null 2>&1 && search_ppa_dialog
 
 					search_advanced_ppa_ppa_results
 
@@ -605,7 +605,7 @@ rm /tmp/.already_searching > /dev/null 2>&1
 
 	IFS=$'\n'
 
-	SEARCH_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=750 --height=400 --title="PPA Search - Y PPA Manager" --search-column="1" --regex-search --text="$SEARCH_PPA can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
+	SEARCH_LIST_PACKAGES=`yad --center --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=750 --height=400 --title="PPA Search - Y PPA Manager" --search-column="1" --regex-search --text="$SEARCH_PPA can be found in the following PPAs:" --column="PPA (description)" --column="PPA Status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $list_search_results`
 	ret2=$?
 #	echo SEARCH_LIST_PACKAGES "$SEARCH_LIST_PACKAGES"
 #	echo ret $ret2
@@ -648,7 +648,7 @@ add_searched_advanced_ppa()
 	checksourceslist=`cat /etc/apt/sources.list | grep -i "deb http://ppa.launchpad.net/$username/$ppaname/ubuntu"`
 			
 	if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
-		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
+		yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Y PPA Manager" --text="  The ppa:$PPA_TO_ADD is already  \n  added on your system.  " --button="gtk-ok:0"
 		search_advanced_ppa_ppa_results
 	fi
 #done check
@@ -699,7 +699,7 @@ search_advanced_ppa_packages_results_dialog()
 
 
 	if [[ ! -s /tmp/.Packages ]]; then
-		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  This PPA does not have any packages for your Ubuntu  \n  version or the PPA is empty   "
+		yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="No packages" --text="  This PPA does not have any packages for your Ubuntu  \n  version or the PPA is empty   "
 		search_advanced_ppa_ppa_results
 	else
 		PPA_PACKAGES=`grep "^Package: " .Packages | sed -e 's/Package://g' > .packagename`
@@ -711,7 +711,7 @@ search_advanced_ppa_packages_results_dialog()
 
 		PPA_SEARCH_LIST_RESULTS=`cat .package_search_list_results`
 		ppa_name=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*|ppa:/ppa:/' -e 's/|//' -e 's/Already present|//g' -e 's/Not present|//g'`
-		LIST_PACKAGES=`yad --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=400 --search-column="1" --regex-search --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Copy PPA link to clipboard:3" --button="Install:0" --list $PPA_SEARCH_LIST_RESULTS`
+		LIST_PACKAGES=`yad --center --always-print-result --multiple --separator=" " --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=450 --height=400 --search-column="1" --regex-search --title="Packages - Y PPA Manager" --text="  Packages in "$ppa_name" PPA (for Ubuntu $PPA_SEARCH_DIST only): " --column "Package (version)" --button="Back:2" --button="Download selected package(s):1" --button="Copy PPA link to clipboard:3" --button="Install:0" --list $PPA_SEARCH_LIST_RESULTS`
 		ret=$?
 #		echo RET $ret
 
@@ -731,7 +731,7 @@ search_advanced_ppa_packages_results_dialog()
 		elif [[ $ret -eq 1 ]]; then
 
 
-			DOWNLOAD_DIR=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="Select downloads folder:DIR"  --button="gtk-cancel:1" --button="gtk-ok:0"`
+			DOWNLOAD_DIR=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="Select downloads folder:DIR"  --button="gtk-cancel:1" --button="gtk-ok:0"`
 				ret=$?
 				if [[ $ret -eq 0 ]]; then
 					cd $(echo $DOWNLOAD_DIR | sed -e 's/|$//')
@@ -781,7 +781,7 @@ search_advanced_ppa_packages_results_dialog()
 			
 			if [[ -e /etc/apt/sources.list.d/"$ppafilename1".list || -e /etc/apt/sources.list.d/"$ppafilename2"-$UBUVER\.list || $checkinppaa || $checksourceslist ]]; then
 
-				INSTALL_ONLY=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+				INSTALL_ONLY=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
 					update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
@@ -793,7 +793,7 @@ search_advanced_ppa_packages_results_dialog()
 
 			else
 
-				ADD_AND_INSTALL=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$PPA_TO_ADD"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
+				ADD_AND_INSTALL=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to add ppa:"$PPA_TO_ADD"  \n  and install: $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
 
 				if [[ $? -eq 0 ]]; then
 					if [[ `lsb_release -cs` = "olivia" ]]; then
@@ -846,11 +846,11 @@ rm /tmp/.already_searching > /dev/null 2>&1
 
 if [[ $RANKINGS = "true" ]]; then
 
-	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="  "$MSG"  " --search-column="3" --regex-search --column="Package" --column="Version" --column="PPA" --column="PPA Rank" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+	SEARCH_ADVANCED_LIST_PACKAGES=`yad --center --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="  "$MSG"  " --search-column="3" --regex-search --column="Package" --column="Version" --column="PPA" --column="PPA Rank" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 elif [[ $RANKINGS = "false" ]]; then
 
-	SEARCH_ADVANCED_LIST_PACKAGES=`yad --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="  "$MSG"  " --search-column="3" --regex-search --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
+	SEARCH_ADVANCED_LIST_PACKAGES=`yad --center --always-print-result --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=700 --height=450 --title="PPA Search - Y PPA Manager" --text="  "$MSG"  " --search-column="3" --regex-search --column="Package" --column="Version" --column="PPA" --column="PPA status" --button="Close:2" --button="Search again:3" --button="Add selected PPA:1" --button="List packages:0" --list $advancedsearch`
 
 fi
 	ret2=$?
@@ -881,7 +881,7 @@ PPA_TO_ADD=`echo "$SEARCH_ADVANCED_LIST_PACKAGES" | sed -e 's/.*ppa://' -e 's/|/
 
 #ppa_add_or_display_contents()
 #{
-#displayyadform=`yad --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --text="Select an action:" --button="List the packages in this PPA:0" --button="Add this PPA:1"`
+#displayyad --centerform=`yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --text="Select an action:" --button="List the packages in this PPA:0" --button="Add this PPA:1"`
 
 #if [ $? -eq 0 ]; then
 #search_ppa_packages_results_dialog

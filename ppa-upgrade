@@ -61,7 +61,7 @@ function testConnection()
 	testconnection=`wget --no-check-certificate --tries=3 --timeout=15 www.google.com -O /tmp/.testinternet &>/dev/null 2>&1`
 	if [[ $? != 0 ]]; then
 		echo  "You are not connected to the Internet. Please check your Internet connection and try again."
-		yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
+		yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Internet connection error" --text="   You don't seem to be connected to the Internet.   \n   This function needs a working internet connection (and working wget)   " --button="gtk-ok:0"
 		ppa_manager_run
 	else
 		echo Internet connection - ok
@@ -73,7 +73,7 @@ function ONLYROOT ()
 {
 
 if [[ "$UID" -ne "$ROOT_UID" ]]; then 
-	yad --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Cannot run as regular user" --text="  Please run this command from the  \n  Y PPA Manager Advanced dialog  " --button="gtk-ok:0"
+	yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error - Cannot run as regular user" --text="  Please run this command from the  \n  Y PPA Manager Advanced dialog  " --button="gtk-ok:0"
 	echo "Error - Cannot run as regular user! Please run y-ppa-manager as an administrator (e.g. gksu  y-ppa-manager)"
 	exit
 fi
@@ -131,7 +131,7 @@ url_exists() {
 
 #replace OLD_RELEASE with NEW_RELEASE:
 replace_old_new() {
-Y_UPGRADE_PPA=`yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all existing PPAs and replace the old Ubuntu version with    \n   the new Ubuntu version you enter below (only for PPAs that work   \n   with the new Ubuntu version)   " --field="Current Ubuntu version. E.g. saucy" --field="Previous Ubuntu version. E.g. raring" --button="gtk-cancel:1" --button="gtk-ok:0"`
+Y_UPGRADE_PPA=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all existing PPAs and replace the old Ubuntu version with    \n   the new Ubuntu version you enter below (only for PPAs that work   \n   with the new Ubuntu version)   " --field="Current Ubuntu version. E.g. saucy" --field="Previous Ubuntu version. E.g. raring" --button="gtk-cancel:1" --button="gtk-ok:0"`
 ret=$?
 if [[ $ret -eq 0 ]]; then
 	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Updating release name in working PPAs. This may take a while...\""
@@ -146,7 +146,7 @@ fi
 
 #update PPAs disabled after regular upgrade:
 update_after_regular_upgrade() {
-yad --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all PPAs disabled after   \n   upgrade and re-enable those that work   \n   with your current Ubuntu version   " --button="gtk-cancel:1" --button="gtk-ok:0"
+yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all PPAs disabled after   \n   upgrade and re-enable those that work   \n   with your current Ubuntu version   " --button="gtk-cancel:1" --button="gtk-ok:0"
 
 ret=$?
 if [[ $ret -eq 0 ]]; then

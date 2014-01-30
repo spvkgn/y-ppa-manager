@@ -7,9 +7,9 @@ GTKVERS=`apt-cache policy libgtk-3-0 | sed -n '2p' | cut -c14- | cut -f1 -d -`
 
 function Y_MAIN_DIALOG() {
 if [[ $(version $GTKVERS) < $(version 3.8) ]]; then
-	Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --item-width="182" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="435" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
+	Y_RUN=$(yad --center --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --item-width="182" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="435" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
 else
-	Y_RUN=$(yad --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="460" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
+	Y_RUN=$(yad --center --icons --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --single-click --read-dir="/usr/share/y-ppa-manager/desktopfiles" --width="460" --height="380" --title="Y PPA Manager" --button="Help:0" --button="Close:1")
 fi
 ret=$?
 if [[ $ret -eq 0 ]]; then
