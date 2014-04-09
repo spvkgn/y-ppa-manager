@@ -107,9 +107,9 @@ function testConnection()
 function checkAPT()
 {
 	sleep 1
-	for lock in synaptic update-manager software-center apt-get dpkg aptitude
+	for lock in synaptic update-manager software-center apt-get "dpkg " aptitude
 	do
-		if ps -U root -u root u | grep $lock | grep -v grep > /dev/null;
+		if ps -U root -u root u | grep "$lock" | grep -v grep > /dev/null;
 			then 
 				echo "Installation won't work. Please close $lock first then try again.";
 				yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Warning - Y PPA Manager" --text="\n\n  Selected action won't work.  \n\n  Please close / wait for <b>$lock</b> to finish and try again!   \n" --button="gtk-ok:0"
