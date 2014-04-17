@@ -1,3 +1,8 @@
+0.9.9.3:
+fix bug with dpkg being reported as running in some cases when it wasn't actually running, this causing some Y PPA Manager features not to work
+fix bug in upgrade dialog with GTK2
+a few other small bug fixes
+
 0.9.9.2:
 - Ubuntu 14.04 Trusty Tahr and Linux Mint 16 Petra support
 - Added install button on Manage PPAs -> List Packages

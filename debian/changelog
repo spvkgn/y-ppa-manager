@@ -1,8 +1,10 @@
-y-ppa-manager (0.9.9.3-1~webupd8~saucy) saucy; urgency=medium
+y-ppa-manager (2014.04.17-1~webupd8~0~pq) trusty; urgency=medium
  
-  * Unreleased
+  * fix bug with dpkg being reported as running in some cases when it wasn't actually running, this causing some Y PPA Manager features not to work
+  * fix bug in upgrade dialog with GTK2
+  * a few other small bug fixes
  
- -- Alin Andrei <webupd8@gmail.com>  Wed, 27 Nov 2013 14:20:34 +0300
+ -- Alin Andrei <webupd8@gmail.com>  Thu, 17 Apr 2014 14:20:34 +0300
 
 y-ppa-manager (0.9.9.2-3~webupd8~saucy) saucy; urgency=medium
  
