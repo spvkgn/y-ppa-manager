@@ -336,7 +336,7 @@ search_ppa_dialog()
 {
 
 	rm /tmp/+ppas* > /dev/null 2>&1;
-	SEARCH_PPA=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. Unless you use the  \n  basic search, you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Basic search (less acurate, displays less info\nbut is faster):CHK" --button="gtk-ok:0"`
+	SEARCH_PPA=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Search - Y PPA Manager" --auto-kill --text="\n  Search in all the Launchpad PPAs. Unless you use the  \n  basic search, you must enter the exact package name!  \n" --button="gtk-cancel:1" --form --field="Search for:" --field="Basic search (faster but displays less accurate info):CHK" --button="gtk-ok:0"`
 	if [[ $? -eq 0 ]]; then
 		checkbox=`echo $SEARCH_PPA | grep "|FALSE|"`
 		SEARCH_PPA=`echo $SEARCH_PPA | sed -e 's/|.*|//' | tr '[:upper:]' '[:lower:]'`

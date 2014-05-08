@@ -1,4 +1,4 @@
-y-ppa-manager (2014.04.17-1~webupd8~0~pq) trusty; urgency=medium
+y-ppa-manager (2014.04.17-1~webupd8~0~pq) precise; urgency=medium
  
   * fix bug with dpkg being reported as running in some cases when it wasn't actually running, this causing some Y PPA Manager features not to work
   * fix bug in upgrade dialog with GTK2
