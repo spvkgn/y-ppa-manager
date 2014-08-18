@@ -23,6 +23,8 @@ if [ "$1" = "configure" ]; then
 			UBUVER="raring" ;;
 		petra)
 			UBUVER="saucy" ;;
+		qiana)
+			UBUVER="trusty" ;;
 		luna)
 			UBUVER="precise" ;;
 	esac
@@ -38,6 +40,34 @@ MatchURI: packages.linuxmint.com
 MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
 MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
 Description: Linux Mint 16 'Petra'
+Component: main
+CompDescription: Main packages
+CompDescriptionLong: Main packages
+Component: upstream
+CompDescription: Upstream packages
+CompDescriptionLong: Upstream packages
+Component: import
+CompDescription: Imported packages
+CompDescriptionLong: Imported packages
+Component: backport
+CompDescription: Backports
+CompDescriptionLong: Backported packages
+Component: romeo
+CompDescription: Unstable packages
+CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
+		fi
+	fi
+	#Fix Linux Mint 17 add-apt-repository
+	if [ `lsb_release -cs` = "qiana" ]; then
+		if ! grep -q "qiana" /usr/share/python-apt/templates/LinuxMint.info 2>/dev/null; then
+		echo "
+Suite: qiana
+RepositoryType: deb
+BaseURI: http://packages.linuxmint.com/
+MatchURI: packages.linuxmint.com
+MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
+MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
+Description: Linux Mint 17 'Qiana'
 Component: main
 CompDescription: Main packages
 CompDescriptionLong: Main packages

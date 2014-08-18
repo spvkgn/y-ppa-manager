@@ -64,6 +64,8 @@ case `lsb_release -cs` in
 		codename="raring";;
 	petra)
 		codename="saucy";;
+	qiana)
+		codename="trusty" ;;
 esac
 }
 
@@ -95,6 +97,35 @@ CompDescription: Unstable packages
 CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
 	fi
 fi
+# Temporary work-around for Linux Mint 17 add-apt-repository
+if [ `lsb_release -cs` = "qiana" ]; then
+	if ! grep -q "qiana" /usr/share/python-apt/templates/LinuxMint.info 2>/dev/null; then
+	echo "
+Suite: qiana
+RepositoryType: deb
+BaseURI: http://packages.linuxmint.com/
+MatchURI: packages.linuxmint.com
+MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
+MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
+Description: Linux Mint 17 'Qiana'
+Component: main
+CompDescription: Main packages
+CompDescriptionLong: Main packages
+Component: upstream
+CompDescription: Upstream packages
+CompDescriptionLong: Upstream packages
+Component: import
+CompDescription: Imported packages
+CompDescriptionLong: Imported packages
+Component: backport
+CompDescription: Backports
+CompDescriptionLong: Backported packages
+Component: romeo
+CompDescription: Unstable packages
+CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
+	fi
+fi
+
 
 parse_args() {
 # Parse the arguements
@@ -225,6 +256,11 @@ if [[ ! `cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep "deb ${
 				mintfix=$(echo "$repo" | sed -e 's/ppa://g' -e 's/\//-/g')
 				mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
         			sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
+			elif [[ `lsb_release -cs` = "qiana" ]]; then
+				/usr/lib/y-ppa-manager/add-apt-repository -y "$repo"
+				mintfix=$(echo "$repo" | sed -e 's/ppa://g' -e 's/\//-/g')
+				mv /etc/apt/sources.list.d/"$mintfix"-qiana.list /etc/apt/sources.list.d/"$mintfix"-trusty.list
+        			sed -i 's/qiana/trusty/g' /etc/apt/sources.list.d/"$mintfix"-trusty.list
 			elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 				add-apt-repository -y "$repo"
 			else

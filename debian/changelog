@@ -1,3 +1,10 @@
+y-ppa-manager (2014.05.14-1~webupd8~0~st) trusty; urgency=medium
+ 
+  * Linux Mint 17 Qiana support
+  * Minor fixes
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Wed, 14 May 2014 14:20:34 +0300
+
 y-ppa-manager (2014.04.17-1~webupd8~0~pq) precise; urgency=medium
  
   * fix bug with dpkg being reported as running in some cases when it wasn't actually running, this causing some Y PPA Manager features not to work

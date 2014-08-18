@@ -20,6 +20,8 @@ case `lsb_release -cs` in
 		UBUVER="raring"  ;;
 	petra)
 		UBUVER="saucy" ;;
+	qiana)
+		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
 
@@ -36,6 +38,34 @@ MatchURI: packages.linuxmint.com
 MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
 MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
 Description: Linux Mint 16 'Petra'
+Component: main
+CompDescription: Main packages
+CompDescriptionLong: Main packages
+Component: upstream
+CompDescription: Upstream packages
+CompDescriptionLong: Upstream packages
+Component: import
+CompDescription: Imported packages
+CompDescriptionLong: Imported packages
+Component: backport
+CompDescription: Backports
+CompDescriptionLong: Backported packages
+Component: romeo
+CompDescription: Unstable packages
+CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
+	fi
+fi
+# Temporary work-around for Linux Mint 17 add-apt-repository
+if [ `lsb_release -cs` = "qiana" ]; then
+	if ! grep -q "qiana" /usr/share/python-apt/templates/LinuxMint.info 2>/dev/null; then
+	echo "
+Suite: qiana
+RepositoryType: deb
+BaseURI: http://packages.linuxmint.com/
+MatchURI: packages.linuxmint.com
+MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
+MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
+Description: Linux Mint 17 'Qiana'
 Component: main
 CompDescription: Main packages
 CompDescriptionLong: Main packages
@@ -127,6 +157,12 @@ elif [[ `lsb_release -cs` = "petra" ]]; then
 	mintfix=$(echo "$1" | sed -e 's/ppa://g' -e 's/\//-/g')
 	mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
         sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
+	update-ppa $1 > /dev/null 2>&1
+elif [[ `lsb_release -cs` = "qiana" ]]; then
+	/usr/lib/y-ppa-manager/add-apt-repository -y $1 
+	mintfix=$(echo "$1" | sed -e 's/ppa://g' -e 's/\//-/g')
+	mv /etc/apt/sources.list.d/"$mintfix"-qiana.list /etc/apt/sources.list.d/"$mintfix"-trusty.list
+        sed -i 's/qiana/trusty/g' /etc/apt/sources.list.d/"$mintfix"-trusty.list
 	update-ppa $1 > /dev/null 2>&1
 elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 && update-ppa $1 > /dev/null 2>&1
@@ -306,6 +342,12 @@ search_ppa_packages_results_dialog()
 						mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
        						sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
 						update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
+					elif [[ `lsb_release -cs` = "qiana" ]]; then
+						/usr/lib/y-ppa-manager/add-apt-repository -y ppa:"$ppa_name"
+						mintfix=$(echo "$ppa_name" | sed -e 's/\//-/g')
+						mv /etc/apt/sources.list.d/"$mintfix"-qiana.list /etc/apt/sources.list.d/"$mintfix"-trusty.list
+       						sed -i 's/qiana/trusty/g' /etc/apt/sources.list.d/"$mintfix"-trusty.list
+						update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 						add-apt-repository -y ppa:"$ppa_name" && update-ppa ppa:"$ppa_name" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					else
@@ -366,7 +408,7 @@ search_ppa_dialog()
 				searched_ppa_names=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d ">" -f 2 | sed -e 's/<\/a//g' -e 's/$/)/g' -e 's/^/(/g' > .searched_ppa_names; cat .searched_ppa_names`
 	
 #get the PPAs from our search:
-				searched_ppas=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d "\"" -f 1 | sed -e 's/\/+archive//g' > .searched_ppas; cat .searched_ppas`
+				searched_ppas=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d "\"" -f 1 | sed -e 's/\/+archive//g' -e 's/\/ubuntu\//\//g' > .searched_ppas; cat .searched_ppas`
 				rm /tmp/+ppas* > /dev/null 2>&1;
 	
 
@@ -433,7 +475,7 @@ search_ppa_dialog()
 				searched_ppa_names=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d ">" -f 2 | sed -e 's/<\/a//g' -e 's/$/)/g' -e 's/^/(/g' > .searched_ppa_names; cat .searched_ppa_names`
 	
 #get the PPAs from our search:
-				searched_ppas=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d "\"" -f 1 | sed -e 's/\/+archive//g' > .searched_ppas; cat .searched_ppas`
+				searched_ppas=`grep -A2 ppa_batch_row +ppas\?name_filter\="$SEARCH_PPA" | grep href | cut -c 18- | cut -d "\"" -f 1 | sed -e 's/\/+archive//g' -e 's/\/ubuntu\//\//g' > .searched_ppas; cat .searched_ppas`
 				rm /tmp/+ppas* > /dev/null 2>&1;
 	
 	
@@ -807,6 +849,12 @@ search_advanced_ppa_packages_results_dialog()
 						mintfix=$(echo "$PPA_TO_ADD" | sed -e 's/\//-/g')
 						mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
       						sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
+						update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
+					elif [[ `lsb_release -cs` = "qiana" ]]; then
+						/usr/lib/y-ppa-manager/add-apt-repository -y ppa:"$PPA_TO_ADD"
+						mintfix=$(echo "$PPA_TO_ADD" | sed -e 's/\//-/g')
+						mv /etc/apt/sources.list.d/"$mintfix"-qiana.list /etc/apt/sources.list.d/"$mintfix"-trusty.list
+      						sed -i 's/qiana/trusty/g' /etc/apt/sources.list.d/"$mintfix"-trusty.list
 						update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
 					elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 						add-apt-repository -y ppa:"$PPA_TO_ADD" && update-ppa ppa:"$PPA_TO_ADD" && python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1

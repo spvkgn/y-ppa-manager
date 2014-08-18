@@ -41,6 +41,8 @@ case `lsb_release -cs` in
 		UBUVER="raring" ;;
 	petra)
 		UBUVER="saucy" ;;
+	qiana)
+		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
 esac
@@ -73,7 +75,34 @@ CompDescription: Unstable packages
 CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
 	fi
 fi
-
+# Temporary work-around for Linux Mint 17 add-apt-repository
+if [ `lsb_release -cs` = "qiana" ]; then
+	if ! grep -q "qiana" /usr/share/python-apt/templates/LinuxMint.info 2>/dev/null; then
+	echo "
+Suite: qiana
+RepositoryType: deb
+BaseURI: http://packages.linuxmint.com/
+MatchURI: packages.linuxmint.com
+MirrorsFile-amd64: /usr/share/python-apt/templates/LinuxMint.mirrors
+MirrorsFile-i386: /usr/share/python-apt/templates/LinuxMint.mirrors
+Description: Linux Mint 17 'Qiana'
+Component: main
+CompDescription: Main packages
+CompDescriptionLong: Main packages
+Component: upstream
+CompDescription: Upstream packages
+CompDescriptionLong: Upstream packages
+Component: import
+CompDescription: Imported packages
+CompDescriptionLong: Imported packages
+Component: backport
+CompDescription: Backports
+CompDescriptionLong: Backported packages
+Component: romeo
+CompDescription: Unstable packages
+CompDescriptionLong: Unstable packages" >> /usr/share/python-apt/templates/LinuxMint.info
+	fi
+fi
 
 loggeduser=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)
@@ -132,6 +161,12 @@ elif [[ `lsb_release -cs` = "petra" ]]; then
 	mv /etc/apt/sources.list.d/"$mintfix"-petra.list /etc/apt/sources.list.d/"$mintfix"-saucy.list
         sed -i 's/petra/saucy/g' /etc/apt/sources.list.d/"$mintfix"-saucy.list
 	update-ppa $1 > /dev/null 2>&1
+elif [[ `lsb_release -cs` = "qiana" ]]; then
+	/usr/lib/y-ppa-manager/add-apt-repository -y $1 &> /tmp/.added_ppa
+	mintfix=$(echo "$1" | sed -e 's/ppa://g' -e 's/\//-/g')
+	mv /etc/apt/sources.list.d/"$mintfix"-qiana.list /etc/apt/sources.list.d/"$mintfix"-trusty.list
+        sed -i 's/qiana/trusty/g' /etc/apt/sources.list.d/"$mintfix"-trusty.list
+	update-ppa $1 > /dev/null 2>&1
 elif [[ `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 	add-apt-repository -y $1 &> /tmp/.added_ppa && update-ppa $1
 else
@@ -142,7 +177,7 @@ ERRORREADINGPPA=$(grep "Error reading" /tmp/.added_ppa || grep "Cannot add" /tmp
 if [[ "$ERRORREADINGPPA" ]]; then
 	first=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 1)
 	second=$(echo $1 | sed -e "s/ppa://g" | sed -e 's/[.+]/_/g' | cut -d '/' -f 2)
-	if [[ `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
+	if [[ `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `add-apt-repository --help 2>&1 | grep "\-y, --yes"` ]]; then
 		rm /etc/apt/sources.list.d/"$first"-"$second"-*.list
 	fi
 fi
@@ -472,14 +507,14 @@ list_packages_PPA()
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Please wait while purging \"$fullppa_stripdist\"\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "luna" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "luna" ]]; then
 					ppa-purge -d $UBUVER -y $fullppa_stripdist
 				else
 					ppa-purge -y ppa:$fullppa_stripdist
 				fi
 			else
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Close the terminal window when you are done purging\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "luna" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "luna" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
 					xterm -hold -e sudo ppa-purge $fullppa_stripdist

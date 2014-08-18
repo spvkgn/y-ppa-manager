@@ -20,6 +20,8 @@ case `lsb_release -cs` in
 		UBUVER="raring"  ;;
 	petra)
 		UBUVER="saucy" ;;
+	qiana)
+		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
 esac
