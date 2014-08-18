@@ -1,3 +1,9 @@
+y-ppa-manager (2014.08.18-1~webupd8~0~t) trusty; urgency=medium
+ 
+  * fix Y PPA Manager advanced search (default) to work with recent Launchpad changes
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Mon, 18 Aug 2014 12:14:19 +0300
+
 y-ppa-manager (2014.05.14-1~webupd8~0~st) trusty; urgency=medium
  
   * Linux Mint 17 Qiana support
