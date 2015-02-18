@@ -264,7 +264,9 @@ for file in /etc/apt/sources.list.d/*; do
 					#fix Ubuntu 13.04+ not updating deb-src line:
 				    	newdist=$(grep "^deb http" "$file" | cut -d ' ' -f3)
 				    	olddist=$(grep ^deb-src "$file" | cut -d ' ' -f3)
-				    	sed -i "s/$olddist/$newdist/g" "$file" &>/dev/null
+					if [ $olddist ]; then
+				    		sed -i "s/$olddist/$newdist/g" "$file" &>/dev/null
+					fi
 				else
 					! $QUIET && echo -en "\tUpdating PPA to use ${NEW_RELEASE^} instead of ${OLD_RELEASE^}..."
 					result=$(sed -i "s/$OLD_RELEASE/$NEW_RELEASE/g" "$file" &>/dev/null; echo $?)
