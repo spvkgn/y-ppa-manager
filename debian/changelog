@@ -1,3 +1,15 @@
+y-ppa-manager (2014.12.02-1~webupd8~0~tu) utopic; urgency=medium
+ 
+  * add Linux Mint 17.1 "rebecca" support
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Tue, 02 Dec 2014 10:55:31 +0300
+
+y-ppa-manager (2014.09.11-1~webupd8~0~tu) utopic; urgency=medium
+ 
+  * add Ubuntu 14.10 Utopic Unicorn support
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Thu, 11 Sep 2014 16:37:18 +0300
+
 y-ppa-manager (2014.08.18-1~webupd8~0~t) trusty; urgency=medium
  
   * fix Y PPA Manager advanced search (default) to work with recent Launchpad changes

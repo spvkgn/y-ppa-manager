@@ -64,7 +64,7 @@ case `lsb_release -cs` in
 		codename="raring";;
 	petra)
 		codename="saucy";;
-	qiana)
+	qiana|rebecca)
 		codename="trusty" ;;
 esac
 }

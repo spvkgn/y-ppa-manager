@@ -41,7 +41,7 @@ case `lsb_release -cs` in
 		UBUVER="raring" ;;
 	petra)
 		UBUVER="saucy" ;;
-	qiana)
+	qiana|rebecca)
 		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
@@ -108,7 +108,7 @@ loggeduser=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
-if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" ]]; then
+if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" ]]; then
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
@@ -507,14 +507,14 @@ list_packages_PPA()
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Please wait while purging \"$fullppa_stripdist\"\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "luna" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "luna" ]]; then
 					ppa-purge -d $UBUVER -y $fullppa_stripdist
 				else
 					ppa-purge -y ppa:$fullppa_stripdist
 				fi
 			else
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Close the terminal window when you are done purging\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "luna" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "luna" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
 					xterm -hold -e sudo ppa-purge $fullppa_stripdist
@@ -826,12 +826,12 @@ Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-i
 	
 	if [[ $Y_dist != $current_ubuntu_version ]]; then
 
-		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" || $Y_dist = "saucy" || $Y_dist = "trusty" ]]; then
+		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" || $Y_dist = "saucy" || $Y_dist = "trusty" || $Y_dist = "utopic" ]]; then
 			sed -i "s/searchdist=.*/searchdist=$Y_dist/g" /tmp/.y-ppa-manager.conf
 #			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #			rm /tmp/.y-ppa-manager.conf
 		else
-			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  trusty, saucy, raring, quantal, precise, oneiric, natty or lucid (in lowercase) " --button="gtk-ok:0"
+			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  utopic, trusty, saucy, raring, quantal, precise, oneiric, natty or lucid (in lowercase) " --button="gtk-ok:0"
 			y_ppa_settings
 		fi
 

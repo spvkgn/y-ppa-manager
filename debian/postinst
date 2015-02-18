@@ -15,7 +15,7 @@ if [ "$1" = "configure" ]; then
 			UBUVER="natty" ;;
 		lisa)
 			UBUVER="oneiric" ;;
-		maya)
+		maya|luna)
 			UBUVER="precise" ;;
 		nadia)
 			UBUVER="quantal" ;;
@@ -23,10 +23,8 @@ if [ "$1" = "configure" ]; then
 			UBUVER="raring" ;;
 		petra)
 			UBUVER="saucy" ;;
-		qiana)
+		qiana|rebecca)
 			UBUVER="trusty" ;;
-		luna)
-			UBUVER="precise" ;;
 	esac
 
 	#Fix Linux Mint 16 add-apt-repository
