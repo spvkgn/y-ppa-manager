@@ -457,7 +457,11 @@ list_packages_PPA()
 		ppaname=$(echo "$stripppa" | sed -e 's/ (.*//g' | cut -f2 -d/)
 		ubuntudist=$(echo "$stripppa" | cut -f2 -d ' ' | sed -e 's/(//g' -e 's/)//g')
 		if [[ `cat /etc/apt/sources.list.d/*.list | grep -i "deb http://ppa.launchpad.net/$ppausername/$ppaname/ubuntu"` ]]; then
-			xdg-open /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list
+			if [ -f /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list ]; then
+				xdg-open /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list
+			else
+				xdg-open /etc/apt/sources.list.d/$ppausername_charfix-ubuntu-$ppaname_charfix-*.list
+			fi
 		else
 			xdg-open /etc/apt/sources.list
 		fi
@@ -477,7 +481,11 @@ list_packages_PPA()
 		echo "the ls command looks like this: /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list"
 
 		if [[ `ls /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list` ]]; then
-			rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update
+			if [ -f /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list ]; then
+				rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update
+			else
+				rm /etc/apt/sources.list.d/$ppausername_charfix-ubuntu-$ppaname_charfix-*.list && apt-get update
+			fi
 		else
 			sed -i "/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d" /etc/apt/sources.list && apt-get update
 		fi

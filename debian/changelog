@@ -1,4 +1,4 @@
-y-ppa-manager (2015.02.18-1~webupd8~0~p) precise; urgency=medium
+y-ppa-manager (2015.02.18-1~webupd8~2~p) precise; urgency=medium
  
   * Fixed uncommented text that wasn't supposed to be uncommented
     (LP: 1423021)
