@@ -20,7 +20,7 @@ case `lsb_release -cs` in
 		UBUVER="raring"  ;;
 	petra)
 		UBUVER="saucy" ;;
-	qiana|rebecca)
+	qiana|rebecca|freya)
 		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
@@ -31,7 +31,7 @@ homedir=$(cat /tmp/.yppa_home)
 
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
-if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" ]]; then
+if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" ]]; then
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########

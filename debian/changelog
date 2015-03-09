@@ -1,3 +1,10 @@
+y-ppa-manager (2015.03.09-1~webupd8~0~p) precise; urgency=medium
+ 
+  * Bug fixes
+  * Support Ubuntu Vivid and eOS Freya
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Mon, 09 Mar 2015 13:25:41 +0300
+
 y-ppa-manager (2015.02.18-1~webupd8~2~p) precise; urgency=medium
  
   * Fixed uncommented text that wasn't supposed to be uncommented

@@ -19,7 +19,7 @@ homedir=$(cat /tmp/.yppa_home)
 
 ######policykit fix for KDE not setting XAUTHORITY
 #sometimes y-pkexec may be called as root by y-ppa-manager so let's fix ~/.Xauthoriy and use $homedir/.Xauthority when that happens
-if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "olivia" || "$codename" = "petra" || "$codename" = "qiana" || "$codename" = "rebecca" || "$codename" = "luna" ]]; then
+if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "olivia" || "$codename" = "petra" || "$codename" = "qiana" || "$codename" = "rebecca" || "$codename" = "luna" || "$codename" = "freya" ]]; then
 	if [[ -z "$XAUTHORITY" ]]; then
 		export XAUTHORITY="$homedir/.Xauthority"
 	fi
