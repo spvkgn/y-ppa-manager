@@ -23,7 +23,7 @@ if [ "$1" = "configure" ]; then
 			UBUVER="raring" ;;
 		petra)
 			UBUVER="saucy" ;;
-		qiana|rebecca)
+		qiana|rebecca|freya)
 			UBUVER="trusty" ;;
 	esac
 
