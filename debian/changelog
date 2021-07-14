@@ -1,4 +1,186 @@
-y-ppa-manager (2015.03.09-1~webupd8~0~p) precise; urgency=medium
+y-ppa-manager (2021.07.15-1~webupd8~0) hirsute; urgency=medium
+ 
+  * Add Ubuntu Impish Idri (21.10) and Linux Mint 20.2 Uma support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 15 Jul 2021 14:41:24 +0200
+ 
+y-ppa-manager (2021.02.11-1~webupd8~0) hirsute; urgency=medium
+ 
+  * Add Ubuntu Hirsute Hippo (21.04) and Linux Mint 20.1 Ulyssa support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 11 Feb 2021 16:15:39 +0200
+
+y-ppa-manager (2020.10.05-1~webupd8~0) focal; urgency=medium
+ 
+  * Add Linux Mint 20 Ulyana and Ubuntu Groovy Gorilla (20.10) support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 05 Oct 2020 15:29:44 +0200
+
+y-ppa-manager (2020.03.12-1~webupd8~0) focal; urgency=medium
+ 
+  * Disable Ubuntu appindicator since Python2 is EOL
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 12 Mar 2020 11:18:36 +0200
+
+y-ppa-manager (2020.01.30+1-1~webupd8~0) bionic; urgency=medium
+ 
+  * Fixed a bug caused by not installing the indicator file in the
+    previous release
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 30 Jan 2020 22:46:16 +0200
+
+y-ppa-manager (2020.01.30+1-1~webupd8~0) bionic; urgency=medium
+ 
+  * Add Linux Mint Tricia (19.3), Ubuntu Focal Fossa (20.04)
+    and elementary OS Hera (based on bionic) and Odin (based on focal)
+    support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 30 Jan 2020 13:15:53 +0200
+
+y-ppa-manager (2019.10.24-1~webupd8~0) xenial; urgency=medium
+ 
+  * Fix Ubuntu Eoan support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 24 Oct 2019 13:38:14 +0200
+
+y-ppa-manager (2019.09.13-1~webupd8~0) xenial; urgency=medium
+ 
+  * Support for Ubuntu Eoan and Linux Mint Tina
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Fri, 13 Sep 2019 13:38:14 +0200
+
+y-ppa-manager (2018.11.02-1~webupd8~0) xenial; urgency=medium
+ 
+  * Support for Ubuntu Disco, Linux Mint Tessa and some fixes
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Fri, 02 Nov 2018 12:35:46 +0200
+
+y-ppa-manager (2018.10.25-1~webupd8~0) xenial; urgency=medium
+ 
+  * Add support for Ubuntu Cosmic and elementaty OS Juno
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 25 Oct 2018 17:12:39 +0200
+
+y-ppa-manager (2018.04.12-1~webupd8~0) xenial; urgency=medium
+ 
+  * UNRELEASED
+  * Depend on python-dbus
+  * Fix quicklists not working in non-Unity desktop environments
+  * Get the app to work as root under Wayland? probably not
+  * Add support for Ubuntu Bionic and Linux Mint Sylvia and Tara
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Thu, 12 Apr 2018 15:05:14 +0200
+
+y-ppa-manager (2017.06.13-1~webupd8~0) xenial; urgency=medium
+ 
+  * Added Ubuntu 17.10 Artful Aardvark and Linux Mint 18.2
+    Sonya support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Tue, 13 Jun 2017 13:52:49 +0200
+
+y-ppa-manager (2017.03.15-1~webupd8~0) xenial; urgency=medium
+ 
+  * Added Ubuntu 17.04 Zesty Zapus support
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Wed, 15 Mar 2017 17:43:22 +0200
+
+y-ppa-manager (2016.11.07-1~webupd8~1) xenial; urgency=medium
+ 
+  * Changed ppa-upgrade feature ("Update release name in working
+    PPAs") to only affect Launchpad PPAs. That's because custom
+    repositories (e.g. Docker, see LP: #1639639 ) behave
+    differently and I can't know all possible variations.
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 07 Nov 2016 15:27:42 +0200
+
+y-ppa-manager (2016.10.17-1~webupd8~1) xenial; urgency=medium
+ 
+  * Ubuntu 16.10 Yakkety Yak support
+  * Fixed PPA Purge not working when set to "auto" mode
+  * Depend on gtk-update-icon-cache | libgtk2.0-bin for the
+    gtk-update-icon-cache exec
+  * Since the install feature no longer worked and it was
+    removed, also remove some dependencies: python-apt, python-vte,
+    python-launchpadlib (still have a python appindicator)
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 17 Oct 2016 11:51:21 +0200
+
+y-ppa-manager (2016.07.29-1~webupd8~0) xenial; urgency=medium
+ 
+  * Fixed PPA Purge not working when set to "auto" mode
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Fri, 29 Jul 2016 14:33:28 +0200
+
+y-ppa-manager (2016.07.27-1~webupd8~0) xenial; urgency=medium
+ 
+  * Fixed Remove PPA not working
+  * Bumped Standards-Version to 3.9.7
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Wed, 27 Jul 2016 14:07:12 +0200
+
+y-ppa-manager (2016.06.20-1~webupd8~0) xenial; urgency=medium
+ 
+  * Add support for Linuyx Mint 18 Sarah
+  * Add support for elementary OS Loki
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 20 Jun 2016 11:42:36 +0200
+
+y-ppa-manager (2016.04.27-1~webupd8~3) xenial; urgency=medium
+ 
+  * YAD GTK3 fixes
+  * Depend on yad >= 0.36.0
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Wed, 27 Apr 2016 12:54:19 +0200
+
+y-ppa-manager (2016.04.26-1~webupd8~1) xenial; urgency=medium
+ 
+  * Fix search again
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Tue, 26 Apr 2016 12:28:48 +0200
+
+y-ppa-manager (2016.03.21-1~webupd8~0) xenial; urgency=medium
+ 
+  * More "install packages" leftovers removed
+ 
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 21 Mar 2016 14:42:16 +0200
+
+y-ppa-manager (2016.03.17-1~webupd8~0) xenial; urgency=medium
+ 
+  * Remove "Install packages" quicklist, feature no longer
+    available in Y PPA Manager
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Thu, 17 Mar 2016 16:07:05 +0200
+
+y-ppa-manager (2016.03.11-1~webupd8~1) xenial; urgency=medium
+ 
+  * Fixed major bug caused by Launchpad changes which caused the
+    PPA package search feature to ignore certain PPAs
+  * Depend on bzip2
+  * Removed the package install option and its dependencies, 
+    it didn't work for a while
+  * Moved help from button to item
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Fri, 11 Mar 2016 18:04:41 +0200
+
+y-ppa-manager (2016.03.08-1~webupd8~1~x) xenial; urgency=medium
+ 
+  * Update
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Tue, 08 Mar 2016 17:46:39 +0200
+
+y-ppa-manager (2016.01.28-1~webupd8~1~tv) trusty; urgency=medium
+ 
+  * Linux Mint 17.3 Rosa and Ubuntu 16.04 Xenial support
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Thu, 28 Jan 2016 12:06:17 +0200
+
+y-ppa-manager (2015.08.11-1~webupd8~1~tv) trusty; urgency=medium
+ 
+  * Linux Mint 17.2 Rafaela and Ubuntu 15.10 Wily Werewolf support
+ 
+ -- Alin Andrei <webupd8@gmail.com>  Tue, 11 Aug 2015 12:06:17 +0200
+
+y-ppa-manager (2015.03.09-1~webupd8~1~tuv) utopic; urgency=medium
  
   * Bug fixes
   * Support Ubuntu Vivid and eOS Freya

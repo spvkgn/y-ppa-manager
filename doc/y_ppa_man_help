@@ -5,8 +5,6 @@ Manage PPAs: from this dialog you can remove a PPA, purge it, update it, edit th
 Search in all Launchpad PPAs: will perform a search in all the Launchpad PPAs for the package you enter in the search form. The regular search uses the Launchpad PPA search so it may return empty PPAs if the PPAs have a description that matches your search, or a PPA with packages for a different Ubuntu version then your current Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for - see info regarding the settings below). The advanced search (this is the default search starting with Y PPA Manager 0.9.9.1) will only return the exact matches for your search and will display the PPAs and package versions at a glance.
 You will be able to perform the following operations on a PPA: add it, list all the packages in that PPA for your Ubuntu version (or the Ubuntu version you've set Y PPA Manager to search for) - including the package versions, download selected packages from a PPA, copy PPA url, install a package from the PPA (including adding the PPA if it's not added already).
 
-Install packages: a simple GUI to quickly install one or more packages (separated by a space)
-
 Advanced > Scan and remove duplicate PPAs: just like the name says, it will automatically remove all duplicate PPAs. This only works for PPAs that have their own .list file.
 
 Advanced > Try to import all missing GPG keys: will attempt to fix all missing GPG keys for all the PPAs added to your system. This probably doesn't work behind a proxy.
@@ -26,7 +24,5 @@ Advanced > Update release name in working PPAs: using this feature, you can repl
 Settings:
 
 - PPA Purge behavior: auto - don't require any user input; manual - opens a terminal window asking the user how to solve the issue (this is the default and highly recommended behavior).
-
-- Ubuntu indicator: disabled (default); enabled - each time you start Y PPA Manager, an AppIndicator will be displayed. Once you close Y PPA Manager, the indicator will be closed too; stand-alone - setting it to "stand-alone", the indicator will automatically start each time you log in without opening the main Y PPA Manager window and also, quitting Y PPA Manager doesn't quit the indicator (feature useful to quickly launch one of the Y PPA Manager action without having to open the main user interface).
 
 - Ubuntu version: this only affects the search. So if you want the Y PPA Manager search to display packages for some other Ubuntu version, simply change the Ubuntu version here (use the Ubuntu version names for Linux Mint too!).

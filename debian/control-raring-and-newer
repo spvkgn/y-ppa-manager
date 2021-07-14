@@ -3,12 +3,12 @@ Section: misc
 Priority: extra
 Maintainer: Alin Andrei <webupd8@gmail.com>
 Build-Depends: debhelper (>=9)
-Standards-Version: 3.9.5
+Standards-Version: 3.9.8
 Homepage: https://launchpad.net/y-ppa-manager
 
 Package: y-ppa-manager
 Architecture: all
-Depends: ${misc:Depends}, yad (>= 0.24.1), libnotify-bin, ppa-purge, python3-software-properties, wget, xterm, launchpad-getkeys (>= 0.3.2), python, python-launchpadlib, python-appindicator, python-gtk2, python-apt, python-vte, xclip, policykit-1
+Depends: ${misc:Depends}, yad (>= 0.36.0), libnotify-bin, ppa-purge, python3-software-properties, wget, xterm, launchpad-getkeys (>= 0.3.2), python, python-appindicator, python-gtk2, python-dbus, xclip, policykit-1, gzip, gtk-update-icon-cache | libgtk2.0-bin
 Recommends: gksu | kdesudo
 Description: Y PPA Manager
  .
@@ -16,4 +16,4 @@ Description: Y PPA Manager
  all Launchpad PPAs using a graphical interface. The 
  search feature allows you to add the found PPAs, list
  the packages and their versions in a PPA or download 
- some packages in the PPA.
+ some packages from the PPA.

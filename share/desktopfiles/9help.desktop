@@ -1,11 +1,11 @@
 
 [Desktop Entry]
 Version=1.0
-Name=Install packages
-Comment=Quickly install packages
+Name=Help
+Comment=Y PPA Manager help
 GenericName=Install packages
-Exec=y-pkexec install
-Icon=y-install
+Exec=y-pkexec help
+Icon=y-help
 Terminal=false
 X-MultipleArgs=false
 Type=Application

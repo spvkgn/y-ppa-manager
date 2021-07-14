@@ -20,10 +20,16 @@ case `lsb_release -cs` in
 		UBUVER="raring"  ;;
 	petra)
 		UBUVER="saucy" ;;
-	qiana|rebecca|freya)
+	qiana|rebecca|rafaela|rosa|freya)
 		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
+	sarah|loki|serena|sonya|sylvia)
+		UBUVER="xenial" ;;
+	tara|juno|tessa|tina|tricia|hera)
+		UBUVER="bionic" ;;
+	odin|ulyana|ulyssa|uma)
+		UBUVER="focal" ;;
 esac
 
 loggeduser=$(cat /tmp/.yppa_username)
@@ -31,7 +37,7 @@ homedir=$(cat /tmp/.yppa_home)
 
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
-if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" ]]; then
+if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" || "$UBUVER" = "wily" || "$UBUVER" = "xenial" || "$UBUVER" = "yakkety" || "$UBUVER" = "zesty" || "$UBUVER" = "artful" || "$UBUVER" = "bionic" || "$UBUVER" = "cosmic" || "$UBUVER" = "disco" || "$UBUVER" = "eoan" || "$UBUVER" = "focal" || "$UBUVER" = "groovy" || "$UBUVER" = "hirsute" || "$UBUVER" = "impish" ]]; then
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
@@ -127,13 +133,13 @@ url_exists() {
 	rett=1
 	not_found=$(wget --no-check-certificate -S --spider "$url" 2>&1 | \
 	            grep -E '^\s*HTTP.*?404')
-	[[ -z "$( echo $not_found)" ]] && rett=0
+	[[ -z "$(echo $not_found)" ]] && rett=0
 	return $rett
 }
 
 #replace OLD_RELEASE with NEW_RELEASE:
 replace_old_new() {
-Y_UPGRADE_PPA=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text-align=fill --borders=10 --text="Will scan all existing PPAs and replace the old Ubuntu version with the new Ubuntu version you enter below (only for PPAs that work with the new Ubuntu version)" --field="Current Ubuntu version. E.g. utopic" --field="Previous Ubuntu version. E.g. trusty" --button="gtk-cancel:1" --button="gtk-ok:0"`
+Y_UPGRADE_PPA=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text-align=fill --borders=10 --text="Will scan all existing PPAs and replace the old Ubuntu version with the new Ubuntu version you enter below (only for PPAs that work with the new Ubuntu version) \n" --field="Current Ubuntu version. E.g. focal" --field="Previous Ubuntu version. E.g. eoan" --width=300 --button="gtk-cancel:1" --button="gtk-ok:0"`
 ret=$?
 if [[ $ret -eq 0 ]]; then
 	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=object-flip-vertical \"Y PPA Manager\" \"Updating release name in working PPAs. This may take a while...\""
@@ -148,7 +154,7 @@ fi
 
 #update PPAs disabled after regular upgrade:
 update_after_regular_upgrade() {
-yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   Will scan all PPAs disabled after   \n   upgrade and re-enable those that work   \n   with your current Ubuntu version   " --button="gtk-cancel:1" --button="gtk-ok:0"
+yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="\n   Will scan all PPAs disabled after   \n   upgrade and re-enable those that work   \n   with your current Ubuntu version.   " --button="gtk-cancel:1" --button="gtk-ok:0"
 
 ret=$?
 if [[ $ret -eq 0 ]]; then
@@ -175,7 +181,10 @@ fi
 changed=false
 for file in /etc/apt/sources.list.d/*; do
 
-	if [[ $file == *.save ]]; then continue; fi
+        # ignore .save files and non-Launchpad PPAs
+	if [[ $file == *.save ]] || [[ -z $(grep "ppa.launchpad.net" $file) ]]; then continue; fi
+
+	#if [[ $file == *.save ]]; then continue; fi
 
 	if $UPGRADE; then
 		# Check if this PPA uses an old release

@@ -41,10 +41,16 @@ case `lsb_release -cs` in
 		UBUVER="raring" ;;
 	petra)
 		UBUVER="saucy" ;;
-	qiana|rebecca|freya)
+	qiana|rebecca|rafaela|rosa|freya)
 		UBUVER="trusty" ;;
 	luna)
 		UBUVER="precise" ;;
+	sarah|loki|serena|sonya|sylvia)
+		UBUVER="xenial" ;;
+	tara|juno|tessa|tina|tricia|hera)
+		UBUVER="bionic" ;;
+	odin|ulyana|ulyssa|uma)
+		UBUVER="focal" ;;
 esac
 
 # Temporary work-around for Linux Mint 16 add-apt-repository
@@ -108,7 +114,7 @@ loggeduser=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
-if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" ]]; then
+if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" || "$UBUVER" = "wily" || "$UBUVER" = "xenial" || "$UBUVER" = "yakkety" || "$UBUVER" = "zesty" || "$UBUVER" = "artful" || "$UBUVER" = "bionic" || "$UBUVER" = "cosmic" || "$UBUVER" = "disco" || "$UBUVER" = "eoan" || "$UBUVER" = "focal" || "$UBUVER" = "groovy" || "$UBUVER" = "hirsute" || "$UBUVER" = "impish" ]]; then
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
@@ -248,7 +254,7 @@ add_a_PPA()
 	
 #	checkAPT
 
-	ADD_PPA=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --entry --title="Add a PPA" --text="Enter a PPA to add (e.g.: ppa:webupd8team/ghtumb)\n" --entry-label="PPA:"`
+	ADD_PPA=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --entry --title="Add a PPA" --text="\n Enter a PPA to add (e.g.: ppa:webupd8team/ghtumb) \n" --entry-label="PPA:"`
 	
 
 	if [[ $? -eq 0 ]]; then
@@ -393,6 +399,11 @@ list_packages_PPA()
    		testConnection
    		cd /tmp/
 		wget --no-check-certificate "$ppa_temp_url"/binary-$arch/Packages
+		if [[ ! -e Packages ]]; then
+			wget --no-check-certificate -q "$ppa_temp_url"/binary-$arch/Packages.gz
+			gzip -d Packages.gz
+			rm -f Packages.gz
+		fi
 		mv Packages .Packages
 		#echo  $ppa_temp_url/binary-$arch/Packages
 
@@ -410,7 +421,7 @@ list_packages_PPA()
 
 		#ZENITY_PPA_PACKAGES="$PPA_PACKAGES ($PPA_VERSIONS)"
 
-		LIST_PACKAGES=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --always-print-result --multiple --separator=" " --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Install:2" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
+		LIST_PACKAGES=`yad --center --class="Y-PPA-Manager" --name="Y PPA Manager" --always-print-result --multiple --separator=" " --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --width=500 --height=250 --title="Packages - Y PPA Manager" --search-column="1" --regex-search --button="Back:1" --button="Copy PPA link to clipboard:0" --text="  Packages in "$ppa_name" PPA (for your Ubuntu version only!): " --column="Package (version)" --list $PPA_SEARCH_LIST_RESULTS2`
 		ret=$?
 		if [[ $ret -eq 0 ]]; then	
 
@@ -426,17 +437,6 @@ list_packages_PPA()
 		elif [[ $ret -eq 1 ]]; then
 			CLEARTEMP	
 			list_packages_PPA
-		elif [[ $ret -eq 2 ]]; then
-			packagestoinstall=$(echo $LIST_PACKAGES | sed -e 's/([^)]*)//g' -e 's/LIST_PACKAGES//g' -e 's/    / /g' -e 's/  / /g' -e 's/^ //g' -e 's/ $//g')
-			packagestoinstall_with_comma=$(echo $packagestoinstall | sed -e 's/ /, /g')
-			INSTALL_ONLY=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Confirmation - Y PPA Manager" --text="  You are about to install:  \n  $packagestoinstall_with_comma  \n\n  Proceed?  " --button="Cancel:1" --button="Ok:0"`
-			if [[ $? -eq 0 ]]; then
-					python /usr/share/pyshared/y-ppa-manager/install_package.py $packagestoinstall > /dev/null 2>&1
-					CLEARTEMP
-			else
-					CLEARTEMP
-					list_packages_PPA
-			fi
 		fi	
 
 		CLEARTEMP
@@ -483,9 +483,12 @@ list_packages_PPA()
 		if [[ `ls /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list` ]]; then
 			if [ -f /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list ]; then
 				rm /etc/apt/sources.list.d/$ppausername_charfix-$ppaname_charfix-*.list && apt-get update
-			else
+			fi
+		elif [[ `ls /etc/apt/sources.list.d/$ppausername_charfix-ubuntu-$ppaname_charfix-*.list` ]]; then
+			if [ -f /etc/apt/sources.list.d/$ppausername_charfix-ubuntu-$ppaname_charfix-*.list ]; then
 				rm /etc/apt/sources.list.d/$ppausername_charfix-ubuntu-$ppaname_charfix-*.list && apt-get update
 			fi
+
 		else
 			sed -i "/$ppausername.*$ppaname\/ubuntu $ubuntudist.*/d" /etc/apt/sources.list && apt-get update
 		fi
@@ -515,14 +518,14 @@ list_packages_PPA()
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Please wait while purging \"$fullppa_stripdist\"\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" ]]; then
-					ppa-purge -d $UBUVER -y $fullppa_stripdist
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "rafaela" || `lsb_release -cs` = "rosa" || `lsb_release -cs` = "sarah"  || `lsb_release -cs` = "serena" || `lsb_release -cs` = "sonya" || `lsb_release -cs` = "tara" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" || `lsb_release -cs` = "loki" || `lsb_release -cs` = "juno" || `lsb_release -cs` = "hera" || `lsb_release -cs` = "odin" || `lsb_release -cs` = "tessa" || `lsb_release -cs` = "tina" || `lsb_release -cs` = "tricia" || `lsb_release -cs` = "ulyana" || `lsb_release -cs` = "ulyssa" || `lsb_release -cs` = "uma" ]]; then
+					sudo ppa-purge -d $UBUVER -y "$fullppa_stripdist"
 				else
-					ppa-purge -y ppa:$fullppa_stripdist
+					sudo ppa-purge -y "$fullppa_stripdist"
 				fi
 			else
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Close the terminal window when you are done purging\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "rafaela" || `lsb_release -cs` = "rosa" || `lsb_release -cs` = "sarah"  || `lsb_release -cs` = "serena" || `lsb_release -cs` = "sonya" || `lsb_release -cs` = "sylvia" || `lsb_release -cs` = "tara" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" || `lsb_release -cs` = "loki" || `lsb_release -cs` = "juno" || `lsb_release -cs` = "hera" || `lsb_release -cs` = "odin" || `lsb_release -cs` = "tessa" || `lsb_release -cs` = "tina" || `lsb_release -cs` = "tricia" || `lsb_release -cs` = "ulyana" || `lsb_release -cs` = "ulyssa" || `lsb_release -cs` = "uma" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
 					xterm -hold -e sudo ppa-purge $fullppa_stripdist
@@ -728,8 +731,8 @@ function reset_settings() {
 	echo "#By default, the integrated PPA Search will display packages for your Ubuntu version. However, you can change this below:" >> /tmp/.y-ppa-manager.conf
 	echo "searchdist=$UBUVER" >> /tmp/.y-ppa-manager.conf
 	echo $'\n' >> /tmp/.y-ppa-manager.conf
-	echo "#Use Ubuntu Indicator (default: disabled):" >> /tmp/.y-ppa-manager.conf
-	echo "indicator=disabled" >> /tmp/.y-ppa-manager.conf
+#	echo "#Use Ubuntu Indicator (default: disabled):" >> /tmp/.y-ppa-manager.conf
+#	echo "indicator=disabled" >> /tmp/.y-ppa-manager.conf
 #	echo $'\n' >> /tmp/.y-ppa-manager.conf
 #	echo "#Downloads folder (default: /home/$ON_USER/$DOWN_DIR/y-ppa-manager):" >> /tmp/.y-ppa-manager.conf
 #	echo "downloads=/home/$ON_USER/$DOWN_DIR/y-ppa-manager" >> /tmp/.y-ppa-manager.conf
@@ -738,7 +741,7 @@ function reset_settings() {
 
 	rm /etc/y-ppa-manager.conf; cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 	rm /tmp/.y-ppa-manager.conf
-	rm /etc/xdg/autostart/y-ppa-indicator.desktop
+#	rm /etc/xdg/autostart/y-ppa-indicator.desktop
 
 	su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=view-refresh \"Y PPA Manager\" \"Settings were reset\""
 
@@ -748,7 +751,7 @@ function y_ppa_settings() {
 
 current_ubuntu_version=`grep "searchdist=" /etc/y-ppa-manager.conf | sed -e 's/searchdist=//g'`
 current_ppa_purge=`grep "ppa-purge=" /etc/y-ppa-manager.conf | sed -e 's/ppa-purge=//g'`
-current_indicator=`grep "indicator=" /etc/y-ppa-manager.conf | sed -e 's/indicator=//g'`
+#current_indicator=`grep "indicator=" /etc/y-ppa-manager.conf | sed -e 's/indicator=//g'`
 #current_downloads_folder=`grep "downloads=" /etc/y-ppa-manager.conf | sed -e "s/downloads=//g"`
 #temporarely_disabled current_rankings=`grep "rankings=" /etc/y-ppa-manager.conf | sed -e 's/rankings=//'`
 
@@ -758,13 +761,13 @@ elif [[ $current_ppa_purge = "manual" ]]; then
 	ppa_purge_opt="manual!auto"
 fi
 
-if [[ $current_indicator = "disabled" ]]; then
-	indicator_opt="disabled!enabled!stand-alone"
-elif [[ $current_indicator = "enabled" ]]; then
-	indicator_opt="enabled!disabled!stand-alone"
-elif [[ $current_indicator = "stand-alone" ]]; then
-	indicator_opt="stand-alone!enabled!disabled"
-fi
+#if [[ $current_indicator = "disabled" ]]; then
+#	indicator_opt="disabled!enabled!stand-alone"
+#elif [[ $current_indicator = "enabled" ]]; then
+#	indicator_opt="enabled!disabled!stand-alone"
+#elif [[ $current_indicator = "stand-alone" ]]; then
+#	indicator_opt="stand-alone!enabled!disabled"
+#fi
 
 #temporarely_disabled  if [[ $current_rankings = "false" ]]; then
 #temporarely_disabled  	rankings_opt="false!true"
@@ -775,7 +778,8 @@ fi
 
 #temporarely_disabled  Y_SETTINGS=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --field="PPA-Purge:CB" $ppa_purge_opt --field="Display PPA rankings for deep search (slow):CB" $rankings_opt --field="Ubuntu version*" "$current_ubuntu_version" --field="Downloads folder:DIR" "$current_downloads_folder" --text="   * Linux Mint users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
 
-Y_SETTINGS=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu Indicator:CB" $indicator_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint, elementary OS users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
+#Y_SETTINGS=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu Indicator:CB" $indicator_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint, elementary OS users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
+Y_SETTINGS=`yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --title="Settings - Y PPA Manager" --field="PPA-Purge:CB" $ppa_purge_opt --field="Ubuntu version*" "$current_ubuntu_version" --text="   * Linux Mint, elementary OS users - enter the corresponding Ubuntu version   " --button="Reset to default:2" --button="gtk-cancel:1" --button="gtk-ok:0"`
 
 ret=$?
 
@@ -787,12 +791,13 @@ ret=$?
 
 if [[ $ret -eq 0 ]]; then
 	Y_purge=`echo "$Y_SETTINGS" | cut -d '|' -f1`
-	Y_indicator=`echo "$Y_SETTINGS" | cut -d '|' -f2`
+	#Y_indicator=`echo "$Y_SETTINGS" | cut -d '|' -f2`
 #temporarely_disabled 	Y_rank=`echo "$Y_SETTINGS" | cut -d '|' -f2`
 #temporarely_disabled 	Y_dist=`echo "$Y_SETTINGS" | cut -d '|' -f3`
 #temporarely_disabled 	Y_down=`echo "$Y_SETTINGS" | cut -d '|' -f4`
 #here, they must be from -f1 to -f4
-	Y_dist=`echo "$Y_SETTINGS" | cut -d '|' -f3`
+#	Y_dist=`echo "$Y_SETTINGS" | cut -d '|' -f3`
+	Y_dist=`echo "$Y_SETTINGS" | cut -d '|' -f2`
 #	Y_down=`echo "$Y_SETTINGS" | cut -d '|' -f3`
 
 	cp /etc/y-ppa-manager.conf /tmp/.y-ppa-manager.conf
@@ -804,42 +809,42 @@ if [[ $ret -eq 0 ]]; then
 #		rm /tmp/.y-ppa-manager.conf
 	fi
 
-	if [[ "$Y_indicator" != "$current_indicator" ]]; then
-	echo $Y_indicator Y_indicator
+#	if [[ "$Y_indicator" != "$current_indicator" ]]; then
+#	echo $Y_indicator Y_indicator
 
-		sed -i "s/indicator=.*/indicator=$Y_indicator/g" /tmp/.y-ppa-manager.conf
+#		sed -i "s/indicator=.*/indicator=$Y_indicator/g" /tmp/.y-ppa-manager.conf
 #		gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #		rm /tmp/.y-ppa-manager.conf
-		if [[ $Y_indicator = "stand-alone" ]]; then
-			echo "
-[Desktop Entry]
-Type=Application
-Exec="/usr/bin/y-ppa-indicator"
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-Name=Y PPA Manager Indicator
-Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-indicator.desktop
+#		if [[ $Y_indicator = "stand-alone" ]]; then
+#			echo "
+#[Desktop Entry]
+#Type=Application
+#Exec="/usr/bin/y-ppa-indicator"
+#Hidden=false
+#NoDisplay=false
+#X-GNOME-Autostart-enabled=true
+#Name=Y PPA Manager Indicator
+#Comment=Stand-alone Y PPA Manager Ubuntu indicator" > /etc/xdg/autostart/y-ppa-indicator.desktop
 
-		elif [[ $Y_indicator = "enabled" ]]; then
-			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
-			yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   The indicator will be started the   \n   next time you run Y PPA Manager   " --button="Ok:1"
+#		elif [[ $Y_indicator = "enabled" ]]; then
+#			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
+#			yad --center --form --class="Y-PPA-Manager" --name="Y PPA Manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --text="   The indicator will be started the   \n   next time you run Y PPA Manager   " --button="Ok:1"
 
-		elif [[ $Y_indicator = "disabled" ]]; then
-			killall y-ppa-indicator &
-			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
-		fi
+#		elif [[ $Y_indicator = "disabled" ]]; then
+#			killall y-ppa-indicator &
+#			rm /etc/xdg/autostart/y-ppa-indicator.desktop > /dev/null 2>&1
+#		fi
 
-	fi
+#	fi
 	
 	if [[ $Y_dist != $current_ubuntu_version ]]; then
 
-		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" || $Y_dist = "saucy" || $Y_dist = "trusty" || $Y_dist = "utopic" || $Y_dist = "vivid" ]]; then
+		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" || $Y_dist = "saucy" || $Y_dist = "trusty" || $Y_dist = "utopic" || $Y_dist = "vivid" || $Y_dist = "wily" || $Y_dist = "xenial" || $Y_dist = "yakkety" || $Y_dist = "zesty" || $Y_dist = "artful" || $Y_dist = "bionic" || $Y_dist = "cosmic" || $Y_dist = "disco" || $Y_dist = "eoan" || $Y_dist = "focal" || $Y_dist = "groovy" || $Y_dist = "hirsute" || $Y_dist = "impish" ]]; then
 			sed -i "s/searchdist=.*/searchdist=$Y_dist/g" /tmp/.y-ppa-manager.conf
 #			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #			rm /tmp/.y-ppa-manager.conf
 		else
-			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n  vivid, utopic, trusty, precise or lucid (in lowercase) " --button="gtk-ok:0"
+			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n impish, hirsute, focal, eoan, bionic or xenial (in lowercase) " --button="gtk-ok:0"
 			y_ppa_settings
 		fi
 
@@ -879,10 +884,6 @@ fi
 
 }
 
-
-function y_ppa_install() {
-python /usr/share/pyshared/y-ppa-manager/install_package.py
-}
 
 help_dialog()
 {
@@ -944,8 +945,6 @@ case $1 in
 	testConnection && y-ppa-search ;;
 	settings)
 	y_ppa_settings ;;
-	install)
-	y_ppa_install ;;
 	kadd)
 	y_add_ppa ;;
 	*)
@@ -956,7 +955,6 @@ case $1 in
 	echo y-ppa-cmd manage - launch the manage PPAs dialog dialog
 	echo y-ppa-cmd advanced - launch the advanced options dialog
 	echo y-ppa-cmd search - search all Launchpad PPAs dialog
-	echo y-ppa-cmd install - open the package installation dialog
 	echo y-ppa-cmd settings - open the settings dialog
 	echo y-ppa-cmd help - open the Help dialog
 	exit

@@ -13,33 +13,53 @@ fi
 loggeduser=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)
 
+xhostcheck() {
+if [[ ! `xhost | grep root` ]]; then
+	touch /tmp/.xhostwasntdefault
+fi
+}
+
+xhoston() {
+if [[ -e /tmp/.xhostwasntdefault ]]; then
+	xhost +SI:localuser:root
+fi
+}
+xhostoff() {
+if [[ -e /tmp/.xhostwasntdefault ]]; then 
+	xhost -SI:localuser:root
+fi
+}
+
+#run xhostcheck and xhoston - this checks if `xhost +SI:localuser:root` was previously ran (so it's not unset by Y PPA Manager). `xhost +SI:localuser:root` is required to run Y PPA Manager as root under Wayland
+xhostcheck && xhoston
+
 ######notification daemon
 #notifydaemonrunning=$(ps -e | grep y-ppa-notify)
 #[[ ! $notifydaemonrunning ]] && y-ppa-notify &
 
 ######policykit fix for KDE not setting XAUTHORITY
 #sometimes y-pkexec may be called as root by y-ppa-manager so let's fix ~/.Xauthoriy and use $homedir/.Xauthority when that happens
-if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "olivia" || "$codename" = "petra" || "$codename" = "qiana" || "$codename" = "rebecca" || "$codename" = "luna" || "$codename" = "freya" ]]; then
+if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "olivia" || "$codename" = "petra" || "$codename" = "qiana" || "$codename" = "rebecca" || "$codename" = "rafaela" || "$codename" = "rosa" || "$codename" = "sarah" || "$codename" = "serena" || "$codename" = "sonya" || "$codename" = "sylvia" || "$codename" = "tara" || "$codename" = "luna" || "$codename" = "freya" || "$codename" = "loki" || "$codename" = "juno" || "$codename" = "tessa" || "$codename" = "tina" || "$codename" = "tricia" || "$codename" = "hera" || "$codename" = "odin" || "$codename" = "ulyana" || "$codename" = "ulyssa" || "$codename" = "uma" ]]; then
 	if [[ -z "$XAUTHORITY" ]]; then
 		export XAUTHORITY="$homedir/.Xauthority"
 	fi
 ###################################################
 	case $1 in
 		add)
-			pkexec y-ppa-cmd add;;
+			pkexec y-ppa-cmd add ; xhostoff;;
 		advanced)
-			pkexec y-ppa-cmd advanced;;
+			pkexec y-ppa-cmd advanced ; xhostoff;;
 		manage)
-			pkexec y-ppa-cmd manage;;
+			pkexec y-ppa-cmd manage ; xhostoff;;
 		search)
-			pkexec y-ppa-search;;
+			pkexec y-ppa-search ; xhostoff;;
 		settings)
-			pkexec y-ppa-cmd settings;;
-		install)
-			pkexec y-ppa-cmd install;;
+			pkexec y-ppa-cmd settings ; xhostoff;;
+		help)
+			pkexec y-ppa-cmd help ; xhostoff;;
 		*)
-			y-ppa-indicator &
-			pkexec y-ppa-manager;;
+			#y-ppa-indicator &
+			pkexec y-ppa-manager ; xhostoff;;
 	esac
 
 else
@@ -58,7 +78,7 @@ else
 			install)
 				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-cmd install;;
 			*)
-				y-ppa-indicator &
+				#y-ppa-indicator &
 				gksu -S -m "Y PPA Manager requires admin privileges for this task" y-ppa-manager;;
 		esac
 	elif [[ -e /usr/bin/kdesudo ]]; then
@@ -76,7 +96,7 @@ else
 			install)
 				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-cmd install;;
 			*)
-				y-ppa-indicator &
+				#y-ppa-indicator &
 				kdesudo -d --comment="Y PPA Manager requires admin privileges for this task" y-ppa-manager;;
 		esac
 	else

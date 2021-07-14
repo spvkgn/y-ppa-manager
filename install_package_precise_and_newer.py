@@ -24,7 +24,7 @@ import pygtk
 pygtk.require("2.0")
 import gtk
 import apt
-from apt.progress import OpProgress, FetchProgress, InstallProgress
+import apt.progress.gtk2
 import apt_pkg
 from apt.cache import Cache
 from apt.cache import LockFailedException

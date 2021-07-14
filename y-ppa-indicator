@@ -1,12 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 #Some bits of code thanks to Alex Simenduev <shamil.si@gmail.com> (via Indicator-PLaces)
 
-import gtk
-import appindicator
 import os
 import signal
 import dbus
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk
+gi.require_version('AppIndicator3', '0.1')
+from gi.repository import AppIndicator3 as AppIndicator
 
 
 
@@ -19,8 +22,6 @@ def item_run(w, yitem):
         os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec add")
     elif yitem == "_yppa_manage":
         os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec manage")
-    elif yitem == "_yppa_install":
-        os.system("y-pkexec install")
     elif yitem == "_yppa_adv":
         os.system("rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec advanced")
     elif yitem == "_yppa_set":
@@ -28,66 +29,62 @@ def item_run(w, yitem):
     elif yitem == "_yppa_quit":
 	#todo: find a better way to exist main Y PPA Manager window, "killall yad" isn't exactly a good idea
         os.system("killall yad") 
-	gtk.main_quit()
+        Gtk.main_quit()
 
 
 class IndicatorY:
 
     def __init__(self):
-	if dbus.SessionBus().request_name('instance.y-ppa-indicator') != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
-	    print "application already running"
-	    exit(0)
-        self.ind = appindicator.Indicator("y-ppa-indicator", "y-ppa-indicator", appindicator.CATEGORY_APPLICATION_STATUS)
-        self.ind.set_status(appindicator.STATUS_ACTIVE)
-	hud_naming = True
-	try:
+        if dbus.SessionBus().request_name('instance.y-ppa-indicator') != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
+        	print("application already running")
+        	exit(0)
+        self.ind = AppIndicator.Indicator.new("y-ppa-indicator", "y-ppa-indicator", AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.ind.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+        hud_naming = True
+        try:
         	self.ind.set_property ("title", ("Y PPA Manager"))
-	except:
-		hud_naming = False
+        except:
+        	hud_naming = False
 
         self.create_menu()
 
     def create_menu(self, widget = None, data = None):
 
         # Create menu
-        menu = gtk.Menu()
+        menu = Gtk.Menu()
 
         # List items
-        item = gtk.MenuItem("Add PPA")
+        item = Gtk.MenuItem("Add PPA")
         item.connect("activate", item_run, "_yppa_add")
         menu.append(item)
 
-        item = gtk.MenuItem("Search in all Launchpad PPAs")
+        item = Gtk.MenuItem("Search in all Launchpad PPAs")
         item.connect("activate", item_run, "_yppa_search")
         menu.append(item)
 
-        item = gtk.MenuItem("Manage PPAs")
+        item = Gtk.MenuItem("Manage PPAs")
         item.connect("activate", item_run, "_yppa_manage")
         menu.append(item)
 
-        item = gtk.MenuItem("Install packages")
-        item.connect("activate", item_run, "_yppa_install")
-        menu.append(item)
-
-        item = gtk.MenuItem("Advanced")
+        item = Gtk.MenuItem("Advanced")
         item.connect("activate", item_run, "_yppa_adv")
         menu.append(item)
 
         # Show separator
-        item = gtk.SeparatorMenuItem()
+        item = Gtk.SeparatorMenuItem()
         menu.append(item)
 
         # More items
-        item = gtk.MenuItem("Settings")
+        item = Gtk.MenuItem("Settings")
         item.connect("activate", item_run, "_yppa_set")
         menu.append(item)
 
-        item = gtk.MenuItem("Y PPA Manager")
+        item = Gtk.MenuItem("Y PPA Manager")
         item.connect("activate", item_run, "_yppa")
         menu.append(item)
 
         # Quit menu item
-        item = gtk.MenuItem("Quit")
+        item = Gtk.MenuItem("Quit")
         item.connect("activate", item_run, "_yppa_quit")
         menu.append(item)
 
@@ -96,10 +93,10 @@ class IndicatorY:
 
 if __name__ == "__main__":
     # Catch CTRL-C
-    signal.signal(signal.SIGINT, lambda signal, frame: gtk.main_quit())
+    signal.signal(signal.SIGINT, lambda signal, frame: Gtk.main_quit())
 
     # Run the indicator
     i = IndicatorY()
              
-    # Main gtk loop
-    gtk.main()
+    # Main Gtk loop
+    Gtk.main()

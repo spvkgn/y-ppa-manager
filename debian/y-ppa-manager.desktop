@@ -11,35 +11,24 @@ X-MultipleArgs=false
 Type=Application
 Categories=GNOME;System;
 StartupWMClass=Y-PPA-Manager
-X-Ayatana-Desktop-Shortcuts=YPPAManager1;YPPAManager3;YPPAManager4;YPPAManager5;YPPAManager6;YPPAManager7;
-TargetEnvironment=Unity
+Actions=YPPAManager1;YPPAManager3;YPPAManager4;YPPAManager5;
 
-[YPPAManager1 Shortcut Group]
+[Desktop Action YPPAManager1]
 Name=Add PPA
 Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec add"
-TargetEnvironment=Unity
 
-[YPPAManager3 Shortcut Group]
+[Desktop Action YPPAManager2]
 Name=Search in all Launchpad PPAs
 Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec search"
-TargetEnvironment=Unity
 
-[YPPAManager4 Shortcut Group]
+[Desktop Action YPPAManager3]
 Name=Manage PPAs
 Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec manage"
-TargetEnvironment=Unity
 
-[YPPAManager5 Shortcut Group]
-Name=Install packages
-Exec=y-pkexec install
-TargetEnvironment=Unity
-
-[YPPAManager6 Shortcut Group]
+[Desktop Action YPPAManager4]
 Name=Advanced
 Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec advanced"
-TargetEnvironment=Unity
 
-[YPPAManager7 Shortcut Group]
+[Desktop Action YPPAManager5]
 Name=Settings
 Exec=sh -c "rm -f '/tmp/.yppa_username' '/tmp/.yppa_home' && y-pkexec settings"
-TargetEnvironment=Unity

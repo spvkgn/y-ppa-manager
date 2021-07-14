@@ -64,8 +64,14 @@ case `lsb_release -cs` in
 		codename="raring";;
 	petra)
 		codename="saucy";;
-	qiana|rebecca|freya)
+	qiana|rebecca|rafaela|rosa|freya)
 		codename="trusty" ;;
+	sarah|loki|serena|sonya|sylvia)
+		codename="xenial" ;;
+	tara|juno|tessa|tina|tricia|hera)
+		codename="bionic" ;;
+	odin|ulyana|ulyssa|uma)
+		codename="focal" ;;
 esac
 }
 
