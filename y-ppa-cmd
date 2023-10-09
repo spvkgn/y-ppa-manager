@@ -49,8 +49,10 @@ case `lsb_release -cs` in
 		UBUVER="xenial" ;;
 	tara|juno|tessa|tina|tricia|hera)
 		UBUVER="bionic" ;;
-	odin|ulyana|ulyssa|uma)
+	odin|ulyana|ulyssa|uma|una)
 		UBUVER="focal" ;;
+	vanessa|vera)
+		UBUVER="jammy" ;;
 esac
 
 # Temporary work-around for Linux Mint 16 add-apt-repository
@@ -114,7 +116,7 @@ loggeduser=$(cat /tmp/.yppa_username)
 homedir=$(cat /tmp/.yppa_home)
 ######policykit fix for KDE not setting XAUTHORITY
 release="$(lsb_release -rs)"
-if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" || "$UBUVER" = "wily" || "$UBUVER" = "xenial" || "$UBUVER" = "yakkety" || "$UBUVER" = "zesty" || "$UBUVER" = "artful" || "$UBUVER" = "bionic" || "$UBUVER" = "cosmic" || "$UBUVER" = "disco" || "$UBUVER" = "eoan" || "$UBUVER" = "focal" || "$UBUVER" = "groovy" || "$UBUVER" = "hirsute" || "$UBUVER" = "impish" ]]; then
+if [[ "$release" > "11.04" || "$UBUVER" = "oneiric" || "$UBUVER" = "precise" || "$UBUVER" = "quantal" || "$UBUVER" = "raring" || "$UBUVER" = "saucy" || "$UBUVER" = "trusty" || "$UBUVER" = "utopic" || "$UBUVER" = "vivid" || "$UBUVER" = "wily" || "$UBUVER" = "xenial" || "$UBUVER" = "yakkety" || "$UBUVER" = "zesty" || "$UBUVER" = "artful" || "$UBUVER" = "bionic" || "$UBUVER" = "cosmic" || "$UBUVER" = "disco" || "$UBUVER" = "eoan" || "$UBUVER" = "focal" || "$UBUVER" = "groovy" || "$UBUVER" = "hirsute" || "$UBUVER" = "impish" || "$UBUVER" = "jammy" ]]; then
 	[[ -z "$XAUTHORITY" ]] && export XAUTHORITY="$homedir/.Xauthority"
 fi
 ########
@@ -518,14 +520,14 @@ list_packages_PPA()
 				
 			if [[ $PPA_PURGE_AUTO ]]; then
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Please wait while purging \"$fullppa_stripdist\"\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "rafaela" || `lsb_release -cs` = "rosa" || `lsb_release -cs` = "sarah"  || `lsb_release -cs` = "serena" || `lsb_release -cs` = "sonya" || `lsb_release -cs` = "tara" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" || `lsb_release -cs` = "loki" || `lsb_release -cs` = "juno" || `lsb_release -cs` = "hera" || `lsb_release -cs` = "odin" || `lsb_release -cs` = "tessa" || `lsb_release -cs` = "tina" || `lsb_release -cs` = "tricia" || `lsb_release -cs` = "ulyana" || `lsb_release -cs` = "ulyssa" || `lsb_release -cs` = "uma" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "rafaela" || `lsb_release -cs` = "rosa" || `lsb_release -cs` = "sarah"  || `lsb_release -cs` = "serena" || `lsb_release -cs` = "sonya" || `lsb_release -cs` = "tara" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" || `lsb_release -cs` = "loki" || `lsb_release -cs` = "juno" || `lsb_release -cs` = "hera" || `lsb_release -cs` = "odin" || `lsb_release -cs` = "tessa" || `lsb_release -cs` = "tina" || `lsb_release -cs` = "tricia" || `lsb_release -cs` = "ulyana" || `lsb_release -cs` = "ulyssa" || `lsb_release -cs` = "uma" || `lsb_release -cs` = "una" || `lsb_release -cs` = "vanessa" || `lsb_release -cs` = "vera" ]]; then
 					sudo ppa-purge -d $UBUVER -y "$fullppa_stripdist"
 				else
 					sudo ppa-purge -y "$fullppa_stripdist"
 				fi
 			else
 				su $loggeduser -s /bin/bash -c "${DBUS} notify-send -h int:transient:1 -t 10000 -u normal --icon=list-remove \"Y PPA Manager\" \"Close the terminal window when you are done purging\""
-				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "rafaela" || `lsb_release -cs` = "rosa" || `lsb_release -cs` = "sarah"  || `lsb_release -cs` = "serena" || `lsb_release -cs` = "sonya" || `lsb_release -cs` = "sylvia" || `lsb_release -cs` = "tara" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" || `lsb_release -cs` = "loki" || `lsb_release -cs` = "juno" || `lsb_release -cs` = "hera" || `lsb_release -cs` = "odin" || `lsb_release -cs` = "tessa" || `lsb_release -cs` = "tina" || `lsb_release -cs` = "tricia" || `lsb_release -cs` = "ulyana" || `lsb_release -cs` = "ulyssa" || `lsb_release -cs` = "uma" ]]; then
+				if [[ `lsb_release -cs` = "helena" || `lsb_release -cs` = "isadora" || `lsb_release -cs` = "julia" || `lsb_release -cs` = "katya" || `lsb_release -cs` = "lisa" || `lsb_release -cs` = "maya" || `lsb_release -cs` = "nadia" || `lsb_release -cs` = "olivia" || `lsb_release -cs` = "petra" || `lsb_release -cs` = "qiana" || `lsb_release -cs` = "rebecca" || `lsb_release -cs` = "rafaela" || `lsb_release -cs` = "rosa" || `lsb_release -cs` = "sarah"  || `lsb_release -cs` = "serena" || `lsb_release -cs` = "sonya" || `lsb_release -cs` = "sylvia" || `lsb_release -cs` = "tara" || `lsb_release -cs` = "luna" || `lsb_release -cs` = "freya" || `lsb_release -cs` = "loki" || `lsb_release -cs` = "juno" || `lsb_release -cs` = "hera" || `lsb_release -cs` = "odin" || `lsb_release -cs` = "tessa" || `lsb_release -cs` = "tina" || `lsb_release -cs` = "tricia" || `lsb_release -cs` = "ulyana" || `lsb_release -cs` = "ulyssa" || `lsb_release -cs` = "uma" || `lsb_release -cs` = "una" || `lsb_release -cs` = "vanessa" || `lsb_release -cs` = "vera" ]]; then
 					xterm -hold -e sudo ppa-purge -d $UBUVER $fullppa_stripdist
 				else					
 					xterm -hold -e sudo ppa-purge $fullppa_stripdist
@@ -839,12 +841,12 @@ if [[ $ret -eq 0 ]]; then
 	
 	if [[ $Y_dist != $current_ubuntu_version ]]; then
 
-		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" || $Y_dist = "saucy" || $Y_dist = "trusty" || $Y_dist = "utopic" || $Y_dist = "vivid" || $Y_dist = "wily" || $Y_dist = "xenial" || $Y_dist = "yakkety" || $Y_dist = "zesty" || $Y_dist = "artful" || $Y_dist = "bionic" || $Y_dist = "cosmic" || $Y_dist = "disco" || $Y_dist = "eoan" || $Y_dist = "focal" || $Y_dist = "groovy" || $Y_dist = "hirsute" || $Y_dist = "impish" ]]; then
+		if [[ $Y_dist = "karmic" || $Y_dist = "lucid" || $Y_dist = "maverick" || $Y_dist = "natty" || $Y_dist = "oneiric" || $Y_dist = "precise" || $Y_dist = "quantal" || $Y_dist = "raring" || $Y_dist = "saucy" || $Y_dist = "trusty" || $Y_dist = "utopic" || $Y_dist = "vivid" || $Y_dist = "wily" || $Y_dist = "xenial" || $Y_dist = "yakkety" || $Y_dist = "zesty" || $Y_dist = "artful" || $Y_dist = "bionic" || $Y_dist = "cosmic" || $Y_dist = "disco" || $Y_dist = "eoan" || $Y_dist = "focal" || $Y_dist = "groovy" || $Y_dist = "hirsute" || $Y_dist = "impish" || $Y_dist = "jammy" ]]; then
 			sed -i "s/searchdist=.*/searchdist=$Y_dist/g" /tmp/.y-ppa-manager.conf
 #			gksu -S -m "Y PPA Manager requires admin privileges for this task" cp /tmp/.y-ppa-manager.conf /etc/y-ppa-manager.conf
 #			rm /tmp/.y-ppa-manager.conf
 		else
-			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n impish, hirsute, focal, eoan, bionic or xenial (in lowercase) " --button="gtk-ok:0"
+			yad --center --class="y-ppa-manager" --window-icon="/usr/share/icons/hicolor/128x128/apps/y-ppa-manager.png" --form --title="Error" --text="  The Ubuntu version you've entered is not valid  \n  Please enter one of the following versions:  \n jammy, focal, bionic or xenial (in lowercase) " --button="gtk-ok:0"
 			y_ppa_settings
 		fi
 

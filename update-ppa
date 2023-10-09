@@ -70,8 +70,10 @@ case `lsb_release -cs` in
 		codename="xenial" ;;
 	tara|juno|tessa|tina|tricia|hera)
 		codename="bionic" ;;
-	odin|ulyana|ulyssa|uma)
+	odin|ulyana|ulyssa|uma|una)
 		codename="focal" ;;
+	vanessa|vera)
+		codename="jammy" ;;
 esac
 }
 

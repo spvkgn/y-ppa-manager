@@ -2,7 +2,7 @@ Source: y-ppa-manager
 Section: misc
 Priority: extra
 Maintainer: Alin Andrei <webupd8@gmail.com>
-Build-Depends: debhelper (>=9)
+Build-Depends: debhelper (>= 10)
 Standards-Version: 3.9.8
 Homepage: https://launchpad.net/y-ppa-manager
 

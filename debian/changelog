@@ -1,3 +1,9 @@
+y-ppa-manager (2023.10.09-1~spvkgn) jammy; urgency=medium
+
+  * Add Ubuntu Jammy (22.04) and Linux Mint 21 support
+
+ -- spvkgn <spvkgn@launchpad.net>  Mon, 09 Oct 2023 14:29:39 +0500
+
 y-ppa-manager (2021.07.15-1~webupd8~0) hirsute; urgency=medium
  
   * Add Ubuntu Impish Idri (21.10) and Linux Mint 20.2 Uma support

@@ -29,8 +29,10 @@ if [ "$1" = "configure" ]; then
 			UBUVER="xenial" ;;
 		tara|juno|tessa|tina|tricia|hera)
 			UBUVER="bionic" ;;
-		odin|ulyana|ulyssa|uma)
+		odin|ulyana|ulyssa|uma|una)
 			UBUVER="focal" ;;
+		vanessa|vera)
+			UBUVER="jammy" ;;
 	esac
 
 	#Fix Linux Mint 16 add-apt-repository

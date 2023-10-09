@@ -39,7 +39,7 @@ xhostcheck && xhoston
 
 ######policykit fix for KDE not setting XAUTHORITY
 #sometimes y-pkexec may be called as root by y-ppa-manager so let's fix ~/.Xauthoriy and use $homedir/.Xauthority when that happens
-if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "olivia" || "$codename" = "petra" || "$codename" = "qiana" || "$codename" = "rebecca" || "$codename" = "rafaela" || "$codename" = "rosa" || "$codename" = "sarah" || "$codename" = "serena" || "$codename" = "sonya" || "$codename" = "sylvia" || "$codename" = "tara" || "$codename" = "luna" || "$codename" = "freya" || "$codename" = "loki" || "$codename" = "juno" || "$codename" = "tessa" || "$codename" = "tina" || "$codename" = "tricia" || "$codename" = "hera" || "$codename" = "odin" || "$codename" = "ulyana" || "$codename" = "ulyssa" || "$codename" = "uma" ]]; then
+if [[ "$release" > "11.04" || "$codename" = "lisa" || "$codename" = "maya" || "$codename" = "nadia" || "$codename" = "olivia" || "$codename" = "petra" || "$codename" = "qiana" || "$codename" = "rebecca" || "$codename" = "rafaela" || "$codename" = "rosa" || "$codename" = "sarah" || "$codename" = "serena" || "$codename" = "sonya" || "$codename" = "sylvia" || "$codename" = "tara" || "$codename" = "luna" || "$codename" = "freya" || "$codename" = "loki" || "$codename" = "juno" || "$codename" = "tessa" || "$codename" = "tina" || "$codename" = "tricia" || "$codename" = "hera" || "$codename" = "odin" || "$codename" = "ulyana" || "$codename" = "ulyssa" || "$codename" = "uma" || "$codename" = "una" || "$codename" = "vanessa" || "$codename" = "vera" ]]; then
 	if [[ -z "$XAUTHORITY" ]]; then
 		export XAUTHORITY="$homedir/.Xauthority"
 	fi
